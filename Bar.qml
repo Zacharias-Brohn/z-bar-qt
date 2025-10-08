@@ -6,6 +6,7 @@ import Quickshell.Widgets
 import Quickshell.Io
 import Quickshell.Wayland
 import Qt5Compat.GraphicalEffects
+import Quickshell.Services.SystemTray
 import Quickshell.Hyprland
 import qs.Modules
 
@@ -59,11 +60,7 @@ Scope {
                         id: rightSection
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
 
-                        TrayWidget {
-                            id: systemTrayModule
-                            bar: bar
-                            Layout.alignment: Qt.AlignVCenter
-                        }
+                        Tray {}
 
                         Clock {
                             Layout.alignment: Qt.AlignVCenter
