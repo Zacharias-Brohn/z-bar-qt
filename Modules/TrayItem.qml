@@ -1,4 +1,6 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
@@ -18,7 +20,7 @@ IconImage {
                 case Qt.RightButton: 
                 if (root.item.hasMenu) {
                     const window = QsWindow.window;
-                    const widgetRect = window.contentItem.mapFromItem(root, 0, root.height + 10 , root.width, root.height);
+                    const widgetRect = window.contentItem.mapFromItem(root, -24, root.height -12 , root.width, root.height);
                     menuAnchor.anchor.rect = widgetRect;
                     menuAnchor.open();
                 } 
@@ -30,6 +32,6 @@ IconImage {
         id: menuAnchor
         menu: root.item.menu
         anchor.window: root.QsWindow.window?? null
-        anchor.adjustment: PopupAdjustment.Flip
+        anchor.adjustment: PopupAdjustment.SlideX
     }
 }
