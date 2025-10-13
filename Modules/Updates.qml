@@ -28,7 +28,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 const output = this.text
-                const lines = output.trim().split("\n")
+                const lines = output.trim().split("\n").filter(line => line.length > 0)
                 console.log("Available updates:", lines)
                 availableUpdates = lines.length
             }
