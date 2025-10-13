@@ -7,9 +7,9 @@ import Quickshell.Hyprland
 Rectangle {
     id: root
     
-    implicitWidth: workspacesRow.implicitWidth + 12
-    implicitHeight: workspacesRow.implicitHeight + 8
-    
+    implicitWidth: workspacesRow.implicitWidth + 10
+    implicitHeight: workspacesRow.implicitHeight + 7
+
     color: "#40000000"
     radius: height / 2
 
@@ -24,7 +24,7 @@ Rectangle {
         id: workspacesRow
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 6
+        anchors.leftMargin: 5
         spacing: 8
 
         Repeater {
@@ -33,9 +33,9 @@ Rectangle {
             Rectangle {
                 required property var modelData
 
-                width: 12
-                height: 12
-                radius: 6
+                width: 14
+                height: 14
+                radius: height / 2
 
                 color: modelData.id === Hyprland.focusedWorkspace.id ? "#4080ff" : "#606060"
 

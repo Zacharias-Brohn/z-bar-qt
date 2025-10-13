@@ -5,5 +5,5 @@ import Quickshell.Hyprland
 
 Singleton {
     id: root
-    property string activeWindow: Hyprland.activeToplevel?.lastIpcObject.class || ""
+    property string activeWindow: Hyprland.activeToplevel?.title || ""
 }

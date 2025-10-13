@@ -48,6 +48,20 @@ Scope {
                             Layout.topMargin: 6
                             Layout.bottomMargin: 6
                         }
+
+                        AudioWidget {
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                            Layout.fillHeight: true
+                            Layout.topMargin: 6
+                            Layout.bottomMargin: 6
+                        }
+
+                        Resources {
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                            Layout.fillHeight: true
+                            Layout.topMargin: 6
+                            Layout.bottomMargin: 6
+                        }
                     }
 
                     RowLayout {
