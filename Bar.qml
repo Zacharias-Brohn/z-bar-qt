@@ -62,6 +62,14 @@ Scope {
                             Layout.topMargin: 6
                             Layout.bottomMargin: 6
                         }
+
+                        UpdatesWidget {
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                            Layout.fillHeight: true
+                            Layout.topMargin: 6
+                            Layout.bottomMargin: 6
+                            countUpdates: Updates.availableUpdates
+                        }
                     }
 
                     RowLayout {
