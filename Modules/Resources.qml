@@ -29,6 +29,7 @@ Item {
 
             Resource {
                 percentage: ResourceUsage.memoryUsedPercentage
+                warningThreshold: 95
             }
 
             Text {
@@ -41,13 +42,14 @@ Item {
 
             Resource {
                 percentage: ResourceUsage.cpuUsage
+                warningThreshold: 80
             }
 
             Text {
                 Layout.alignment: Qt.AlignVCenter
                 font.family: "Material Symbols Rounded"
-                font.pixelSize: 18
-                text: "\ue30d"
+                font.pixelSize: 16
+                text: "󰢮"
                 color: "#ffffff"
             }
 

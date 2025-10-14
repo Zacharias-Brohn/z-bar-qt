@@ -14,6 +14,13 @@ Item {
     implicitHeight: 22
     property bool warning: percentage * 100 >= warningThreshold
 
+    Behavior on percentage {
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.InOutQuad
+        }
+    }
+
     RowLayout {
         id: resourceRowLayout
         spacing: 2

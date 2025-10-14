@@ -5,9 +5,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-/**
- * Simple polled resource usage service with RAM, Swap, and CPU usage.
- */
 Singleton {
 	property double memoryTotal: 1
 	property double memoryFree: 1
@@ -22,6 +19,7 @@ Singleton {
     property double gpuUsage: 0
     property double gpuMemUsage: 0
     property double totalMem: 0
+
 	Timer {
 		interval: 1
         running: true 
@@ -70,6 +68,7 @@ Singleton {
         stdout: StdioCollector {
             onStreamFinished: {
                 totalMem = Number(this.text.trim())
+                oneshotMem.running = false
             }
         }
     }

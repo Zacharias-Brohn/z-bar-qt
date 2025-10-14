@@ -1,14 +1,35 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Io
+import Quickshell.Hyprland
 
 Item {
     id: root
+    property string currentTitle
     Layout.fillHeight: true
     Layout.preferredWidth: Math.max( titleText1.implicitWidth, titleText2.implicitWidth ) + 10
     clip: true
 
-    property string currentTitle: ActiveWindow.activeWindow
     property bool showFirst: true
+
+    Process {
+        id: initialTitleProc
+        command: ["./scripts/initialTitle.sh"]
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.currentTitle = this.text.trim().replace(/\"/g, "")
+            }
+        }
+    }
+
+    Component.onCompleted: {
+        Hyprland.rawEvent.connect(( event ) => {
+            if (event.name === "activewindow") {
+                initialTitleProc.running = true
+            }
+        })
+    }
 
     onCurrentTitleChanged: {
         if (showFirst) {
