@@ -14,7 +14,6 @@ Singleton {
         running: true
         repeat: true
         onTriggered: {
-            console.log("Checking for updates...")
             updatesProc.running = true
             interval = 60000
         }
@@ -29,7 +28,6 @@ Singleton {
             onStreamFinished: {
                 const output = this.text
                 const lines = output.trim().split("\n").filter(line => line.length > 0)
-                console.log("Available updates:", lines)
                 availableUpdates = lines.length
             }
         }

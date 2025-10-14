@@ -21,7 +21,7 @@ Singleton {
     property var previousCpuStats
     property double gpuUsage: 0
     property double gpuMemUsage: 0
-
+    property double totalMem: 0
 	Timer {
 		interval: 1
         running: true 
@@ -64,14 +64,25 @@ Singleton {
     FileView { id: fileStat; path: "/proc/stat" }
 
     Process {
+        id: oneshotMem
+        command: ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: {
+                totalMem = Number(this.text.trim())
+            }
+        }
+    }
+
+    Process {
         id: processGpu
-        command: ["nvidia-smi", "--query-gpu=utilization.gpu,utilization.memory", "--format=csv,noheader,nounits"]
+        command: ["nvidia-smi", "--query-gpu=utilization.gpu,memory.used", "--format=csv,noheader,nounits"]
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
                 const parts = this.text.trim().split(", ")
                 gpuUsage = Number(parts[0]) / 100
-                gpuMemUsage = Number(parts[1]) / 100
+                gpuMemUsage = Number(parts[1]) / totalMem
             }
         }
     }
