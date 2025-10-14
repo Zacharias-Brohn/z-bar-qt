@@ -8,8 +8,17 @@ import qs.Modules
 
 Item {
     id: root
-    implicitWidth: 150
+    implicitWidth: expanded ? 300 : 150
     implicitHeight: 100
+
+    property bool expanded: false
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: 300
+            easing.type: Easing.OutCubic
+        }
+    }
 
 	PwObjectTracker {
 		objects: [ Pipewire.defaultAudioSink ]
@@ -24,6 +33,7 @@ Item {
         radius: height / 2
         color: "#40000000"
 
+
         // Background circle
         Rectangle {
             anchors.centerIn: parent
@@ -35,74 +45,190 @@ Item {
             border.width: 0
         }
 
-        RowLayout {
-            anchors {
-                fill: parent
-                leftMargin: 10
-                rightMargin: 15
-            }
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onEntered: root.expanded = true
+            onExited: root.expanded = false
+            RowLayout {
+                anchors {
+                    fill: parent
+                    leftMargin: 10
+                    rightMargin: 15
+                }
 
-            Text {
-                Layout.alignment: Qt.AlignVCenter
-                font.family: "Material Symbols Rounded"
-                font.pixelSize: 18
-                text: "\ue050"  // volume_up icon
-                color: "#ffffff"
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-
-                implicitHeight: 4
-                radius: 20
-                color: "#50ffffff"
-
-                Rectangle {
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
-
-                    implicitWidth: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
-                    radius: parent.radius
+                Text {
+                    Layout.alignment: Qt.AlignVCenter
+                    font.family: "Material Symbols Rounded"
+                    font.pixelSize: 18
+                    text: "\ue050"  // volume_up icon
                     color: "#ffffff"
                 }
-            }
-
-            Text {
-                Layout.alignment: Qt.AlignVCenter
-                font.family: "Material Symbols Rounded"
-                font.pixelSize: 18
-                text: "\ue029"
-                color: (Pipewire.defaultAudioSource?.audio.muted ?? false) ? "#ff4444" : "#ffffff"
-            }
-
-            Rectangle {
-                Layout.fillWidth: true
-
-                implicitHeight: 4
-                radius: 20
-                color: "#50ffffff"
 
                 Rectangle {
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        bottom: parent.bottom
+                    Layout.fillWidth: true
+
+                    implicitHeight: 4
+                    radius: 20
+                    color: "#50ffffff"
+
+                    Rectangle {
+                        id: sinkVolumeBar
+                        anchors {
+                            left: parent.left
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+
+                        implicitWidth: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
+                        radius: parent.radius
+                        color: "#ffffff"
                     }
 
-                    implicitWidth: parent.width * (Pipewire.defaultAudioSource?.audio.volume ?? 0)
-                    radius: parent.radius
+                    Rectangle {
+                        id: sinkGrabber
+                        visible: root.expanded
+                        opacity: root.expanded ? 1 : 0
+                        width: 12
+                        height: 12
+                        radius: width / 2
+                        color: sinkVolumeMouseArea.containsMouse || sinkVolumeMouseArea.pressed ? "#ffffff" : "#aaaaaa"
+                        border.color: "#40000000"
+                        border.width: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: sinkVolumeBar.width - width / 2
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 300
+                            }
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: sinkVolumeMouseArea
+                        anchors.fill: parent
+                        anchors {
+                            leftMargin: 0
+                            rightMargin: 0
+                            topMargin: -10
+                            bottomMargin: -10
+                        }
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
+                        onPressed: function(mouse) {
+                            var newVolume = Math.max(0, Math.min(1, mouse.x / width))
+                            if (Pipewire.defaultAudioSink?.audio) {
+                                Pipewire.defaultAudioSink.audio.volume = newVolume
+                            }
+                        }
+
+                        onPositionChanged: function(mouse) {
+                            if (pressed) {
+                                var newVolume = Math.max(0, Math.min(1, mouse.x / width))
+                                if (Pipewire.defaultAudioSink?.audio) {
+                                    Pipewire.defaultAudioSink.audio.volume = newVolume
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Text {
+                    Layout.alignment: Qt.AlignVCenter
+                    font.family: "Material Symbols Rounded"
+                    font.pixelSize: 18
+                    text: "\ue029"
                     color: (Pipewire.defaultAudioSource?.audio.muted ?? false) ? "#ff4444" : "#ffffff"
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+
+                    implicitHeight: 4
+                    radius: 20
+                    color: "#50ffffff"
+
+                    Rectangle {
+                        id: sourceVolumeBar
+                        anchors {
+                            left: parent.left
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+
+                        implicitWidth: parent.width * (Pipewire.defaultAudioSource?.audio.volume ?? 0)
+                        radius: parent.radius
+                        color: (Pipewire.defaultAudioSource?.audio.muted ?? false) ? "#ff4444" : "#ffffff"
+                    }
+
+                    Rectangle {
+                        id: sourceGrabber
+                        visible: root.expanded
+                        opacity: root.expanded ? 1 : 0
+                        width: 12
+                        height: 12
+                        radius: width / 2
+                        color: sourceVolumeMouseArea.containsMouse || sourceVolumeMouseArea.pressed ? "#ffffff" : "#aaaaaa"
+                        border.color: "#40000000"
+                        border.width: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: sourceVolumeBar.width - width / 2
+
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 300
+                            }
+                        }
+
+                        Behavior on color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
+                    }
+
+                    MouseArea {
+                        id: sourceVolumeMouseArea
+                        anchors.fill: parent
+                        anchors {
+                            leftMargin: 0
+                            rightMargin: 0
+                            topMargin: -10
+                            bottomMargin: -10
+                        }
+                        cursorShape: Qt.PointingHandCursor
+                        hoverEnabled: true
+
+                        onPressed: function(mouse) {
+                            var newVolume = Math.max(0, Math.min(1, mouse.x / width))
+                            if (Pipewire.defaultAudioSource?.audio) {
+                                Pipewire.defaultAudioSource.audio.volume = newVolume
+                            }
+                        }
+
+                        onPositionChanged: function(mouse) {
+                            if (pressed) {
+                                var newVolume = Math.max(0, Math.min(1, mouse.x / width))
+                                if (Pipewire.defaultAudioSource?.audio) {
+                                    Pipewire.defaultAudioSource.audio.volume = newVolume
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: pavucontrolProc.running = true
-        }
+
         Process {
             id: pavucontrolProc
             command: ["pavucontrol"]
