@@ -1,3 +1,5 @@
+//@ pragma Env QT_STYLE_OVERRIDE=Breeze
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
@@ -10,7 +12,10 @@ IconImage {
     required property SystemTrayItem item
 
     source: root.item.icon
-    implicitSize: 15
+    implicitWidth: 18
+    implicitHeight: 18
+    mipmap: false
+    asynchronous: true
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
@@ -19,9 +24,6 @@ IconImage {
                 case Qt.LeftButton: root.item.activate(); break;
                 case Qt.RightButton: 
                 if (root.item.hasMenu) {
-                    const window = QsWindow.window;
-                    const widgetRect = window.contentItem.mapFromItem(root, -24, root.height -12 , root.width, root.height);
-                    menuAnchor.anchor.rect = widgetRect;
                     menuAnchor.open();
                 } 
                 break;
@@ -31,7 +33,9 @@ IconImage {
     QsMenuAnchor {
         id: menuAnchor
         menu: root.item.menu
-        anchor.window: root.QsWindow.window?? null
+        anchor.item: root
+        anchor.edges: Edges.Bottom | Edges.Left
+        anchor.margins.top: 23
         anchor.adjustment: PopupAdjustment.SlideX
     }
 }

@@ -78,7 +78,7 @@ Item {
                 visible: root.getIcon().includes("notification")
                 Layout.alignment: Qt.AlignTop | Qt.AlignRight
                 Layout.topMargin: 0
-                Layout.rightMargin: -6
+                Layout.rightMargin: 4
             }
         }
         
