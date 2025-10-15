@@ -6,7 +6,21 @@ import Quickshell.Hyprland
 
 Rectangle {
     id: root
-    
+
+    required property ShellScreen screen
+
+    readonly property int activeWsId: ( Hyprland.monitorFor( screen ).activeWorkspace?.id ?? 1 )
+
+    readonly property var occupied: Hyprland.workspaces.values.reduce(( acc, curr ) => {
+        acc[ curr.id ] = curr.lastIpcObject.windows > 0;
+        return acc;
+    })
+    readonly property int groupOffset: Math.floor(( activeWsId - 1 ) / 10) * 10
+    readonly property int ws: 1 + groupOffset
+
+    readonly property bool isOccupied: occupied[ ws ] ?? false
+
+
     implicitWidth: workspacesRow.implicitWidth + 10
     implicitHeight: workspacesRow.implicitHeight + 7
 

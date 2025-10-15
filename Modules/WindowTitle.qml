@@ -18,7 +18,8 @@ Item {
         running: false
         stdout: StdioCollector {
             onStreamFinished: {
-                root.currentTitle = this.text.trim().replace(/\"/g, "")
+                let cleaned = this.text.trim().replace(/\"/g, "")
+                root.currentTitle = ( cleaned === "null" ) ? "" : cleaned
             }
         }
     }

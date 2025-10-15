@@ -7,7 +7,7 @@ import qs.Modules
 
 PopupWindow {
     id: popup
-    color: "#FF202020"
+    color: "#00202020"
 
     required property QsMenuOpener trayMenu
 
