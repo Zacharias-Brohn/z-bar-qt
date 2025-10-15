@@ -47,7 +47,6 @@ Scope {
                             Layout.fillHeight: true
                             Layout.topMargin: 6
                             Layout.bottomMargin: 6
-                            screen: bar.screen
                         }
 
                         AudioWidget {
