@@ -82,7 +82,7 @@ Item {
                             bottom: parent.bottom
                         }
 
-                        implicitWidth: parent.width * (Pipewire.defaultAudioSink?.audio.volume ?? 0)
+                        implicitWidth: parent.width * ( Pipewire.defaultAudioSink?.audio.volume ?? 0 )
                         radius: parent.radius
                         color: "#ffffff"
                     }
@@ -91,14 +91,34 @@ Item {
                         id: sinkGrabber
                         visible: root.expanded
                         opacity: root.expanded ? 1 : 0
-                        width: 12
-                        height: 12
+                        width: sinkVolumeMouseArea.pressed ? 25 : 12
+                        height: sinkVolumeMouseArea.pressed ? 25 : 12
                         radius: width / 2
                         color: sinkVolumeMouseArea.containsMouse || sinkVolumeMouseArea.pressed ? "#ffffff" : "#aaaaaa"
                         border.color: "#40000000"
                         border.width: 2
                         anchors.verticalCenter: parent.verticalCenter
                         x: sinkVolumeBar.width - width / 2
+
+                        Text {
+                            anchors.centerIn: parent
+                            anchors.verticalCenterOffset: text.length === 3 ? -0.5 : 0
+                            visible: sinkVolumeMouseArea.pressed
+                            font.pixelSize: text.length === 3 ? 10 : 12
+                            text: Math.round(( Pipewire.defaultAudioSink?.audio.volume ?? 0 ) * 100 ).toString()
+                        }
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 50
+                            }
+                        }
+
+                        Behavior on height {
+                            NumberAnimation {
+                                duration: 50
+                            }
+                        }
 
                         Behavior on opacity {
                             NumberAnimation {
@@ -125,17 +145,17 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
 
-                        onPressed: function(mouse) {
-                            var newVolume = Math.max(0, Math.min(1, mouse.x / width))
-                            if (Pipewire.defaultAudioSink?.audio) {
+                        onPressed: function( mouse ) {
+                            var newVolume = Math.max( 0, Math.min( 1, mouse.x / width ))
+                            if ( Pipewire.defaultAudioSink?.audio ) {
                                 Pipewire.defaultAudioSink.audio.volume = newVolume
                             }
                         }
 
-                        onPositionChanged: function(mouse) {
-                            if (pressed) {
-                                var newVolume = Math.max(0, Math.min(1, mouse.x / width))
-                                if (Pipewire.defaultAudioSink?.audio) {
+                        onPositionChanged: function( mouse ) {
+                            if ( pressed ) {
+                                var newVolume = Math.max( 0, Math.min( 1, mouse.x / width ))
+                                if ( Pipewire.defaultAudioSink?.audio ) {
                                     Pipewire.defaultAudioSink.audio.volume = newVolume
                                 }
                             }
@@ -148,7 +168,7 @@ Item {
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: 18
                     text: "\ue029"
-                    color: (Pipewire.defaultAudioSource?.audio.muted ?? false) ? "#ff4444" : "#ffffff"
+                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? "#ff4444" : "#ffffff"
                 }
 
                 Rectangle {
@@ -166,23 +186,43 @@ Item {
                             bottom: parent.bottom
                         }
 
-                        implicitWidth: parent.width * (Pipewire.defaultAudioSource?.audio.volume ?? 0)
+                        implicitWidth: parent.width * ( Pipewire.defaultAudioSource?.audio.volume ?? 0 )
                         radius: parent.radius
-                        color: (Pipewire.defaultAudioSource?.audio.muted ?? false) ? "#ff4444" : "#ffffff"
+                        color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? "#ff4444" : "#ffffff"
                     }
 
                     Rectangle {
                         id: sourceGrabber
                         visible: root.expanded
                         opacity: root.expanded ? 1 : 0
-                        width: 12
-                        height: 12
+                        width: sourceVolumeMouseArea.pressed ? 25 : 12
+                        height: sourceVolumeMouseArea.pressed ? 25 : 12
                         radius: width / 2
                         color: sourceVolumeMouseArea.containsMouse || sourceVolumeMouseArea.pressed ? "#ffffff" : "#aaaaaa"
                         border.color: "#40000000"
                         border.width: 2
                         anchors.verticalCenter: parent.verticalCenter
                         x: sourceVolumeBar.width - width / 2
+
+                        Text {
+                            anchors.centerIn: parent
+                            anchors.verticalCenterOffset: text.length === 3 ? -0.5 : 0
+                            visible: sourceVolumeMouseArea.pressed
+                            font.pixelSize: text.length === 3 ? 10 : 12
+                            text: Math.round(( Pipewire.defaultAudioSource?.audio.volume ?? 0 ) * 100 ).toString()
+                        }
+
+                        Behavior on width {
+                            NumberAnimation {
+                                duration: 50
+                            }
+                        }
+
+                        Behavior on height {
+                            NumberAnimation {
+                                duration: 50
+                            }
+                        }
 
                         Behavior on opacity {
                             NumberAnimation {
@@ -209,17 +249,17 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         hoverEnabled: true
 
-                        onPressed: function(mouse) {
-                            var newVolume = Math.max(0, Math.min(1, mouse.x / width))
-                            if (Pipewire.defaultAudioSource?.audio) {
+                        onPressed: function( mouse ) {
+                            var newVolume = Math.max( 0, Math.min( 1, mouse.x / width ))
+                            if ( Pipewire.defaultAudioSource?.audio ) {
                                 Pipewire.defaultAudioSource.audio.volume = newVolume
                             }
                         }
 
-                        onPositionChanged: function(mouse) {
-                            if (pressed) {
-                                var newVolume = Math.max(0, Math.min(1, mouse.x / width))
-                                if (Pipewire.defaultAudioSource?.audio) {
+                        onPositionChanged: function( mouse ) {
+                            if ( pressed ) {
+                                var newVolume = Math.max( 0, Math.min( 1, mouse.x / width ))
+                                if ( Pipewire.defaultAudioSource?.audio ) {
                                     Pipewire.defaultAudioSource.audio.volume = newVolume
                                 }
                             }
