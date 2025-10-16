@@ -3,31 +3,53 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import Caelestia
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 
-IconImage {
+MouseArea {
     id: root
+
     required property SystemTrayItem item
 
-    source: root.item.icon
-    implicitWidth: 18
-    implicitHeight: 18
-    mipmap: false
-    asynchronous: true
-    MouseArea {
+    implicitWidth: 22
+    implicitHeight: 22
+
+    acceptedButtons: Qt.LeftButton | Qt.RightButton
+    onClicked: event => {
+        switch (event.button) {
+            case Qt.LeftButton: root.item.activate(); break;
+            case Qt.RightButton: 
+            if (root.item.hasMenu) {
+                menuAnchor.open();
+            } 
+            break;
+        }
+    }
+    IconImage {
+        id: icon
+
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: event => {
-            switch (event.button) {
-                case Qt.LeftButton: root.item.activate(); break;
-                case Qt.RightButton: 
-                if (root.item.hasMenu) {
-                    menuAnchor.open();
-                } 
-                break;
-            }
+        layer.enabled: true
+
+        layer.onEnabledChanged: {
+            if (layer.enabled && status === Image.Ready) 
+                analyser.requestUpdate();
+        }
+
+        onStatusChanged: {
+            if (layer.enabled && status === Image.Ready) 
+                analyser.requestUpdate();
+        }
+
+        source: GetIcons.getTrayIcon(root.item.id, root.item.icon)
+
+        mipmap: false
+        asynchronous: true
+        ImageAnalyser {
+            id: analyser
+            sourceItem: icon
         }
     }
     QsMenuAnchor {
