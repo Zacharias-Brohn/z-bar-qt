@@ -9,7 +9,6 @@ Rectangle {
     implicitWidth: rowL.implicitWidth + 20
     color: "transparent"
 
-
     RowLayout {
         spacing: 10
         id: rowL
