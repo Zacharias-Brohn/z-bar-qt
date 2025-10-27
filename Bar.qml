@@ -16,6 +16,7 @@ Scope {
         PanelWindow {
             id: bar
             required property var modelData
+            property bool trayMenuVisible: false
             screen: modelData
 
             anchors {

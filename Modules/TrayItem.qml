@@ -7,6 +7,7 @@ import Caelestia
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.SystemTray
+import qs.Modules
 
 MouseArea {
     id: root
@@ -16,17 +17,9 @@ MouseArea {
     implicitWidth: 22
     implicitHeight: 22
 
+    hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
-    onClicked: event => {
-        switch (event.button) {
-            case Qt.LeftButton: root.item.activate(); break;
-            case Qt.RightButton: 
-            if (root.item.hasMenu) {
-                menuAnchor.open();
-            } 
-            break;
-        }
-    }
+
     IconImage {
         id: icon
 
@@ -51,13 +44,23 @@ MouseArea {
             id: analyser
             sourceItem: icon
         }
+
+        TrayMenu {
+            id: trayMenu
+            menu: root.item.menu
+            anchor.item: root
+            anchor.edges: Edges.Bottom
+            anchor.margins {
+                left: -270
+            }
+        }
+
     }
-    QsMenuAnchor {
-        id: menuAnchor
-        menu: root.item.menu
-        anchor.item: root
-        anchor.edges: Edges.Bottom | Edges.Left
-        anchor.margins.top: 23
-        anchor.adjustment: PopupAdjustment.SlideX
+    onClicked: {
+        if ( mouse.button === Qt.LeftButton ) {
+            root.item.activate();
+        } else if ( mouse.button === Qt.RightButton ) {
+            trayMenu.visible = !trayMenu.visible;
+        }
     }
 }
