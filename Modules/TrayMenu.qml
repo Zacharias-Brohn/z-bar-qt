@@ -20,17 +20,6 @@ PopupWindow {
         menu: root.menu
     }
 
-    // HyprlandFocusGrab {
-    //     id: grab
-    //     windows: [ root ]
-    //     onCleared: {
-    //         root.visible = false;
-    //     }
-    // }
-
-    // onVisibleChanged: {
-    //     grab.active = root.visible;
-    // }
     Rectangle {
         id: menuRect
         anchors.fill: parent
