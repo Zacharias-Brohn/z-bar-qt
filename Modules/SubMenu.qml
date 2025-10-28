@@ -73,15 +73,6 @@ PopupWindow {
                             if ( !menuItem.modelData.hasChildren ) {
                                 menuItem.modelData.triggered();
                                 root.visible = false;
-                            } else {
-                                subMenuComponent.createObject( null, {
-                                    menu: menuItem.modelData,
-                                    anchor: {
-                                        item: menuItem,
-                                        edges: Edges.Right
-                                    },
-                                    visible: true
-                                })
                             }
                         }
                     }
@@ -96,9 +87,5 @@ PopupWindow {
                 }
             }
         }
-    }
-    Component {
-        id: subMenuComponent
-        SubMenu {}
     }
 }
