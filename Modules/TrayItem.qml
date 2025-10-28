@@ -6,6 +6,7 @@ import QtQuick.Effects
 import Caelestia
 import Quickshell
 import Quickshell.Widgets
+import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
 import qs.Modules
 
@@ -53,6 +54,13 @@ MouseArea {
             anchor.margins {
                 left: -270
             }
+            HyprlandFocusGrab {
+                id: grab
+                windows: [ trayMenu ]
+                onCleared: {
+                    trayMenu.visible = false;
+                }
+            }
         }
 
     }
@@ -61,6 +69,7 @@ MouseArea {
             root.item.activate();
         } else if ( mouse.button === Qt.RightButton ) {
             trayMenu.visible = !trayMenu.visible;
+            grab.active = true;
         }
     }
 }
