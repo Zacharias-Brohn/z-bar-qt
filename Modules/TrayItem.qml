@@ -44,6 +44,7 @@ MouseArea {
         ImageAnalyser {
             id: analyser
             sourceItem: icon
+            rescaleSize: 20
         }
 
         TrayMenu {
@@ -51,8 +52,10 @@ MouseArea {
             menu: root.item.menu
             anchor.item: root
             anchor.edges: Edges.Bottom
-            anchor.margins {
-                left: -270
+            onVisibleChanged: {
+                if ( grab.active && !visible ) {
+                    grab.active = false;
+                }
             }
             HyprlandFocusGrab {
                 id: grab

@@ -3,17 +3,27 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 import Quickshell.Hyprland
 
 PopupWindow {
     id: root
     required property QsMenuHandle menu
-    property int height: entryCount * ( entryHeight + 3 )
+    property int height: {
+        let count = 0;
+        for (let i = 0; i < repeater.count; i++) {
+            if (!repeater.itemAt(i).modelData.isSeparator) count++;
+        }
+        return count * (entryHeight + 3);
+    }
     property int entryHeight: 30
-    property int entryCount: 0
-    implicitWidth: 300
+    property int maxWidth
+    implicitWidth: maxWidth + 20
     implicitHeight: height
     color: "transparent"
+    anchor.margins {
+        left: -implicitWidth
+    }
 
     QsMenuOpener {
         id: menuOpener
@@ -36,18 +46,28 @@ PopupWindow {
                 model: menuOpener.children
                 Rectangle {
                     id: menuItem
+                    property bool containsMouseAndEnabled: mouseArea.containsMouse && menuItem.modelData.enabled
+                    property bool containsMouseAndNotEnabled: mouseArea.containsMouse && !menuItem.modelData.enabled
                     width: root.implicitWidth
                     Layout.maximumWidth: parent.width
                     Layout.fillHeight: true
                     height: root.entryHeight
-                    color: mouseArea.containsMouse && !modelData.isSeparator ? "#15FFFFFF" : "transparent"
+                    color: modelData.isSeparator ? "transparent" : containsMouseAndEnabled ? "#15FFFFFF" : containsMouseAndNotEnabled ? "#08FFFFFF" : "transparent"
                     radius: 4
                     visible: modelData.isSeparator ? false : true
                     required property QsMenuEntry modelData
 
+                    TextMetrics {
+                        id: textMetrics
+                        font: menuText.font
+                        text: menuItem.modelData.text
+                    }
+
                     Component.onCompleted: {
-                        if ( !modelData.isSeparator ) {
-                            root.entryCount += 1;
+                        // Measure text width to determine maximumWidth
+                        var textWidth = textMetrics.width + 20 + (iconImage.width > 0 ? iconImage.width + 10 : 0);
+                        if ( textWidth > root.maxWidth ) {
+                            root.maxWidth = textWidth
                         }
                     }
 
@@ -60,8 +80,10 @@ PopupWindow {
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
                             if ( !menuItem.modelData.hasChildren ) {
-                                menuItem.modelData.triggered();
-                                root.visible = false;
+                                if ( menuItem.modelData.enabled ) {
+                                    menuItem.modelData.triggered();
+                                    root.visible = false;
+                                }
                             } else {
                                 subMenuComponent.createObject( null, {
                                     menu: menuItem.modelData,
@@ -75,12 +97,30 @@ PopupWindow {
                         }
                     }
 
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.left: parent.left
-                        anchors.leftMargin: 10
-                        text: menuItem.modelData.text
-                        color: "white"
+                    RowLayout {
+                        anchors.fill: parent
+                        Text {
+                            id: menuText
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+                            Layout.leftMargin: 10
+                            text: menuItem.modelData.text
+                            color: menuItem.modelData.enabled ? "white" : "gray"
+                        }
+                        Image {
+                            id: iconImage
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                            Layout.rightMargin: 10
+                            Layout.maximumWidth: 20
+                            Layout.maximumHeight: 20
+                            source: menuItem.modelData.icon
+                            sourceSize.width: width
+                            sourceSize.height: height
+                            fillMode: Image.PreserveAspectFit
+                            layer.enabled: true
+                            layer.effect: ColorOverlay {
+                                color: menuItem.modelData.enabled ? "white" : "gray"
+                            }
+                        }
                     }
                 }
             }

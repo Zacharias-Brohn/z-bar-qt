@@ -3,5 +3,5 @@ import Quickshell
 
 Scope {
     Bar {}
-    Wallpaper {}
+    // Wallpaper {}
 }
