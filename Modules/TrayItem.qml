@@ -6,27 +6,22 @@ import QtQuick.Effects
 import Caelestia
 import Quickshell
 import Quickshell.Widgets
+import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
+import qs.Modules
 
 MouseArea {
     id: root
 
     required property SystemTrayItem item
+    property var menuHandle
 
     implicitWidth: 22
     implicitHeight: 22
 
+    hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
-    onClicked: event => {
-        switch (event.button) {
-            case Qt.LeftButton: root.item.activate(); break;
-            case Qt.RightButton: 
-            if (root.item.hasMenu) {
-                menuAnchor.open();
-            } 
-            break;
-        }
-    }
+
     IconImage {
         id: icon
 
@@ -47,17 +42,40 @@ MouseArea {
 
         mipmap: false
         asynchronous: true
+
         ImageAnalyser {
             id: analyser
             sourceItem: icon
+            rescaleSize: 20
+        }
+
+        TrayMenu {
+            id: trayMenu
+            menu: root.item.menu
+            anchor.item: root
+            anchor.edges: Edges.Bottom
+            onVisibleChanged: {
+                if ( grab.active && !visible ) {
+                    grab.active = false;
+                }
+            }
+
+            HyprlandFocusGrab {
+                id: grab
+                windows: [ trayMenu ]
+                onCleared: {
+                    trayMenu.visible = false;
+                }
+            }
         }
     }
-    QsMenuAnchor {
-        id: menuAnchor
-        menu: root.item.menu
-        anchor.item: root
-        anchor.edges: Edges.Bottom | Edges.Left
-        anchor.margins.top: 23
-        anchor.adjustment: PopupAdjustment.SlideX
+
+    onClicked: {
+        if ( mouse.button === Qt.LeftButton ) {
+            root.item.activate();
+        } else if ( mouse.button === Qt.RightButton ) {
+            trayMenu.visible = !trayMenu.visible;
+            grab.active = true;
+        }
     }
 }
