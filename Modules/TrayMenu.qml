@@ -8,6 +8,8 @@ import Quickshell.Hyprland
 
 PopupWindow {
     id: root
+
+    signal menuActionTriggered()
     required property QsMenuHandle menu
     property int height: {
         let count = 0;
@@ -17,8 +19,8 @@ PopupWindow {
         return count * (entryHeight + 3);
     }
     property int entryHeight: 30
-    property int maxWidth
-    implicitWidth: maxWidth + 20
+    property int maxWidth: 100
+    implicitWidth: Math.max(100, maxWidth + 20)
     implicitHeight: height
     color: "transparent"
     anchor.margins {
@@ -65,8 +67,8 @@ PopupWindow {
 
                     Component.onCompleted: {
                         // Measure text width to determine maximumWidth
-                        var textWidth = textMetrics.width + 20 + (iconImage.width > 0 ? iconImage.width + 10 : 0);
-                        if ( textWidth > root.maxWidth ) {
+                        var textWidth = textMetrics.width + 20 + (iconImage.source ? iconImage.width + 10 : 0);
+                        if ( textWidth > 0 && textWidth > root.maxWidth ) {
                             root.maxWidth = textWidth
                         }
                     }
@@ -76,12 +78,13 @@ PopupWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         preventStealing: true
-                        propagateComposedEvents: true
+propagateComposedEvents: true
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
                             if ( !menuItem.modelData.hasChildren ) {
                                 if ( menuItem.modelData.enabled ) {
                                     menuItem.modelData.triggered();
+                                    root.menuActionTriggered();
                                     root.visible = false;
                                 }
                             } else {

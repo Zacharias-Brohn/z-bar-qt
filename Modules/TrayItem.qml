@@ -14,6 +14,7 @@ MouseArea {
     id: root
 
     required property SystemTrayItem item
+    property var menuHandle
 
     implicitWidth: 22
     implicitHeight: 22
@@ -41,6 +42,7 @@ MouseArea {
 
         mipmap: false
         asynchronous: true
+
         ImageAnalyser {
             id: analyser
             sourceItem: icon
@@ -57,6 +59,7 @@ MouseArea {
                     grab.active = false;
                 }
             }
+
             HyprlandFocusGrab {
                 id: grab
                 windows: [ trayMenu ]
@@ -65,8 +68,8 @@ MouseArea {
                 }
             }
         }
-
     }
+
     onClicked: {
         if ( mouse.button === Qt.LeftButton ) {
             root.item.activate();
