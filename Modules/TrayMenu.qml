@@ -10,75 +10,119 @@ PopupWindow {
     id: root
 
     signal menuActionTriggered()
-    required property QsMenuHandle menu
-    property int height: {
+    required property QsMenuOpener menu
+    property var menuStack: []
+
+    function calcHeight() {
         let count = 0;
-        for (let i = 0; i < repeater.count; i++) {
-            if (!repeater.itemAt(i).modelData.isSeparator) count++;
+        let separatorCount = 0;
+        for (let i = 0; i < listLayout.count; i++) {
+            if (!listLayout.model.values[i].isSeparator) {
+                count++;
+            } else {
+                separatorCount++;
+            }
         }
-        return count * (entryHeight + 3);
-    }
-    property int entryHeight: 30
-    property int maxWidth: 100
-    implicitWidth: Math.max(100, maxWidth + 20)
-    implicitHeight: height
-    color: "transparent"
-    anchor.margins {
-        left: -implicitWidth
+        if ( root.menuStack.length > 0 ) {
+            count++;
+        }
+        return (count * entryHeight) + ((count - 1) * 2) + (separatorCount * 3) + 10;
     }
 
-    QsMenuOpener {
-        id: menuOpener
-        menu: root.menu
+    function calcWidth() {
+        let menuWidth = 0;
+        for ( let i = 0; i < listLayout.count; i++ ) {
+            if ( !listLayout.model.values[i].isSeparator ) {
+                let entry = listLayout.model.values[i];
+                tempMetrics.text = entry.text;
+                let textWidth = tempMetrics.width + 20 + (entry.icon ?? "" ? 30 : 0) + (entry.hasChildren ? 30 : 0);
+                if ( textWidth > menuWidth ) {
+                    menuWidth = textWidth;
+                }
+            }
+        }
+        return menuWidth;
+    }
+
+    function goBack() {
+        if ( root.menuStack.length > 0 ) {
+            root.menu = root.menuStack.pop();
+        }
+    }
+
+    onVisibleChanged: {
+        if ( visible ) {
+            root.menuStack = [];
+        }
+    }
+
+    TextMetrics {
+        id: tempMetrics
+        text: ""
+    }
+
+    property int height: calcHeight()
+    property int entryHeight: 30
+    property int maxWidth: calcWidth()
+    implicitWidth: maxWidth + 20
+    implicitHeight: height
+    color: "transparent"
+    anchor.gravity: Edges.Bottom
+
+    Behavior on implicitHeight {
+        NumberAnimation {
+            duration: MaterialEasing.standardTime
+            easing.bezierCurve: MaterialEasing.standard
+        }
+    }
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: MaterialEasing.standardTime
+            easing.bezierCurve: MaterialEasing.standard
+        }
     }
 
     Rectangle {
         id: menuRect
         anchors.fill: parent
-        color: "#90000000"
+        color: "#80151515"
         radius: 8
-        border.color: "#10FFFFFF"
+        border.color: "#40FFFFFF"
+
         ColumnLayout {
-            id: columnLayout
             anchors.fill: parent
             anchors.margins: 5
-            spacing: 2
-            Repeater {
-                id: repeater
-                model: menuOpener.children
-                Rectangle {
+            spacing: 0
+            ListView {
+                id: listLayout
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.calcHeight() - ( root.menuStack.length > 0 ? root.entryHeight + 10 : 0 )
+                spacing: 2
+                model: ScriptModel {
+                    values: [...root.menu?.children.values]
+                }
+                delegate: Rectangle {
                     id: menuItem
+                    required property QsMenuEntry modelData
+                    property var child: QsMenuOpener {
+                        menu: menuItem.modelData
+                    }
                     property bool containsMouseAndEnabled: mouseArea.containsMouse && menuItem.modelData.enabled
                     property bool containsMouseAndNotEnabled: mouseArea.containsMouse && !menuItem.modelData.enabled
                     width: root.implicitWidth
-                    Layout.maximumWidth: parent.width
-                    Layout.fillHeight: true
-                    height: root.entryHeight
-                    color: modelData.isSeparator ? "transparent" : containsMouseAndEnabled ? "#15FFFFFF" : containsMouseAndNotEnabled ? "#08FFFFFF" : "transparent"
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: menuItem.modelData.isSeparator ? 1 : root.entryHeight
+                    color: menuItem.modelData.isSeparator ? "#20FFFFFF" : containsMouseAndEnabled ? "#15FFFFFF" : containsMouseAndNotEnabled ? "#08FFFFFF" : "transparent"
                     radius: 4
-                    visible: modelData.isSeparator ? false : true
-                    required property QsMenuEntry modelData
-
-                    TextMetrics {
-                        id: textMetrics
-                        font: menuText.font
-                        text: menuItem.modelData.text
-                    }
-
-                    Component.onCompleted: {
-                        // Measure text width to determine maximumWidth
-                        var textWidth = textMetrics.width + 20 + (iconImage.source ? iconImage.width + 10 : 0);
-                        if ( textWidth > 0 && textWidth > root.maxWidth ) {
-                            root.maxWidth = textWidth
-                        }
-                    }
+                    visible: true
 
                     MouseArea {
                         id: mouseArea
                         anchors.fill: parent
                         hoverEnabled: true
                         preventStealing: true
-propagateComposedEvents: true
+    propagateComposedEvents: true
                         acceptedButtons: Qt.LeftButton
                         onClicked: {
                             if ( !menuItem.modelData.hasChildren ) {
@@ -88,14 +132,8 @@ propagateComposedEvents: true
                                     root.visible = false;
                                 }
                             } else {
-                                subMenuComponent.createObject( null, {
-                                    menu: menuItem.modelData,
-                                    anchor: {
-                                        item: menuItem,
-                                        edges: Edges.Right
-                                    },
-                                    visible: true
-                                })
+                                root.menuStack.push(root.menu);
+                                root.menu = menuItem.child;
                             }
                         }
                     }
@@ -124,13 +162,44 @@ propagateComposedEvents: true
                                 color: menuItem.modelData.enabled ? "white" : "gray"
                             }
                         }
+                        Text {
+                            id: textArrow
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+                            Layout.rightMargin: 10
+                            Layout.bottomMargin: 5
+                            Layout.maximumWidth: 20
+                            Layout.maximumHeight: 20
+                            text: ""
+                            color: menuItem.modelData.enabled ? "white" : "gray"
+                            visible: menuItem.modelData.hasChildren ?? false
+                        }
                     }
                 }
             }
+            Rectangle {
+                visible: true
+                Layout.fillWidth: true
+                Layout.preferredHeight: root.entryHeight
+                color: mouseAreaBack.containsMouse ? "#15FFFFFF" : "transparent"
+                radius: 4
+
+                MouseArea {
+                    id: mouseAreaBack
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    onClicked: {
+                        root.goBack();
+                    }
+                }
+
+                Text {
+                    anchors.fill: parent
+                    anchors.leftMargin: 10
+                    verticalAlignment: Text.AlignVCenter
+                    text: "Back "
+                    color: "white"
+                }
+            }
         }
-    }
-    Component {
-        id: subMenuComponent
-        SubMenu {}
     }
 }

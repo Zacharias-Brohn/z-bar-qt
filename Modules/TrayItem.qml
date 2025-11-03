@@ -14,7 +14,6 @@ MouseArea {
     id: root
 
     required property SystemTrayItem item
-    property var menuHandle
 
     implicitWidth: 22
     implicitHeight: 22
@@ -46,14 +45,16 @@ MouseArea {
         ImageAnalyser {
             id: analyser
             sourceItem: icon
-            rescaleSize: 20
+            rescaleSize: 22
         }
 
         TrayMenu {
             id: trayMenu
-            menu: root.item.menu
+            menu: menuOpener
             anchor.item: root
             anchor.edges: Edges.Bottom
+            anchor.rect.x: 11
+            anchor.rect.y: 25
             onVisibleChanged: {
                 if ( grab.active && !visible ) {
                     grab.active = false;
@@ -74,8 +75,17 @@ MouseArea {
         if ( mouse.button === Qt.LeftButton ) {
             root.item.activate();
         } else if ( mouse.button === Qt.RightButton ) {
+            if ( trayMenu.menu != menuOpener ) {
+                trayMenu.menu = menuOpener;
+            }
             trayMenu.visible = !trayMenu.visible;
             grab.active = true;
         }
+    }
+
+    QsMenuOpener {
+        id: menuOpener
+
+        menu: root.item?.menu
     }
 }
