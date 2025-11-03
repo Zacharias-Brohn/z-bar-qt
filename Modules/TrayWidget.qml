@@ -20,8 +20,10 @@ Rectangle {
             id: repeater
             model: SystemTray.items
             TrayItem {
+                id: trayItem
                 required property SystemTrayItem modelData
                 item: modelData
+                bar: root.bar
             }
         }
     }

@@ -29,6 +29,7 @@ Scope {
             color: "transparent"
 
             Rectangle {
+                id: backgroundRect
                 anchors.fill: parent
                 color: "#801a1a1a"
                 radius: 0

@@ -14,12 +14,18 @@ MouseArea {
     id: root
 
     required property SystemTrayItem item
+    required property PanelWindow bar
+    property point globalPos
 
     implicitWidth: 22
     implicitHeight: 22
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+    onPositionChanged: {
+        globalPos = root.mapToItem(root.bar.backgroundRect, 0, 0);
+    }
 
     IconImage {
         id: icon
@@ -51,23 +57,8 @@ MouseArea {
         TrayMenu {
             id: trayMenu
             menu: menuOpener
-            anchor.item: root
-            anchor.edges: Edges.Bottom
-            anchor.rect.x: 11
-            anchor.rect.y: 25
-            onVisibleChanged: {
-                if ( grab.active && !visible ) {
-                    grab.active = false;
-                }
-            }
-
-            HyprlandFocusGrab {
-                id: grab
-                windows: [ trayMenu ]
-                onCleared: {
-                    trayMenu.visible = false;
-                }
-            }
+            trayItemRect: root.globalPos
+            bar: root.bar
         }
     }
 
@@ -79,7 +70,7 @@ MouseArea {
                 trayMenu.menu = menuOpener;
             }
             trayMenu.visible = !trayMenu.visible;
-            grab.active = true;
+            console.log(root.x);
         }
     }
 
