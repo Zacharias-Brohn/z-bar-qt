@@ -30,22 +30,12 @@ MouseArea {
     IconImage {
         id: icon
 
-        anchors.fill: parent
-        layer.enabled: true
-
-        layer.onEnabledChanged: {
-            if (layer.enabled && status === Image.Ready) 
-                analyser.requestUpdate();
-        }
-
-        onStatusChanged: {
-            if (layer.enabled && status === Image.Ready) 
-                analyser.requestUpdate();
-        }
-
-        source: GetIcons.getTrayIcon(root.item.id, root.item.icon)
-
-        mipmap: false
+        anchors.centerIn: parent
+        height: 22
+        width: 22
+        source: root.item.icon
+        mipmap: true
+        smooth: false
         asynchronous: true
 
         ImageAnalyser {

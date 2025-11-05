@@ -16,22 +16,9 @@ PanelWindow {
     property var menuStack: []
     property real scaleValue: 0
 
-    property int height: calcHeight()
+    property int height: calcSize("h")
     property int entryHeight: 30
-    property int maxWidth: {
-        let menuWidth = 0;
-        for ( let i = 0; i < listLayout.count; i++ ) {
-            if ( !listLayout.model.values[i].isSeparator ) {
-                let entry = listLayout.model.values[i];
-                tempMetrics.text = entry.text;
-                let textWidth = tempMetrics.width + 20 + (entry.icon ?? "" ? 30 : 0) + (entry.hasChildren ? 30 : 0);
-                if ( textWidth > menuWidth ) {
-                    menuWidth = textWidth;
-                }
-            }
-        }
-        return menuWidth;
-    }
+    property int maxWidth: calcSize("w")
 
     visible: false
     color: "transparent"
@@ -42,36 +29,37 @@ PanelWindow {
         bottom: true
     }
 
-    function calcHeight() {
-        let count = 0;
-        let separatorCount = 0;
-        for (let i = 0; i < listLayout.count; i++) {
-            if (!listLayout.model.values[i].isSeparator) {
-                count++;
-            } else {
-                separatorCount++;
-            }
-        }
-        if ( root.menuStack.length > 0 ) {
-            backEntry.visible = true;
-            count++;
-        }
-        return (count * entryHeight) + ((count - 1) * 2) + (separatorCount * 3) + 10;
-    }
-
-    function calcWidth() {
-        let menuWidth = 0;
-        for ( let i = 0; i < listLayout.count; i++ ) {
-            if ( !listLayout.model.values[i].isSeparator ) {
-                let entry = listLayout.model.values[i];
-                tempMetrics.text = entry.text;
-                let textWidth = tempMetrics.width + 20 + (entry.icon ?? "" ? 30 : 0) + (entry.hasChildren ? 30 : 0);
-                if ( textWidth > menuWidth ) {
-                    menuWidth = textWidth;
+    function calcSize(String) {
+        if ( String === "w" ) {
+            let menuWidth = 0;
+            for ( let i = 0; i < listLayout.count; i++ ) {
+                if ( !listLayout.model.values[i].isSeparator ) {
+                    let entry = listLayout.model.values[i];
+                    tempMetrics.text = entry.text;
+                    let textWidth = tempMetrics.width + 20 + (entry.icon ?? "" ? 30 : 0) + (entry.hasChildren ? 30 : 0);
+                    if ( textWidth > menuWidth ) {
+                        menuWidth = textWidth;
+                    }
                 }
             }
+            return menuWidth;
         }
-        return menuWidth;
+        if ( String === "h" ) {
+            let count = 0;
+            let separatorCount = 0;
+            for (let i = 0; i < listLayout.count; i++) {
+                if (!listLayout.model.values[i].isSeparator) {
+                    count++;
+                } else {
+                    separatorCount++;
+                }
+            }
+            if ( root.menuStack.length > 0 ) {
+                backEntry.visible = true;
+                count++;
+            }
+            return (count * entryHeight) + ((count - 1) * 2) + (separatorCount * 3) + 10;
+        }
     }
 
     function goBack() {
@@ -165,7 +153,7 @@ PanelWindow {
 
     Rectangle {
         id: menuRect
-        x: root.trayItemRect.x - ( menuRect.implicitWidth / 2 ) + 10
+        x: root.trayItemRect.x - ( menuRect.implicitWidth / 2 ) + 11
         y: root.trayItemRect.y - 5
         implicitHeight: root.height
         implicitWidth: root.maxWidth + 20
@@ -213,7 +201,7 @@ PanelWindow {
             ListView {
                 id: listLayout
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.calcHeight() - ( root.menuStack.length > 0 ? root.entryHeight + 10 : 0 )
+                Layout.preferredHeight: root.height - ( root.menuStack.length > 0 ? root.entryHeight + 10 : 0 )
                 spacing: 2
                 model: ScriptModel {
                     values: [...root.menu?.children.values]
