@@ -48,7 +48,7 @@ Item {
 
     Process {
         id: swayncProcess
-        command: ["swaync-client", "-t", "-sw"]
+        command: ["sh", "-c", "qs -p /home/zach/GitProjects/z-bar-qt/notification-test/shell.qml ipc call root showCenter"]
         running: false
     }
 

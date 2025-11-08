@@ -3,8 +3,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
-import Caelestia
 import Quickshell
+import Quickshell.DBusMenu
 import Quickshell.Widgets
 import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
@@ -38,17 +38,20 @@ MouseArea {
         smooth: false
         asynchronous: true
 
-        ImageAnalyser {
-            id: analyser
-            sourceItem: icon
-            rescaleSize: 22
-        }
-
         TrayMenu {
             id: trayMenu
-            menu: menuOpener
+            trayMenu: root.item?.menu
             trayItemRect: root.globalPos
             bar: root.bar
+        }
+    }
+
+    Connections {
+        target: trayMenu
+        function onVisibleChanged() {
+            if ( !trayMenu.visible ) {
+                trayMenu.trayMenu = null;
+            }
         }
     }
 
@@ -56,17 +59,9 @@ MouseArea {
         if ( mouse.button === Qt.LeftButton ) {
             root.item.activate();
         } else if ( mouse.button === Qt.RightButton ) {
-            if ( trayMenu.menu != menuOpener ) {
-                trayMenu.menu = menuOpener;
-            }
+            trayMenu.trayMenu = root.item?.menu;
             trayMenu.visible = !trayMenu.visible;
-            console.log(root.x);
+            trayMenu.focusGrab = true;
         }
-    }
-
-    QsMenuOpener {
-        id: menuOpener
-
-        menu: root.item?.menu
     }
 }

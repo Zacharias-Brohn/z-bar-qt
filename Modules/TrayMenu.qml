@@ -1,24 +1,34 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
+import Quickshell.DBusMenu
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Quickshell.Hyprland
+import QtQml
 
 PanelWindow {
     id: root
 
     signal menuActionTriggered()
-    required property QsMenuOpener menu
+    required property QsMenuHandle trayMenu
     required property point trayItemRect
     required property PanelWindow bar
     property var menuStack: []
     property real scaleValue: 0
-
-    property int height: calcSize("h")
+    property alias focusGrab: grab.active
     property int entryHeight: 30
-    property int maxWidth: calcSize("w")
+    property int biggestWidth: 0
+
+    QsMenuOpener {
+        id: menuOpener
+        menu: root.trayMenu
+    }
+
+    // onTrayMenuChanged: {
+    //     listLayout.forceLayout();
+    // }
 
     visible: false
     color: "transparent"
@@ -29,60 +39,28 @@ PanelWindow {
         bottom: true
     }
 
-    function calcSize(String) {
-        if ( String === "w" ) {
-            let menuWidth = 0;
-            for ( let i = 0; i < listLayout.count; i++ ) {
-                if ( !listLayout.model.values[i].isSeparator ) {
-                    let entry = listLayout.model.values[i];
-                    tempMetrics.text = entry.text;
-                    let textWidth = tempMetrics.width + 20 + (entry.icon ?? "" ? 30 : 0) + (entry.hasChildren ? 30 : 0);
-                    if ( textWidth > menuWidth ) {
-                        menuWidth = textWidth;
-                    }
-                }
-            }
-            return menuWidth;
-        }
-        if ( String === "h" ) {
-            let count = 0;
-            let separatorCount = 0;
-            for (let i = 0; i < listLayout.count; i++) {
-                if (!listLayout.model.values[i].isSeparator) {
-                    count++;
-                } else {
-                    separatorCount++;
-                }
-            }
-            if ( root.menuStack.length > 0 ) {
-                backEntry.visible = true;
-                count++;
-            }
-            return (count * entryHeight) + ((count - 1) * 2) + (separatorCount * 3) + 10;
-        }
-    }
+    mask: Region { id: mask; item: menuRect }
 
     function goBack() {
         if ( root.menuStack.length > 0 ) {
-            root.menu = root.menuStack.pop();
+            menuChangeAnimation.start();
+            root.biggestWidth = 0;
+            root.trayMenu = root.menuStack.pop();
+            listLayout.positionViewAtBeginning();
             backEntry.visible = false;
         }
     }
 
+    function updateMask() {
+        root.mask.changed();
+    }
+
     onVisibleChanged: {
-        if ( !visible ) {
-            goBack();
-        } else {
+        if ( visible ) {
             scaleValue = 0;
             scaleAnimation.start();
         }
     }
-
-    TextMetrics {
-        id: tempMetrics
-        text: ""
-    }
-
 
     NumberAnimation {
         id: scaleAnimation
@@ -92,89 +70,84 @@ PanelWindow {
         to: 1
         duration: 150
         easing.type: Easing.OutCubic
+        onStopped: {
+            root.updateMask();
+        }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-        onClicked: {
+    HyprlandFocusGrab {
+        id: grab
+        windows: [ root ]
+        active: false
+        onCleared: {
             root.visible = false;
         }
     }
 
-    Behavior on menu {
-        SequentialAnimation {
-            ParallelAnimation {
-                NumberAnimation {
-                    duration: MaterialEasing.standardTime / 2
-                    easing.bezierCurve: MaterialEasing.expressiveEffects
-                    from: 0
-                    property: "x"
-                    target: translateAnim
-                    to: -listLayout.width / 2
-                }
-
-                NumberAnimation {
-                    duration: MaterialEasing.standardTime / 2
-                    easing.bezierCurve: MaterialEasing.standard
-                    from: 1
-                    property: "opacity"
-                    target: columnLayout
-                    to: 0
-                }
+    SequentialAnimation {
+        id: menuChangeAnimation
+        ParallelAnimation {
+            NumberAnimation {
+                duration: MaterialEasing.standardTime / 2
+                easing.bezierCurve: MaterialEasing.expressiveEffects
+                from: 0
+                property: "x"
+                target: translateAnim
+                to: -listLayout.width / 2
             }
 
-            PropertyAction {
-                property: "menu"
+            NumberAnimation {
+                duration: MaterialEasing.standardTime / 2
+                easing.bezierCurve: MaterialEasing.standard
+                from: 1
+                property: "opacity"
                 target: columnLayout
+                to: 0
+            }
+        }
+
+        PropertyAction {
+            property: "menu"
+            target: columnLayout
+        }
+
+        ParallelAnimation {
+            NumberAnimation {
+                duration: MaterialEasing.standardTime / 2
+                easing.bezierCurve: MaterialEasing.standard
+                from: 0
+                property: "opacity"
+                target: columnLayout
+                to: 1
             }
 
-            ParallelAnimation {
-                NumberAnimation {
-                    duration: MaterialEasing.standardTime / 2
-                    easing.bezierCurve: MaterialEasing.standard
-                    from: 0
-                    property: "opacity"
-                    target: columnLayout
-                    to: 1
-                }
-
-                NumberAnimation {
-                    duration: MaterialEasing.standardTime / 2
-                    easing.bezierCurve: MaterialEasing.expressiveEffects
-                    from: listLayout.width / 2
-                    property: "x"
-                    target: translateAnim
-                    to: 0
-                }
+            NumberAnimation {
+                duration: MaterialEasing.standardTime / 2
+                easing.bezierCurve: MaterialEasing.expressiveEffects
+                from: listLayout.width / 2
+                property: "x"
+                target: translateAnim
+                to: 0
             }
+        }
+    }
+
+    onMenuActionTriggered: {
+        if ( root.menuStack.length > 0 ) {
+            backEntry.visible = true;
         }
     }
 
     Rectangle {
         id: menuRect
-        x: root.trayItemRect.x - ( menuRect.implicitWidth / 2 ) + 11
-        y: root.trayItemRect.y - 5
-        implicitHeight: root.height
-        implicitWidth: root.maxWidth + 20
+        x: Math.round( root.trayItemRect.x - ( menuRect.implicitWidth / 2 ) + 11 )
+        y: Math.round( root.trayItemRect.y - 5 )
+        implicitWidth: listLayout.contentWidth + 10
+        implicitHeight: listLayout.contentHeight + ( root.menuStack.length > 0 ? root.entryHeight + 10 : 10 )
         color: "#80151515"
         radius: 8
         border.color: "#40FFFFFF"
         clip: true
-
-        Behavior on implicitHeight {
-            NumberAnimation {
-                duration: MaterialEasing.standardTime
-                easing.bezierCurve: MaterialEasing.standard
-            }
-        }
-
-        Behavior on implicitWidth {
-            NumberAnimation {
-                duration: MaterialEasing.standardTime
-                easing.bezierCurve: MaterialEasing.standard
-            }
-        }
 
         transform: [
             Scale {
@@ -185,6 +158,19 @@ PanelWindow {
             }
         ]
 
+        Behavior on implicitWidth {
+            NumberAnimation {
+                duration: MaterialEasing.standardTime
+                easing.bezierCurve: MaterialEasing.standard
+            }
+        }
+
+        Behavior on implicitHeight {
+            NumberAnimation {
+                duration: MaterialEasing.standardTime
+                easing.bezierCurve: MaterialEasing.standard
+            }
+        }
 
         ColumnLayout {
             id: columnLayout
@@ -201,31 +187,11 @@ PanelWindow {
             ListView {
                 id: listLayout
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.height - ( root.menuStack.length > 0 ? root.entryHeight + 10 : 0 )
+                Layout.preferredHeight: contentHeight
                 spacing: 2
-                model: ScriptModel {
-                    values: [...root.menu?.children.values]
-                }
-
-                add: Transition {
-                    NumberAnimation {
-                        property: "x"
-                        from: listLayout.width
-                        to: 0
-                        duration: 200
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                move: Transition {
-                    NumberAnimation {
-                        property: "x"
-                        from: 0
-                        to: -listLayout.width
-                        duration: 200
-                        easing.type: Easing.InCubic
-                    }
-                }
+                contentWidth: root.biggestWidth
+                contentHeight: contentItem.childrenRect.height
+                model: menuOpener.children
 
                 delegate: Rectangle {
                     id: menuItem
@@ -235,13 +201,26 @@ PanelWindow {
                     }
                     property bool containsMouseAndEnabled: mouseArea.containsMouse && menuItem.modelData.enabled
                     property bool containsMouseAndNotEnabled: mouseArea.containsMouse && !menuItem.modelData.enabled
-                    width: root.implicitWidth
+                    width: widthMetrics.width + (menuItem.modelData.icon ?? "" ? 30 : 0) + (menuItem.modelData.hasChildren ? 30 : 0) + 20
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: menuItem.modelData.isSeparator ? 1 : root.entryHeight
                     color: menuItem.modelData.isSeparator ? "#20FFFFFF" : containsMouseAndEnabled ? "#15FFFFFF" : containsMouseAndNotEnabled ? "#08FFFFFF" : "transparent"
                     radius: 4
                     visible: true
+
+                    Component.onCompleted: {
+                        var biggestWidth = root.biggestWidth;
+                        var currentWidth = widthMetrics.width + (menuItem.modelData.icon ?? "" ? 30 : 0) + (menuItem.modelData.hasChildren ? 30 : 0) + 20;
+                        if ( currentWidth > biggestWidth ) {
+                            root.biggestWidth = currentWidth;
+                        }
+                    }
+
+                    TextMetrics {
+                        id: widthMetrics
+                        text: menuItem.modelData.text
+                    }
 
                     MouseArea {
                         id: mouseArea
@@ -254,12 +233,15 @@ PanelWindow {
                             if ( !menuItem.modelData.hasChildren ) {
                                 if ( menuItem.modelData.enabled ) {
                                     menuItem.modelData.triggered();
-                                    root.menuActionTriggered();
                                     root.visible = false;
                                 }
                             } else {
-                                root.menuStack.push(root.menu);
-                                root.menu = menuItem.child;
+                                root.menuStack.push(root.trayMenu);
+                                menuChangeAnimation.start();
+                                root.biggestWidth = 0;
+                                root.trayMenu = menuItem.modelData;
+                                listLayout.positionViewAtBeginning();
+                                root.menuActionTriggered();
                             }
                         }
                     }

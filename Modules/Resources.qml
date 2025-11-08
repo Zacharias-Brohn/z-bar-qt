@@ -49,7 +49,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 16
-                text: "󰢮"
+                text: "\ue30f"
                 color: "#ffffff"
             }
 
