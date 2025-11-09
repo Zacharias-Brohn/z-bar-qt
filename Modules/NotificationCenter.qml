@@ -119,16 +119,6 @@ PanelWindow {
         }
     }
 
-    // MouseArea {
-    //     anchors.fill: parent
-    //     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-    //     onClicked: {
-    //         if ( root.centerShown ) {
-    //             root.centerShown = false;
-    //         }
-    //     }
-    // }
-
     Rectangle {
         id: backgroundRect
         y: 10
