@@ -19,6 +19,12 @@ Scope {
             property bool trayMenuVisible: false
             screen: modelData
 
+            Process {
+                id: ncProcess
+                command: ["sh", "-c", "qs -p /home/zach/GitProjects/z-bar-qt/shell.qml ipc call root showCenter"]
+                running: false
+            }
+
             anchors {
                 top: true
                 left: true
@@ -93,8 +99,18 @@ Scope {
                             Layout.alignment: Qt.AlignVCenter
                         }
 
-                        SwayNC {
+                        Text {
                             Layout.alignment: Qt.AlignVCenter
+                            text: "\ue7f4"
+                            font.family: "Material Symbols Rounded"
+                            font.pixelSize: 22
+                            color: "white"
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    ncProcess.running = true
+                                }
+                            }
                         }
                     }
                 }

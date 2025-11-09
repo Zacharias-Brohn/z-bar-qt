@@ -59,6 +59,9 @@ PanelWindow {
         if ( visible ) {
             scaleValue = 0;
             scaleAnimation.start();
+        } else {
+            root.menuStack.pop();
+            backEntry.visible = false;
         }
     }
 

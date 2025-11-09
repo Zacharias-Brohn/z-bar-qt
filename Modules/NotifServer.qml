@@ -2,9 +2,19 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Services.Notifications
 import QtQuick
+import qs.Modules
 
-Scope {
+Rectangle {
     id: root
+
+    Text {
+        text: "\ue7f4"
+        font.family: "Material Symbols Rounded"
+        font.pixelSize: 16
+        color: "white"
+        anchors.centerIn: parent
+    }
+
     property list<int> notifIds: []
     NotificationServer {
         id: notificationServer
@@ -23,7 +33,7 @@ Scope {
 
     Component {
         id: notificationComponent
-        Notif {
+        Notification {
             centerX: notificationCenter.posX
             notifIndex: root.notifIds
             onNotifDestroy: {
