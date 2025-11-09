@@ -23,6 +23,8 @@ PanelWindow {
     property alias doNotDisturb: dndSwitch.checked
     visible: false
 
+    mask: Region { item: backgroundRect }
+
     IpcHandler {
         id: ipcHandler
         target: "root"
@@ -61,6 +63,9 @@ PanelWindow {
         to: Screen.width - backgroundRect.implicitWidth - 10
         duration: 300
         easing.type: Easing.OutCubic
+        onStopped: {
+            focusGrab.active = true;
+        }
     }
 
     NumberAnimation {
@@ -105,15 +110,24 @@ PanelWindow {
         }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-        onClicked: {
-            if ( root.centerShown ) {
-                root.centerShown = false;
-            }
+    HyprlandFocusGrab {
+        id: focusGrab
+        active: false
+        windows: [ root ]
+        onCleared: {
+            root.centerShown = false;
         }
     }
+
+    // MouseArea {
+    //     anchors.fill: parent
+    //     acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+    //     onClicked: {
+    //         if ( root.centerShown ) {
+    //             root.centerShown = false;
+    //         }
+    //     }
+    // }
 
     Rectangle {
         id: backgroundRect
