@@ -141,6 +141,7 @@ PanelWindow {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
                     text: "Do Not Disturb"
+                    focus: false
                 }
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
