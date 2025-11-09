@@ -21,7 +21,7 @@ Scope {
 
             Process {
                 id: ncProcess
-                command: ["sh", "-c", "qs -p /home/zach/GitProjects/z-bar-qt/shell.qml ipc call root showCenter"]
+                command: ["sh", "-c", "qs -p ./shell.qml ipc call root showCenter"]
                 running: false
             }
 
