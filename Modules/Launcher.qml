@@ -24,11 +24,6 @@ Scope {
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
-        HyprlandFocusGrab {
-            id: focusGrab
-            windows: [ searchInput ]
-        }
-
         onVisibleChanged: {
             if ( !visible ) {
                 searchInput.text = "";
@@ -54,7 +49,6 @@ Scope {
                         openAnim.start();
                     }
                 }
-                focusGrab.active = true;
                 searchInput.forceActiveFocus();
             }
         }

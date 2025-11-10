@@ -1,3 +1,4 @@
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -18,10 +19,11 @@ Scope {
             required property var modelData
             property bool trayMenuVisible: false
             screen: modelData
+            property var root: Quickshell.shellDir
 
             Process {
                 id: ncProcess
-                command: ["sh", "-c", "qs -p ./shell.qml ipc call root showCenter"]
+                command: ["sh", "-c", `qs -p ${bar.root}/shell.qml ipc call root showCenter`]
                 running: false
             }
 
