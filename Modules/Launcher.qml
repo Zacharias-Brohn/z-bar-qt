@@ -53,7 +53,7 @@ Scope {
             implicitHeight: 800
             implicitWidth: 600
             x: Math.round(( parent.width - width ) / 2 )
-            color: "#801a1a1a"
+            color: "#d01a1a1a"
             radius: 8
             border.color: "#444444"
             border.width: 1
