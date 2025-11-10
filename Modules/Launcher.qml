@@ -202,6 +202,117 @@ Scope {
                             AppItem {
                             }
                         }
+
+                        transitions: Transition {
+                            SequentialAnimation {
+                                ParallelAnimation {
+                                    Anim {
+                                        target: appListView
+                                        property: "opacity"
+                                        from: 1
+                                        to: 0
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardAccel
+                                    }
+                                    Anim {
+                                        target: appListView
+                                        property: "scale"
+                                        from: 1
+                                        to: 0.9
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardAccel
+                                    }
+                                }
+                                PropertyAction {
+                                    targets: [model, appListView]
+                                    properties: "values,delegate"
+                                }
+                                ParallelAnimation {
+                                    Anim {
+                                        target: appListView
+                                        property: "opacity"
+                                        from: 0
+                                        to: 1
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardDecel
+                                    }
+                                    Anim {
+                                        target: appListView
+                                        property: "scale"
+                                        from: 0.9
+                                        to: 1
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardDecel
+                                    }
+                                }
+                                PropertyAction {
+                                    targets: [appListView.add, appListView.remove]
+                                    property: "enabled"
+                                    value: true
+                                }
+                            }
+                        }
+
+                        add: Transition {
+                            enabled: !appListView.state
+                            Anim {
+                                properties: "opacity"
+                                from: 0
+                                to: 1
+                            }
+
+                            Anim {
+                                properties: "scale"
+                                from: 0.9
+                                to: 1
+                            }
+                        }
+
+                        remove: Transition {
+                            enabled: !appListView.state
+                            Anim {
+                                properties: "opacity"
+                                from: 1
+                                to: 0
+                            }
+
+                            Anim {
+                                properties: "scale"
+                                from: 1
+                                to: 0.9
+                            }
+                        }
+
+                        move: Transition {
+                            Anim {
+                                property: "y"
+                            }
+                            Anim {
+                                properties: "opacity,scale"
+                                to: 1
+                            }
+                        }
+
+                        addDisplaced: Transition {
+                            Anim {
+                                property: "y"
+                                duration: 200
+                            }
+                            Anim {
+                                properties: "opacity,scale"
+                                to: 1
+                            }
+                        }
+
+                        displaced: Transition {
+                            Anim {
+                                property: "y"
+                            }
+                            Anim {
+                                properties: "opacity,scale"
+                                to: 1
+                            }
+                        }
                     }
                 }
             }

@@ -1,7 +1,7 @@
 import QtQuick
 
 NumberAnimation {
-    duration: Appearance.anim.durations.normal
+    duration: 400
     easing.type: Easing.BezierSpline
-    easing.bezierCurve: Appearance.anim.curves.standard
+    easing.bezierCurve: MaterialEasing.standard
 }
