@@ -50,22 +50,31 @@ Scope {
             id: backgroundRect
             anchors.top: parent.top
             anchors.topMargin: 200
-            implicitHeight: 800
+            implicitHeight: mainLayout.childrenRect.height + 20
             implicitWidth: 600
             x: Math.round(( parent.width - width ) / 2 )
             color: "#d01a1a1a"
             radius: 8
             border.color: "#444444"
             border.width: 1
-            ColumnLayout {
+
+            Behavior on implicitHeight {
+                Anim {
+                    duration: MaterialEasing.expressiveFastSpatialTime
+                    easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
+                }
+            }
+
+            Column {
+                id: mainLayout
                 anchors.fill: parent
                 anchors.margins: 10
+                spacing: 5
 
                 TextField {
                     id: searchInput
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 30
-                    Layout.leftMargin: 5
+                    implicitHeight: 30
+                    implicitWidth: parent.width
                     color: "white"
                     horizontalAlignment: Text.AlignLeft
                     echoMode: TextInput.Normal
@@ -142,15 +151,15 @@ Scope {
 
                 Rectangle {
                     id: separator
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 1
+                    implicitWidth: parent.width
+                    implicitHeight: 1
                     color: "#444444"
                 }
 
                 Rectangle {
                     id: appListRect
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    implicitWidth: parent.width
+                    implicitHeight: appListView.implicitHeight
                     color: "transparent"
                     clip: true
                     ListView {
@@ -163,6 +172,8 @@ Scope {
                                 appListView.currentIndex = 0;
                             }
                         }
+
+                        implicitHeight: Math.min( count, 15 ) * 48
 
                         preferredHighlightBegin: 0
                         preferredHighlightEnd: appListRect.height
@@ -255,7 +266,6 @@ Scope {
                         }
 
                         add: Transition {
-                            enabled: !appListView.state
                             Anim {
                                 properties: "opacity"
                                 from: 0
@@ -264,13 +274,12 @@ Scope {
 
                             Anim {
                                 properties: "scale"
-                                from: 0.9
+                                from: 0.95
                                 to: 1
                             }
                         }
 
                         remove: Transition {
-                            enabled: !appListView.state
                             Anim {
                                 properties: "opacity"
                                 from: 1
@@ -280,7 +289,7 @@ Scope {
                             Anim {
                                 properties: "scale"
                                 from: 1
-                                to: 0.9
+                                to: 0.95
                             }
                         }
 
