@@ -61,15 +61,16 @@ Scope {
                 anchors.fill: parent
                 anchors.margins: 10
 
-                TextInput {
+                TextField {
                     id: searchInput
                     Layout.fillWidth: true
                     Layout.preferredHeight: 30
                     Layout.leftMargin: 5
-                    font.pixelSize: 20
                     color: "white"
                     horizontalAlignment: Text.AlignLeft
                     echoMode: TextInput.Normal
+                    placeholderText: qsTr("Search applications...")
+                    background: null
 
                     cursorDelegate: Rectangle {
                         id: cursor
