@@ -40,9 +40,19 @@ Scope {
             name: "toggle-launcher"
             onPressed: {
                 if ( !launcherWindow.visible ) {
-                    openAnim.start();
+                    if ( !openAnim.running ) {
+                        openAnim.start();
+                    }
                 } else if ( launcherWindow.visible ) {
-                    closeAnim.start();
+                    if ( !closeAnim.running ) {
+                        closeAnim.start();
+                    } else if ( openAnim.running ) {
+                        openAnim.stop();
+                        closeAnim.start();
+                    } else if ( closeAnim.running ) {
+                        closeAnim.stop();
+                        openAnim.start();
+                    }
                 }
                 focusGrab.active = true;
                 searchInput.forceActiveFocus();
