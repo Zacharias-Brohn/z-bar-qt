@@ -6,4 +6,5 @@ Scope {
     Bar {}
     // Wallpaper {}
     NotifServer {}
+    Launcher {}
 }

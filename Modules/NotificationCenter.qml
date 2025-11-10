@@ -275,38 +275,12 @@ PanelWindow {
                                     required property var modelData
                                     required property var index
                                     width: parent.width
-                                    height: groupColumn.isExpanded ? ( modelData.actions.length > 1 ? 130 : 80 ) : 80
+                                    height: groupColumn.isExpanded ? ( modelData.actions.length > 1 ? 130 : 80 ) : ( groupColumn.notifications.length === 1 ? ( modelData.actions.length > 1 ? 130 : 80 ) : 80 )
                                     color: "#801a1a1a"
                                     border.color: "#555555"
                                     border.width: 1
                                     radius: 8
                                     visible: groupColumn.notifications[0].id === modelData.id || groupColumn.isExpanded
-
-                                    // NumberAnimation {
-                                    //     id: expandAnim
-                                    //     target: groupHeader
-                                    //     property: "y"
-                                    //     duration: 300
-                                    //     easing.type: Easing.OutCubic
-                                    //     from: (( groupHeader.height / 2 ) * index )
-                                    //     to: (( groupHeader.height + 60 ) * index )
-                                    //     onStarted: {
-                                    //         groupColumn.shouldShow = true;
-                                    //     }
-                                    // }
-                                    //
-                                    // NumberAnimation {
-                                    //     id: collapseAnim
-                                    //     target: groupHeader
-                                    //     property: "y"
-                                    //     duration: 300
-                                    //     easing.type: Easing.OutCubic
-                                    //     from: (( groupHeader.height + 60 ) * index )
-                                    //     to: (( groupHeader.height / 2 ) * index )
-                                    //     onStopped: {
-                                    //         groupColumn.isExpanded = false;
-                                    //     }
-                                    // }
 
                                     Connections {
                                         target: groupColumn
@@ -320,13 +294,15 @@ PanelWindow {
                                     onVisibleChanged: {
                                         if ( visible ) {
                                             // expandAnim.start();
+                                        } else {
+                                            groupColumn.isExpanded = false;
                                         }
                                     }
 
                                     MouseArea {
                                         anchors.fill: parent
                                         onClicked: {
-                                            if ( groupColumn.isExpanded ) {
+                                            if ( groupColumn.isExpanded || groupColumn.notifications.length === 1 ) {
                                                 if ( groupHeader.modelData.actions.length === 1 ) {
                                                     groupHeader.modelData.actions[0].invoke();
                                                 }
@@ -371,6 +347,10 @@ PanelWindow {
                                                     font.pointSize: 10
                                                     color: "#dddddd"
                                                     elide: Text.ElideRight
+                                                    lineHeightMode: Text.FixedHeight
+                                                    lineHeight: 14
+                                                    wrapMode: Text.WordWrap
+                                                    maximumLineCount: 3
                                                     Layout.fillWidth: true
                                                     Layout.fillHeight: true
                                                 }
@@ -387,7 +367,7 @@ PanelWindow {
 
                                         RowLayout {
                                             spacing: 2
-                                            visible: groupColumn.isExpanded && groupHeader.modelData.actions.length > 1
+                                            visible: groupColumn.isExpanded ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : ( groupColumn.notifications.length === 1 ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : false )
                                             height: 15
                                             width: parent.width
 

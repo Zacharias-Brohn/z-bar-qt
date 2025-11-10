@@ -63,7 +63,7 @@ PanelWindow {
     Rectangle {
         id: backgroundRect
         implicitWidth: 400
-        implicitHeight: 80
+        implicitHeight: 90
         x: root.centerX - implicitWidth - 20
         y: 34 + 20 + ( root.index * ( implicitHeight + 10 ))
         color: "#801a1a1a"
@@ -80,6 +80,7 @@ PanelWindow {
         RowLayout {
             anchors.fill: parent
             anchors.margins: 8
+            spacing: 12
             IconImage {
                 source: root.notif.image
                 Layout.preferredWidth: 64
@@ -107,6 +108,7 @@ PanelWindow {
                     text: root.notif.summary
                     color: "white"
                     font.pointSize: 10
+                    font.bold: true
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
@@ -115,7 +117,7 @@ PanelWindow {
                 Text {
                     text: root.notif.body
                     color: "#dddddd"
-                    font.pointSize: 8
+                    font.pointSize: 10
                     elide: Text.ElideRight
                     wrapMode: Text.WordWrap
                     Layout.fillWidth: true
