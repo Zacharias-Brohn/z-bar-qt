@@ -5,7 +5,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
 import QtQuick.Layouts
-import qs
+import qs.Config
 
 Scope {
     id: root
@@ -224,7 +224,7 @@ Scope {
                     }
 
                     verticalLayoutDirection: ListView.BottomToTop
-                    implicitHeight: Math.min( count, 20 ) * 48
+                    implicitHeight: Math.min( count, Config.appCount ) * 48
 
                     preferredHighlightBegin: 0
                     preferredHighlightEnd: appListRect.height

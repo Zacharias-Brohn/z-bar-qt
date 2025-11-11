@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
+import qs.Config
 
 Rectangle {
     id: root
@@ -37,9 +38,9 @@ Rectangle {
                 height: 14
                 radius: height / 2
 
-                color: modelData.id === Hyprland.focusedWorkspace.id ? "#4080ff" : "#606060"
+                color: modelData.id === Hyprland.focusedWorkspace.id ? Config.accentColor.accents.primary : "#606060"
 
-                border.color: modelData.id === Hyprland.focusedWorkspace.id ? "#60a0ff" : "#808080"
+                border.color: modelData.id === Hyprland.focusedWorkspace.id ? Config.accentColor.accents.primaryAlt : "#808080"
                 border.width: 1
 
                 scale: 1.0

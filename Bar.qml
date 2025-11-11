@@ -1,4 +1,3 @@
-
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -9,6 +8,7 @@ import Quickshell.Wayland
 import Qt5Compat.GraphicalEffects
 import Quickshell.Hyprland
 import qs.Modules
+import qs.Config
 
 Scope {
     Variants {
@@ -39,7 +39,7 @@ Scope {
             Rectangle {
                 id: backgroundRect
                 anchors.fill: parent
-                color: "#801a1a1a"
+                color: Config.baseBgColor
                 radius: 0
 
                 RowLayout {

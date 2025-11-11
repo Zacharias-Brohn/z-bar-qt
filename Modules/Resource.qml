@@ -2,6 +2,7 @@ import qs.Modules
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import qs.Config
 
 Item {
     id: root
@@ -71,7 +72,7 @@ Item {
                     var startAngle = -Math.PI / 2; // Start at top
                     var endAngle = startAngle + (2 * Math.PI * percentage);
 
-                    ctx.fillStyle = warning ? "#ff6b6b" : "#4080ff";
+                    ctx.fillStyle = warning ? Config.accentColor.accents.warning : Config.accentColor.accents.primary;
                     ctx.beginPath();
                     ctx.moveTo(centerX, centerY);
                     ctx.arc(centerX, centerY, radius, startAngle, endAngle);

@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick
 import Quickshell.Services.Notifications
+import qs.Config
 
 PanelWindow {
     id: root
@@ -66,7 +67,7 @@ PanelWindow {
         implicitHeight: 90
         x: root.centerX - implicitWidth - 20
         y: 34 + 20 + ( root.index * ( implicitHeight + 10 ))
-        color: "#801a1a1a"
+        color: Config.baseBgColor
         border.color: "#555555"
         radius: 8
 

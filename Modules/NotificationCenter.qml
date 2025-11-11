@@ -7,6 +7,7 @@ import QtQuick.Controls.FluentWinUI3
 import QtQuick.Effects
 import QtQuick
 import Quickshell.Services.Notifications
+import qs.Config
 
 PanelWindow {
     id: root
@@ -125,7 +126,7 @@ PanelWindow {
         x: Screen.width
         implicitWidth: 400
         implicitHeight: root.height - 20
-        color: "#801a1a1a"
+        color: Config.baseBgColor
         radius: 8
         border.color: "#555555"
         border.width: 1
@@ -276,7 +277,7 @@ PanelWindow {
                                     required property var index
                                     width: parent.width
                                     height: groupColumn.isExpanded ? ( modelData.actions.length > 1 ? 130 : 80 ) : ( groupColumn.notifications.length === 1 ? ( modelData.actions.length > 1 ? 130 : 80 ) : 80 )
-                                    color: "#801a1a1a"
+                                    color: Config.baseBgColor
                                     border.color: "#555555"
                                     border.width: 1
                                     radius: 8
