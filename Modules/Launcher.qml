@@ -27,6 +27,8 @@ Scope {
         onVisibleChanged: {
             if ( !visible ) {
                 searchInput.text = "";
+                appListView.currentIndex = 0;
+                appListView.positionViewAtBeginning();
             }
         }
 
@@ -41,12 +43,6 @@ Scope {
                 } else if ( launcherWindow.visible ) {
                     if ( !closeAnim.running ) {
                         closeAnim.start();
-                    } else if ( openAnim.running ) {
-                        openAnim.stop();
-                        closeAnim.start();
-                    } else if ( closeAnim.running ) {
-                        closeAnim.stop();
-                        openAnim.start();
                     }
                 }
                 searchInput.forceActiveFocus();
@@ -209,8 +205,8 @@ Scope {
 
             Item {
                 anchors.fill: parent
-                anchors.margins: 10
                 visible: appListView.count > 0
+                anchors.margins: 10
                 clip: true
                 ListView {
                     id: appListView
@@ -227,7 +223,7 @@ Scope {
                     implicitHeight: Math.min( count, Config.appCount ) * 48
 
                     preferredHighlightBegin: 0
-                    preferredHighlightEnd: appListRect.height
+                    preferredHighlightEnd: appListView.height
                     highlightFollowsCurrentItem: false
                     highlightRangeMode: ListView.ApplyRange
                     focus: true
