@@ -238,8 +238,8 @@ Scope {
 
                         Behavior on y {
                             Anim {
-                                duration: MaterialEasing.expressiveDefaultSpatialTime
-                                easing.bezierCurve: MaterialEasing.expressiveFastSpatial
+                                duration: MaterialEasing.expressiveEffectsTime
+                                easing.bezierCurve: MaterialEasing.expressiveEffects
                             }
                         }
                     }
