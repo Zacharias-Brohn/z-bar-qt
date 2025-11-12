@@ -59,8 +59,10 @@ MouseArea {
         if ( mouse.button === Qt.LeftButton ) {
             root.item.activate();
         } else if ( mouse.button === Qt.RightButton ) {
+            if ( root.item?.menu !== trayMenu.trayMenu ) {
+                trayMenu.trayMenu = root.item?.menu;
+            }
             trayMenu.visible = !trayMenu.visible;
-            trayMenu.trayMenu = root.item?.menu;
             trayMenu.focusGrab = true;
         }
     }

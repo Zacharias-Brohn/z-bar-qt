@@ -8,6 +8,7 @@ Singleton {
     property alias appCount: adapter.appCount
     property alias baseBgColor: adapter.baseBgColor
     property alias accentColor: adapter.accentColor
+    property alias wallpaperPath: adapter.wallpaperPath
 
     FileView {
         id: root
@@ -23,6 +24,7 @@ Singleton {
         JsonAdapter {
             id: adapter
             property int appCount: 20
+            property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
             property string baseBgColor: "#801a1a1a"
             property AccentColor accentColor: AccentColor {}
         }

@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
 import Quickshell.Hyprland
+import qs.Helpers
 
 Item {
     id: root
@@ -12,22 +12,12 @@ Item {
 
     property bool showFirst: true
 
-    Process {
-        id: initialTitleProc
-        command: ["./scripts/initialTitle.sh"]
-        running: false
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let cleaned = this.text.trim().replace(/\"/g, "")
-                root.currentTitle = ( cleaned === "null" ) ? "" : cleaned
-            }
-        }
-    }
-
     Component.onCompleted: {
         Hyprland.rawEvent.connect(( event ) => {
             if (event.name === "activewindow") {
-                initialTitleProc.running = true
+                InitialTitle.getInitialTitle( function( initialTitle ) {
+                    root.currentTitle = initialTitle
+                })
             }
         })
     }

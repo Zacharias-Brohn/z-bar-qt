@@ -6,6 +6,7 @@ import QtQuick.Controls
 import QtQuick.Effects
 import QtQuick.Layouts
 import qs.Config
+import qs.Helpers
 
 Scope {
     id: root
@@ -54,7 +55,7 @@ Scope {
         Rectangle {
             id: shadowRect
             anchors {
-                top: appListView.count > 0 ? appListRect.top : backgroundRect.top
+                top: appListRect.top
                 bottom: backgroundRect.bottom
                 left: appListRect.left
                 right: appListRect.right
@@ -84,7 +85,7 @@ Scope {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: -1
             implicitHeight: mainLayout.childrenRect.height + 20
-            implicitWidth: 600
+            implicitWidth: appListRect.implicitWidth
             x: Math.round(( parent.width - width ) / 2 )
             color: "#d01a1a1a"
             opacity: 1
@@ -99,7 +100,7 @@ Scope {
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                     property: "implicitHeight"
                     from: 40
-                    to: appListView.implicitHeight + 20
+                    to: appListContainer.implicitHeight + 20
                 }
                 Anim {
                     target: appListRect
@@ -134,7 +135,7 @@ Scope {
                     duration: MaterialEasing.expressiveFastSpatialTime
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                     property: "implicitHeight"
-                    from: appListView.implicitHeight
+                    from: appListContainer.implicitHeight
                     to: 40
                 }
                 SequentialAnimation {
@@ -187,14 +188,15 @@ Scope {
         Rectangle {
             id: appListRect
             x: Math.round(( parent.width - width ) / 2 )
-            implicitWidth: backgroundRect.implicitWidth
-            implicitHeight: appListView.implicitHeight + 20
+            implicitWidth: appListContainer.implicitWidth + 20
+            implicitHeight: appListContainer.implicitHeight + 20
             anchors.bottom: backgroundRect.top
             anchors.bottomMargin: -1
             color: backgroundRect.color
             topRightRadius: 8
             topLeftRadius: 8
             border.color: backgroundRect.border.color
+            clip: true
 
             Behavior on implicitHeight {
                 Anim {
@@ -203,218 +205,320 @@ Scope {
                 }
             }
 
+            Behavior on implicitWidth {
+                Anim {
+                    duration: MaterialEasing.expressiveFastSpatialTime
+                    easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
+                }
+            }
+
             Item {
-                anchors.fill: parent
-                visible: appListView.count > 0
-                anchors.margins: 10
+                anchors.centerIn: parent
+                id: appListContainer
+                visible: true
                 clip: true
-                ListView {
-                    id: appListView
+                property var showWallpapers: searchInput.text.startsWith(">")
+                state: showWallpapers ? "wallpaperpicker" : "apps"
+                states: [
+                    State {
+                        name: "apps"
+                        PropertyChanges {
+                            appListLoader.active: true
+                            appListContainer.implicitHeight: appListLoader.implicitHeight
+                            appListContainer.implicitWidth: 600
+                        }
+                    },
+                    State {
+                        name: "wallpaperpicker"
+                        PropertyChanges {
+                            wallpaperPickerLoader.active: true
+                            appListContainer.implicitHeight: wallpaperPickerLoader.implicitHeight 
+                            appListContainer.implicitWidth: wallpaperPickerLoader.implicitWidth
+                        }
+                    }
+                ]
+                Loader {
+                    id: wallpaperPickerLoader
+                    active: false
                     anchors.fill: parent
-                    model: ScriptModel {
-                        id: appModel
+                    sourceComponent: PathView {
+                        id: wallpaperPickerView
+                        anchors.fill: parent
+                        model: ScriptModel {
+                            id: wallpaperModel
+                            readonly property string search: searchInput.text.split(" ").slice(1).join(" ")
 
-                        onValuesChanged: {
-                            appListView.currentIndex = 0;
+                            values: SearchWallpapers.query( search )
                         }
+
+                        cacheItemCount: 5
+                        snapMode: PathView.SnapToItem
+                        preferredHighlightBegin: 0.5
+                        preferredHighlightEnd: 0.5
+                        highlightRangeMode: PathView.StrictlyEnforceRange
+
+                        pathItemCount: 7
+                        implicitHeight: 212
+                        implicitWidth: Math.min( wallpaperModel.values.length, 7 ) * 192 + Math.max(0, wallpaperModel.values.length -1) * 10
+
+                        path: Path {
+                            startY: wallpaperPickerView.height / 2
+
+                            PathAttribute {
+                                name: "z"
+                                value: 0
+                            }
+                            PathLine {
+                                x: wallpaperPickerView.width / 2
+                                relativeY: 0
+                            }
+                            PathAttribute {
+                                name: "z"
+                                value: 1
+                            }
+                            PathLine {
+                                x: wallpaperPickerView.width
+                                relativeY: 0
+                            }
+                        }
+
+                        focus: true
+
+                        delegate: WallpaperItem { }
                     }
+                }
+                Loader {
+                    id: appListLoader
+                    active: false
+                    anchors.fill: parent
+                    sourceComponent: ListView {
+                        id: appListView
+                        anchors.fill: parent
+                        model: ScriptModel {
+                            id: appModel
 
-                    verticalLayoutDirection: ListView.BottomToTop
-                    implicitHeight: Math.min( count, Config.appCount ) * 48
+                            onValuesChanged: {
+                                appListView.currentIndex = 0;
+                            }
+                        }
 
-                    preferredHighlightBegin: 0
-                    preferredHighlightEnd: appListView.height
-                    highlightFollowsCurrentItem: false
-                    highlightRangeMode: ListView.ApplyRange
-                    focus: true
-                    highlight: Rectangle {
-                        radius: 4
-                        color: "#FFFFFF"
-                        opacity: 0.08
+                        verticalLayoutDirection: ListView.BottomToTop
+                        implicitHeight: Math.min( count, Config.appCount ) * 48
 
-                        y: appListView.currentItem?.y
-                        implicitWidth: appListView.width
-                        implicitHeight: appListView.currentItem?.implicitHeight ?? 0
+                        preferredHighlightBegin: 0
+                        preferredHighlightEnd: appListView.height
+                        highlightFollowsCurrentItem: false
+                        highlightRangeMode: ListView.ApplyRange
+                        focus: true
+                        highlight: Rectangle {
+                            radius: 4
+                            color: "#FFFFFF"
+                            opacity: 0.08
 
-                        Behavior on y {
+                            y: appListView.currentItem?.y
+                            implicitWidth: appListView.width
+                            implicitHeight: appListView.currentItem?.implicitHeight ?? 0
+
+                            Behavior on y {
+                                Anim {
+                                    duration: MaterialEasing.expressiveEffectsTime
+                                    easing.bezierCurve: MaterialEasing.expressiveEffects
+                                }
+                            }
+                        }
+
+                        property list<var> search: Search.search( searchInput.text )
+
+                        state: {
+                            const text = searchInput.text
+                            if ( search.length === 0 ) {
+                                return "noresults"
+                            } else {
+                                return "apps"
+                            }
+                        }
+
+                        states: [
+                            State {
+                                name: "apps"
+                                PropertyChanges {
+                                    appModel.values: Search.search(searchInput.text)
+                                    appListView.delegate: appItem
+                                }
+                            },
+                            State {
+                                name: "noresults"
+                                PropertyChanges {
+                                    appModel.values: [1]
+                                    appListView.delegate: noResultsItem
+                                }
+                            }
+                            // State {
+                            //     name: "wallpaperpicker"
+                            //     PropertyChanges {
+                            //         appModel.values: SearchWallpapers.query( searchInput.text.split(" ").slice(1).join(" ") )
+                            //         appListView.delegate: wallpaperItem
+                            //         appListView.orientation: ListView.Horizontal
+                            //     }
+                            // }
+                        ]
+
+                        Component {
+                            id: appItem
+                            AppItem {
+                            }
+                        }
+
+                        Component {
+                            id: noResultsItem
+                            Item {
+                                width: appListView.width
+                                height: 48
+                                Text {
+                                    id: icon
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    property real fill: 0
+                                    text: "\ue000"
+                                    color: "#cccccc"
+                                    renderType: Text.NativeRendering
+                                    font.pointSize: 28
+                                    font.family: "Material Symbols Outlined"
+                                    font.variableAxes: ({
+                                        FILL: fill.toFixed(1),
+                                        GRAD: -25,
+                                        opsz: fontInfo.pixelSize,
+                                        wght: fontInfo.weight
+                                    })
+                                }
+
+                                Text {
+                                    anchors.left: icon.right
+                                    anchors.leftMargin: 10
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "No results found"
+                                    color: "#cccccc"
+                                    renderType: Text.NativeRendering
+                                    
+                                    font.pointSize: 12
+                                    font.family: "Rubik"
+                                }
+                            }
+                        }
+
+                        Component {
+                            id: wallpaperItem
+                            WallpaperItem { }
+                        }
+
+                        transitions: Transition {
+                            SequentialAnimation {
+                                ParallelAnimation {
+                                    Anim {
+                                        target: appListView
+                                        property: "opacity"
+                                        from: 1
+                                        to: 0
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardAccel
+                                    }
+                                    Anim {
+                                        target: appListView
+                                        property: "scale"
+                                        from: 1
+                                        to: 0.9
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardAccel
+                                    }
+                                }
+                                PropertyAction {
+                                    targets: [model, appListView]
+                                    properties: "values,delegate"
+                                }
+                                ParallelAnimation {
+                                    Anim {
+                                        target: appListView
+                                        property: "opacity"
+                                        from: 0
+                                        to: 1
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardDecel
+                                    }
+                                    Anim {
+                                        target: appListView
+                                        property: "scale"
+                                        from: 0.9
+                                        to: 1
+                                        duration: 200
+                                        easing.bezierCurve: MaterialEasing.standardDecel
+                                    }
+                                }
+                                PropertyAction {
+                                    targets: [appListView.add, appListView.remove]
+                                    property: "enabled"
+                                    value: true
+                                }
+                            }
+                        }
+
+                        add: Transition {
+                            enabled: !appListView.state
                             Anim {
-                                duration: MaterialEasing.expressiveEffectsTime
-                                easing.bezierCurve: MaterialEasing.expressiveEffects
-                            }
-                        }
-                    }
-
-                    property list<var> search: Search.search( searchInput.text )
-
-                    state: search.length === 0 ? "noresults" : "apps"
-
-                    states: [
-                        State {
-                            name: "apps"
-                            PropertyChanges {
-                                appModel.values: Search.search(searchInput.text)
-                                appListView.delegate: appItem
-                            }
-                        },
-                        State {
-                            name: "noresults"
-                            PropertyChanges {
-                                appModel.values: [1]
-                                appListView.delegate: noResultsItem
-                            }
-                        }
-                    ]
-
-                    Component {
-                        id: appItem
-                        AppItem {
-                        }
-                    }
-
-                    Component {
-                        id: noResultsItem
-                        Item {
-                            width: appListView.width
-                            height: 48
-                            Text {
-                                id: icon
-                                anchors.verticalCenter: parent.verticalCenter
-                                property real fill: 0
-                                text: "\ue000"
-                                color: "#cccccc"
-                                renderType: Text.NativeRendering
-                                font.pointSize: 28
-                                font.family: "Material Symbols Outlined"
-                                font.variableAxes: ({
-                                    FILL: fill.toFixed(1),
-                                    GRAD: -25,
-                                    opsz: fontInfo.pixelSize,
-                                    wght: fontInfo.weight
-                                })
+                                properties: "opacity"
+                                from: 0
+                                to: 1
                             }
 
-                            Text {
-                                anchors.left: icon.right
-                                anchors.leftMargin: 10
-                                anchors.verticalCenter: parent.verticalCenter
-                                text: "No results found"
-                                color: "#cccccc"
-                                renderType: Text.NativeRendering
-                                
-                                font.pointSize: 12
-                                font.family: "Rubik"
+                            Anim {
+                                properties: "scale"
+                                from: 0.95
+                                to: 1
                             }
                         }
-                    }
 
-                    transitions: Transition {
-                        SequentialAnimation {
-                            ParallelAnimation {
-                                Anim {
-                                    target: appListView
-                                    property: "opacity"
-                                    from: 1
-                                    to: 0
-                                    duration: 200
-                                    easing.bezierCurve: MaterialEasing.standardAccel
-                                }
-                                Anim {
-                                    target: appListView
-                                    property: "scale"
-                                    from: 1
-                                    to: 0.9
-                                    duration: 200
-                                    easing.bezierCurve: MaterialEasing.standardAccel
-                                }
+                        remove: Transition {
+                            enabled: !appListView.state
+                            Anim {
+                                properties: "opacity"
+                                from: 1
+                                to: 0
                             }
-                            PropertyAction {
-                                targets: [model, appListView]
-                                properties: "values,delegate"
-                            }
-                            ParallelAnimation {
-                                Anim {
-                                    target: appListView
-                                    property: "opacity"
-                                    from: 0
-                                    to: 1
-                                    duration: 200
-                                    easing.bezierCurve: MaterialEasing.standardDecel
-                                }
-                                Anim {
-                                    target: appListView
-                                    property: "scale"
-                                    from: 0.9
-                                    to: 1
-                                    duration: 200
-                                    easing.bezierCurve: MaterialEasing.standardDecel
-                                }
-                            }
-                            PropertyAction {
-                                targets: [appListView.add, appListView.remove]
-                                property: "enabled"
-                                value: true
+
+                            Anim {
+                                properties: "scale"
+                                from: 1
+                                to: 0.95
                             }
                         }
-                    }
 
-                    add: Transition {
-                        enabled: !appListView.state
-                        Anim {
-                            properties: "opacity"
-                            from: 0
-                            to: 1
-                        }
-
-                        Anim {
-                            properties: "scale"
-                            from: 0.95
-                            to: 1
-                        }
-                    }
-
-                    remove: Transition {
-                        enabled: !appListView.state
-                        Anim {
-                            properties: "opacity"
-                            from: 1
-                            to: 0
+                        move: Transition {
+                            Anim {
+                                property: "y"
+                            }
+                            Anim {
+                                properties: "opacity,scale"
+                                to: 1
+                            }
                         }
 
-                        Anim {
-                            properties: "scale"
-                            from: 1
-                            to: 0.95
+                        addDisplaced: Transition {
+                            Anim {
+                                property: "y"
+                                duration: 200
+                            }
+                            Anim {
+                                properties: "opacity,scale"
+                                to: 1
+                            }
                         }
-                    }
 
-                    move: Transition {
-                        Anim {
-                            property: "y"
-                        }
-                        Anim {
-                            properties: "opacity,scale"
-                            to: 1
-                        }
-                    }
-
-                    addDisplaced: Transition {
-                        Anim {
-                            property: "y"
-                            duration: 200
-                        }
-                        Anim {
-                            properties: "opacity,scale"
-                            to: 1
-                        }
-                    }
-
-                    displaced: Transition {
-                        Anim {
-                            property: "y"
-                        }
-                        Anim {
-                            properties: "opacity,scale"
-                            to: 1
+                        displaced: Transition {
+                            Anim {
+                                property: "y"
+                            }
+                            Anim {
+                                properties: "opacity,scale"
+                                to: 1
+                            }
                         }
                     }
                 }

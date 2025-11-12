@@ -5,7 +5,7 @@ import qs.Modules
 
 Scope {
     Bar {}
-    // Wallpaper {}
+    Wallpaper {}
     NotifServer {}
     Launcher {}
 }
