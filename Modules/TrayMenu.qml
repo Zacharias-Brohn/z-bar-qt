@@ -163,15 +163,15 @@ PanelWindow {
 
         Behavior on implicitWidth {
             NumberAnimation {
-                duration: MaterialEasing.standardTime
-                easing.bezierCurve: MaterialEasing.standard
+                duration: MaterialEasing.expressiveEffectsTime
+                easing.bezierCurve: MaterialEasing.expressiveEffects
             }
         }
 
         Behavior on implicitHeight {
             NumberAnimation {
-                duration: MaterialEasing.standardTime
-                easing.bezierCurve: MaterialEasing.standard
+                duration: MaterialEasing.expressiveEffectsTime
+                easing.bezierCurve: MaterialEasing.expressiveEffects
             }
         }
 
