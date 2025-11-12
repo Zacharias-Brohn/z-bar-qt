@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
+import qs.Helpers
 
 Scope {
     Variants {
@@ -21,8 +22,8 @@ Scope {
             Image {
                 id: wallpaperImage
                 anchors.fill: parent
-                source: "/mnt/IronWolf/SDImages/SWWW_Wals/ComfyUI_00037_.png"
-                fillMode: Image.PreserveAspectFit
+                source: WallpaperPath.currentWallpaperPath
+                fillMode: Image.PreserveAspectCrop
             }
         }
     }

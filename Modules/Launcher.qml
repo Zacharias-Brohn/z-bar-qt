@@ -55,7 +55,7 @@ Scope {
         Rectangle {
             id: shadowRect
             anchors {
-                top: appListView.count > 0 ? appListRect.top : backgroundRect.top
+                top: appListRect.top
                 bottom: backgroundRect.bottom
                 left: appListRect.left
                 right: appListRect.right
@@ -85,7 +85,7 @@ Scope {
             anchors.bottom: parent.bottom
             anchors.bottomMargin: -1
             implicitHeight: mainLayout.childrenRect.height + 20
-            implicitWidth: 600
+            implicitWidth: appListRect.implicitWidth
             x: Math.round(( parent.width - width ) / 2 )
             color: "#d01a1a1a"
             opacity: 1
@@ -100,7 +100,7 @@ Scope {
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                     property: "implicitHeight"
                     from: 40
-                    to: appListView.implicitHeight + 20
+                    to: appListContainer.implicitHeight + 20
                 }
                 Anim {
                     target: appListRect
@@ -135,7 +135,7 @@ Scope {
                     duration: MaterialEasing.expressiveFastSpatialTime
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                     property: "implicitHeight"
-                    from: appListView.implicitHeight
+                    from: appListContainer.implicitHeight
                     to: 40
                 }
                 SequentialAnimation {
@@ -196,8 +196,16 @@ Scope {
             topRightRadius: 8
             topLeftRadius: 8
             border.color: backgroundRect.border.color
+            clip: true
 
             Behavior on implicitHeight {
+                Anim {
+                    duration: MaterialEasing.expressiveFastSpatialTime
+                    easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
+                }
+            }
+
+            Behavior on implicitWidth {
                 Anim {
                     duration: MaterialEasing.expressiveFastSpatialTime
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
@@ -207,7 +215,7 @@ Scope {
             Item {
                 anchors.centerIn: parent
                 id: appListContainer
-                visible: appListView.count > 0
+                visible: true
                 clip: true
                 property var showWallpapers: searchInput.text.startsWith(">")
                 state: showWallpapers ? "wallpaperpicker" : "apps"
@@ -216,7 +224,7 @@ Scope {
                         name: "apps"
                         PropertyChanges {
                             appListLoader.active: true
-                            appListContainer.implicitHeight: appListView.implicitHeight + 20
+                            appListContainer.implicitHeight: appListLoader.implicitHeight
                             appListContainer.implicitWidth: 600
                         }
                     },
@@ -224,8 +232,8 @@ Scope {
                         name: "wallpaperpicker"
                         PropertyChanges {
                             wallpaperPickerLoader.active: true
-                            appListContainer.implicitHeight: wallpaperPickerView.implicitHeight + 20
-                            appListContainer.implicitWidth: wallpaperPickerView.implicitWidth + 20
+                            appListContainer.implicitHeight: wallpaperPickerLoader.implicitHeight 
+                            appListContainer.implicitWidth: wallpaperPickerLoader.implicitWidth
                         }
                     }
                 ]
@@ -233,7 +241,7 @@ Scope {
                     id: wallpaperPickerLoader
                     active: false
                     anchors.fill: parent
-                    sourceComponent: ListView {
+                    sourceComponent: PathView {
                         id: wallpaperPickerView
                         anchors.fill: parent
                         model: ScriptModel {
@@ -243,15 +251,40 @@ Scope {
                             values: SearchWallpapers.query( search )
                         }
 
-                        orientation: ListView.Horizontal
-                        spacing: 10
-                        implicitHeight: 300
-                        implicitWidth: Math.min( wallpaperModel.count, 7 ) * 192 + Math.max(0, wallpaperModel.count -1) * 10
+                        cacheItemCount: 5
+                        snapMode: PathView.SnapToItem
+                        preferredHighlightBegin: 0.5
+                        preferredHighlightEnd: 0.5
+                        highlightRangeMode: PathView.StrictlyEnforceRange
+
+                        pathItemCount: 7
+                        implicitHeight: 212
+                        implicitWidth: Math.min( wallpaperModel.values.length, 7 ) * 192 + Math.max(0, wallpaperModel.values.length -1) * 10
+
+                        path: Path {
+                            startY: wallpaperPickerView.height / 2
+
+                            PathAttribute {
+                                name: "z"
+                                value: 0
+                            }
+                            PathLine {
+                                x: wallpaperPickerView.width / 2
+                                relativeY: 0
+                            }
+                            PathAttribute {
+                                name: "z"
+                                value: 1
+                            }
+                            PathLine {
+                                x: wallpaperPickerView.width
+                                relativeY: 0
+                            }
+                        }
 
                         focus: true
 
                         delegate: WallpaperItem { }
-
                     }
                 }
                 Loader {

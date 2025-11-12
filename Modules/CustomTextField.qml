@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import QtQuick.Controls
+import qs.Helpers
 
 TextField {
     id: root
@@ -63,15 +64,25 @@ TextField {
 
     Keys.onPressed: {
         if ( event.key === Qt.Key_Down ) {
-            appListView.decrementCurrentIndex();
+            if ( appListLoader.active ) {
+                appListLoader.item.decrementCurrentIndex();
+            } else {
+                wallpaperPickerLoader.item.decrementCurrentIndex();
+            }
             event.accepted = true;
         } else if ( event.key === Qt.Key_Up ) {
-            appListView.incrementCurrentIndex();
+            if ( appListLoader.active ) {
+                appListLoader.item.incrementCurrentIndex();
+            } else {
+                wallpaperPickerLoader.item.incrementCurrentIndex();
+            }
             event.accepted = true;
         } else if ( event.key === Qt.Key_Return || event.key === Qt.Key_Enter ) {
-            if ( appListView.currentItem ) {
-                Search.launch(appListView.currentItem.modelData);
+            if ( appListLoader.active ) {
+                Search.launch(appListLoader.item.currentItem.modelData);
                 launcherWindow.visible = false;
+            } else if ( wallpaperPickerLoader.active ) {
+                WallpaperPath.currentWallpaperPath = wallpaperPickerLoader.item.currentItem.modelData.path;
             }
             event.accepted = true;
         } else if ( event.key === Qt.Key_Escape ) {
