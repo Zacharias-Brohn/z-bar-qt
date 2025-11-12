@@ -28,8 +28,8 @@ Scope {
         onVisibleChanged: {
             if ( !visible ) {
                 searchInput.text = "";
-                appListView.currentIndex = 0;
-                appListView.positionViewAtBeginning();
+                appListLoader.item.currentIndex = 0;
+                appListLoader.item.positionViewAtBeginning();
             }
         }
 
