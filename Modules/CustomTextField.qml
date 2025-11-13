@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Controls
 import qs.Helpers
+import qs.Config
 
 TextField {
     id: root
@@ -83,6 +84,9 @@ TextField {
                 launcherWindow.visible = false;
             } else if ( wallpaperPickerLoader.active ) {
                 WallpaperPath.currentWallpaperPath = wallpaperPickerLoader.item.currentItem.modelData.path;
+                if ( Config.wallust ) {
+                    Wallust.generateColors(WallpaperPath.currentWallpaperPath);
+                }
             }
             event.accepted = true;
         } else if ( event.key === Qt.Key_Escape ) {

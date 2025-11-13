@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import Quickshell.Wayland
 import qs.Helpers
+import qs.Modules
 
 Scope {
     Variants {
@@ -24,6 +25,13 @@ Scope {
                 anchors.fill: parent
                 source: WallpaperPath.currentWallpaperPath
                 fillMode: Image.PreserveAspectCrop
+
+                // Behavior on source {
+                //     Anim {
+                //         properties: "opacity"
+                //         duration: 500
+                //     }
+                // }
             }
         }
     }

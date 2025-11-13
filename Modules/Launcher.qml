@@ -259,20 +259,19 @@ Scope {
                                 return 0;
 
                             // Screen width - 4x outer rounding - 2x max side thickness (cause centered)
-                            const barMargins = 10;
-                            let outerMargins = 0;
-                            const maxWidth = screen.width - (barMargins + outerMargins) * 2;
+                            const margins = 10;
+                            const maxWidth = screen.width - margins * 2;
 
-                            if (maxWidth <= 0)
+                            if ( maxWidth <= 0 )
                                 return 0;
 
 
-                            const maxItemsOnScreen = Math.floor(maxWidth / itemWidth);
-                            const visible = Math.min(maxItemsOnScreen, Config.maxWallpapers, wallpaperModel.values.length);
+                            const maxItemsOnScreen = Math.floor( maxWidth / itemWidth );
+                            const visible = Math.min( maxItemsOnScreen, Config.maxWallpapers, wallpaperModel.values.length );
 
-                            if (visible === 2)
+                            if ( visible === 2 )
                                 return 1;
-                            if (visible > 1 && visible % 2 === 0)
+                            if ( visible > 1 && visible % 2 === 0 )
                                 return visible - 1;
                             return visible;
                         }
