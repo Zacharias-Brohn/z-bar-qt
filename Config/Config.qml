@@ -9,6 +9,7 @@ Singleton {
     property alias baseBgColor: adapter.baseBgColor
     property alias accentColor: adapter.accentColor
     property alias wallpaperPath: adapter.wallpaperPath
+    property alias maxWallpapers: adapter.maxWallpapers
 
     FileView {
         id: root
@@ -27,6 +28,7 @@ Singleton {
             property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
             property string baseBgColor: "#801a1a1a"
             property AccentColor accentColor: AccentColor {}
+            property int maxWallpapers: 7
         }
     }
 }

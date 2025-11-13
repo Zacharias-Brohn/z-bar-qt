@@ -249,7 +249,35 @@ Scope {
                             readonly property string search: searchInput.text.split(" ").slice(1).join(" ")
 
                             values: SearchWallpapers.query( search )
+                            onValuesChanged: wallpaperPickerView.currentIndex = SearchWallpapers.list.findIndex( w => w.path === WallpaperPath.currentWallpaperPath )
                         }
+
+                        readonly property int itemWidth: 288 + 10
+                        readonly property int numItems: {
+                            const screen = QsWindow.window?.screen;
+                            if (!screen)
+                                return 0;
+
+                            // Screen width - 4x outer rounding - 2x max side thickness (cause centered)
+                            const barMargins = 10;
+                            let outerMargins = 0;
+                            const maxWidth = screen.width - (barMargins + outerMargins) * 2;
+
+                            if (maxWidth <= 0)
+                                return 0;
+
+
+                            const maxItemsOnScreen = Math.floor(maxWidth / itemWidth);
+                            const visible = Math.min(maxItemsOnScreen, Config.maxWallpapers, wallpaperModel.values.length);
+
+                            if (visible === 2)
+                                return 1;
+                            if (visible > 1 && visible % 2 === 0)
+                                return visible - 1;
+                            return visible;
+                        }
+
+                        Component.onCompleted: currentIndex = SearchWallpapers.list.findIndex( w => w.path === WallpaperPath.currentWallpaperPath )
 
                         cacheItemCount: 5
                         snapMode: PathView.SnapToItem
@@ -257,9 +285,9 @@ Scope {
                         preferredHighlightEnd: 0.5
                         highlightRangeMode: PathView.StrictlyEnforceRange
 
-                        pathItemCount: 7
+                        pathItemCount: numItems
                         implicitHeight: 212
-                        implicitWidth: Math.min( wallpaperModel.values.length, 7 ) * 192 + Math.max(0, wallpaperModel.values.length -1) * 10
+                        implicitWidth: Math.min( numItems, count ) * itemWidth
 
                         path: Path {
                             startY: wallpaperPickerView.height / 2
