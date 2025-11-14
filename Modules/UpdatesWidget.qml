@@ -5,7 +5,7 @@ import qs.Modules
 Item {
     id: root
     required property int countUpdates
-    implicitWidth: 60
+    implicitWidth: contentRow.childrenRect.width + 10
     implicitHeight: 22
 
     Rectangle {
@@ -15,6 +15,8 @@ Item {
     }
 
     RowLayout {
+        id: contentRow
+        spacing: 10
         anchors {
             fill: parent
             leftMargin: 5
@@ -29,17 +31,16 @@ Item {
             color: "#ffffff"
         }
 
-        Item {
-            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-            implicitWidth: 18
-            implicitHeight: root.implicitHeight
+        TextMetrics {
+            id: textMetrics
+            font.pixelSize: 16
+            text: root.countUpdates
+        }
 
-
-            Text {
-                anchors.centerIn: parent
-                text: root.countUpdates
-                color: "white"
-            }
+        Text {
+            Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+            text: textMetrics.text
+            color: "white"
         }
     }
 }

@@ -1,12 +1,7 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Widgets
 import Quickshell.Io
-import Quickshell.Wayland
-import Qt5Compat.GraphicalEffects
-import Quickshell.Hyprland
 import qs.Modules
 import qs.Config
 
@@ -20,6 +15,10 @@ Scope {
             property bool trayMenuVisible: false
             screen: modelData
             property var root: Quickshell.shellDir
+
+            Component.onCompleted: {
+                console.log(modelData.x);
+            }
 
             Process {
                 id: ncProcess
@@ -50,13 +49,14 @@ Scope {
                     RowLayout {
                         id: leftSection
                         Layout.fillHeight: true
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: leftSection.childrenRect.width
 
                         Workspaces {
                             Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
                             Layout.fillHeight: true
                             Layout.topMargin: 6
                             Layout.bottomMargin: 6
+                            bar: bar
                         }
 
                         AudioWidget {

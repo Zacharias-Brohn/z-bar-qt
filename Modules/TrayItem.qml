@@ -1,13 +1,9 @@
 //@ pragma Env QT_STYLE_OVERRIDE=Breeze
 
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Effects
 import Quickshell
-import Quickshell.DBusMenu
-import Quickshell.Widgets
-import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
+import Quickshell.Io
 import qs.Modules
 
 MouseArea {
@@ -27,16 +23,27 @@ MouseArea {
         globalPos = root.mapToItem(root.bar.backgroundRect, 0, 0);
     }
 
-    IconImage {
+    Image {
         id: icon
 
+        Component.onCompleted: {
+            console.log(root.item.icon);
+        }
+
+        property bool batteryHDPI: root.bar.screen.x < 0 && root.item.icon.includes("battery")
+        property bool nmHDPI: root.bar.screen.x < 0 && root.item.icon.includes("nm-")
+
         anchors.centerIn: parent
-        height: 22
-        width: 22
+        width: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
+        height: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
         source: root.item.icon
         mipmap: true
-        smooth: false
+        smooth: batteryHDPI ? false : ( nmHDPI ? false : true )
         asynchronous: true
+        sourceSize.width: batteryHDPI ? 16 : ( nmHDPI ? 16 : 22 )
+        sourceSize.height: batteryHDPI ? 16 : ( nmHDPI ? 16 : 22 )
+        autoTransform: true
+        fillMode: Image.PreserveAspectFit
 
         TrayMenu {
             id: trayMenu

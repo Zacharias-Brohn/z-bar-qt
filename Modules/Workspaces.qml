@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -8,8 +10,21 @@ import qs.Config
 Rectangle {
     id: root
 
-    implicitWidth: workspacesRow.implicitWidth + 10
+    required property PanelWindow bar
+    property HyprlandMonitor monitor: Hyprland.monitorFor( root.bar?.screen )
+
+    implicitWidth: workspacesRow.implicitWidth + 6
     implicitHeight: workspacesRow.implicitHeight + 7
+
+    function shouldShow(monitor) {
+        Hyprland.refreshWorkspaces();
+        Hyprland.refreshMonitors();
+        if ( monitor === root.monitor ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     color: "#40000000"
     radius: height / 2
@@ -25,7 +40,7 @@ Rectangle {
         id: workspacesRow
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 5
+        anchors.leftMargin: 3
         spacing: 8
 
         Repeater {
@@ -34,14 +49,16 @@ Rectangle {
             Rectangle {
                 required property var modelData
 
-                width: 14
-                height: 14
+                width: 16
+                height: 16
                 radius: height / 2
 
                 color: modelData.id === Hyprland.focusedWorkspace.id ? Config.accentColor.accents.primary : "#606060"
 
                 border.color: modelData.id === Hyprland.focusedWorkspace.id ? Config.accentColor.accents.primaryAlt : "#808080"
                 border.width: 1
+
+                visible: root.shouldShow( modelData.monitor )
 
                 scale: 1.0
                 opacity: 1.0
@@ -71,6 +88,14 @@ Rectangle {
                     from: 0.0
                     to: 1.0
                     duration: 200
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: modelData.id
+                    font.pixelSize: 10
+                    font.family: "Rubik"
+                    color: modelData.id === Hyprland.focusedWorkspace.id ? Config.workspaceWidget.textColor : Config.workspaceWidget.inactiveTextColor
                 }
 
                 MouseArea {
