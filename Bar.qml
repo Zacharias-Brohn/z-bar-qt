@@ -103,7 +103,7 @@ Scope {
                             Layout.alignment: Qt.AlignVCenter
                             text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
                             font.family: "Material Symbols Rounded"
-                            font.pixelSize: 22
+                            font.pixelSize: 20
                             color: "white"
                             MouseArea {
                                 anchors.fill: parent

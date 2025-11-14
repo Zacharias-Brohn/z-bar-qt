@@ -14,7 +14,6 @@ MouseArea {
     property point globalPos
 
     implicitWidth: 22
-    implicitHeight: parent.height
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
@@ -38,11 +37,10 @@ MouseArea {
         height: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
         source: root.item.icon
         mipmap: true
-        smooth: batteryHDPI ? false : ( nmHDPI ? false : true )
+        smooth: ( batteryHDPI || nmHDPI ) ? false : true
         asynchronous: true
-        sourceSize.width: batteryHDPI ? 16 : ( nmHDPI ? 16 : 22 )
-        sourceSize.height: batteryHDPI ? 16 : ( nmHDPI ? 16 : 22 )
-        autoTransform: true
+        sourceSize.width: ( batteryHDPI || nmHDPI ) ? 16 : 22
+        sourceSize.height: ( batteryHDPI || nmHDPI ) ? 16 : 22
         fillMode: Image.PreserveAspectFit
 
         TrayMenu {

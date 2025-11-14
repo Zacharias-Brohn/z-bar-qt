@@ -22,6 +22,7 @@ Rectangle {
             TrayItem {
                 id: trayItem
                 required property SystemTrayItem modelData
+                implicitHeight: root.implicitHeight
                 item: modelData
                 bar: root.bar
             }
