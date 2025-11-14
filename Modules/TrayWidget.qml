@@ -9,11 +9,11 @@ Rectangle {
     id: root
     required property PanelWindow bar
     implicitHeight: parent.height
-    implicitWidth: rowL.implicitWidth + 20
+    implicitWidth: rowL.implicitWidth + 10
     color: "transparent"
 
     RowLayout {
-        spacing: 10
+        spacing: 5
         id: rowL
         anchors.centerIn: parent
         Repeater {

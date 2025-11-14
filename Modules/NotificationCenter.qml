@@ -8,6 +8,7 @@ import QtQuick.Effects
 import QtQuick
 import Quickshell.Services.Notifications
 import qs.Config
+import qs.Helpers
 
 PanelWindow {
     id: root
@@ -25,6 +26,14 @@ PanelWindow {
     visible: false
 
     mask: Region { item: backgroundRect }
+
+    onNotificationsChanged: {
+        if ( root.notifications.length > 0 ) {
+            HasNotifications.hasNotifications = true;
+        } else {
+            HasNotifications.hasNotifications = false;
+        }
+    }
 
     IpcHandler {
         id: ipcHandler

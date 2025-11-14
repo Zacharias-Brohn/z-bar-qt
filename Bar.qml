@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.Modules
 import qs.Config
+import qs.Helpers
 
 Scope {
     Variants {
@@ -15,10 +16,6 @@ Scope {
             property bool trayMenuVisible: false
             screen: modelData
             property var root: Quickshell.shellDir
-
-            Component.onCompleted: {
-                console.log(modelData.x);
-            }
 
             Process {
                 id: ncProcess
@@ -102,10 +99,11 @@ Scope {
                         }
 
                         Text {
+                            id: notificationCenterIcon
                             Layout.alignment: Qt.AlignVCenter
-                            text: "\ue7f4"
+                            text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
                             font.family: "Material Symbols Rounded"
-                            font.pixelSize: 20
+                            font.pixelSize: 22
                             color: "white"
                             MouseArea {
                                 anchors.fill: parent

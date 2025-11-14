@@ -14,7 +14,7 @@ MouseArea {
     property point globalPos
 
     implicitWidth: 22
-    implicitHeight: 22
+    implicitHeight: parent.height
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
