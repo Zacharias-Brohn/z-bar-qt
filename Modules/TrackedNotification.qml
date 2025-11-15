@@ -21,11 +21,15 @@ PanelWindow {
     required property Notification notif
     required property int centerX
     required property list<int> notifIndex
+    required property list<TrackedNotification> notifList
     property int index: notifIndex.indexOf(notif.id)
+    property alias y: backgroundRect.y
+    property alias notifHeight: backgroundRect.implicitHeight
     signal notifDestroy()
 
     Component.onCompleted: {
         openAnim.start();
+        console.log(root.index);
     }
 
     Timer {
@@ -64,9 +68,9 @@ PanelWindow {
     Rectangle {
         id: backgroundRect
         implicitWidth: 400
-        implicitHeight: 90
+        implicitHeight: contentLayout.childrenRect.height + 16
         x: root.centerX - implicitWidth - 20
-        y: 34 + 20 + ( root.index * ( implicitHeight + 10 ))
+        y: !root.notifList[ root.index - 1 ] ? 34 + 20 : root.notifList[ root.index - 1 ].y + root.notifList[ root.index - 1 ].notifHeight + 10
         color: Config.baseBgColor
         border.color: "#555555"
         radius: 8
@@ -78,52 +82,59 @@ PanelWindow {
             }
         }
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.margins: 8
-            spacing: 12
-            IconImage {
-                source: root.notif.image
-                Layout.preferredWidth: 64
-                Layout.preferredHeight: 64
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
-                visible: root.notif.image !== ""
-            }
-
-            ColumnLayout {
-                Layout.fillWidth: true
-                Layout.leftMargin: root.notif.image !== "" ? 0 : 16
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-
-                Text {
-                    text: root.notif.appName
-                    color: "white"
-                    font.bold: true
-                    font.pointSize: 12
-                    elide: Text.ElideRight
-                    wrapMode: Text.NoWrap
-                    Layout.fillWidth: true
+        Column {
+            id: contentLayout
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.margins: 10
+            spacing: 8
+            RowLayout {
+                spacing: 12
+                IconImage {
+                    source: root.notif.image
+                    Layout.preferredWidth: 48
+                    Layout.preferredHeight: 48
+                    Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
+                    visible: root.notif.image !== ""
                 }
 
-                Text {
-                    text: root.notif.summary
-                    color: "white"
-                    font.pointSize: 10
-                    font.bold: true
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
-                    Layout.fillWidth: true
-                }
-
-                Text {
-                    text: root.notif.body
-                    color: "#dddddd"
-                    font.pointSize: 10
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
+                ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.leftMargin: 0
+                    Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+
+                    Text {
+                        text: root.notif.appName
+                        color: "white"
+                        font.bold: true
+                        font.pointSize: 14
+                        elide: Text.ElideRight
+                        wrapMode: Text.NoWrap
+                        Layout.fillWidth: true
+                    }
+
+                    Text {
+                        text: root.notif.summary
+                        color: "white"
+                        font.pointSize: 12
+                        font.bold: true
+                        elide: Text.ElideRight
+                        wrapMode: Text.WordWrap
+                        Layout.fillWidth: true
+                    }
+
                 }
+            }
+            Text {
+                text: root.notif.body
+                color: "#dddddd"
+                font.pointSize: 14
+                elide: Text.ElideRight
+                wrapMode: Text.WordWrap
+                maximumLineCount: 4
+                width: parent.width
             }
         }
 

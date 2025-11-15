@@ -6,9 +6,15 @@ import qs.Modules
 Item {
     id: root
     implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
+    implicitHeight: 34
 
     Rectangle {
-        anchors.fill: parent
+        anchors {
+            left: parent.left
+            right: parent.right
+            verticalCenter: parent.verticalCenter
+        }
+        implicitHeight: 22
         color: "#40000000"
         radius: height / 2
         RowLayout {
@@ -67,6 +73,36 @@ Item {
 
             Resource {
                 percentage: ResourceUsage.gpuMemUsage
+            }
+        }
+    }
+    MouseArea {
+        id: mouseArea
+        anchors.fill: parent
+        hoverEnabled: true
+    }
+
+    Loader {
+        anchors.left: parent.left
+        sourceComponent: mouseArea.containsMouse ? resourcePopout : null
+    }
+
+    Component {
+        id: resourcePopout
+        PanelWindow {
+            anchors {
+                left: true
+                top: true
+                right: true
+                bottom: true
+            }
+            color: "transparent"
+            Rectangle {
+                x: mapFromItem(root, 0, 0).x
+                implicitHeight: 300
+                implicitWidth: root.implicitWidth
+                color: "#80000000"
+                radius: 12
             }
         }
     }

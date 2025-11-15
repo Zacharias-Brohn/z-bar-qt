@@ -9,7 +9,7 @@ import qs.Modules
 Item {
     id: root
     implicitWidth: expanded ? 300 : 150
-    implicitHeight: 100
+    implicitHeight: 34
 
     property bool expanded: false
 
@@ -29,7 +29,10 @@ Item {
     }
 
     Rectangle {
-        anchors.fill: parent
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: 22
         radius: height / 2
         color: "#40000000"
 

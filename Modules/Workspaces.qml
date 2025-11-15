@@ -14,7 +14,7 @@ Rectangle {
     property HyprlandMonitor monitor: Hyprland.monitorFor( root.bar?.screen )
 
     implicitWidth: workspacesRow.implicitWidth + 6
-    implicitHeight: workspacesRow.implicitHeight + 7
+    implicitHeight: 22
 
     function shouldShow(monitor) {
         Hyprland.refreshWorkspaces();

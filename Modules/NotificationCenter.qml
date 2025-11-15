@@ -234,10 +234,41 @@ PanelWindow {
                             property bool shouldShow: false
                             property bool isExpanded: false
 
+                            Behavior on height {
+                                Anim {}
+                            }
+
+                            add: Transition {
+                                id: addTrans
+                                SequentialAnimation {
+                                    PauseAnimation {
+                                        duration: ( addTrans.ViewTransition.index - addTrans.ViewTransition.targetIndexes[ 0 ]) * 50
+                                    }
+                                    ParallelAnimation {
+                                        NumberAnimation {
+                                            properties: "y";
+                                            from: addTrans.ViewTransition.destination.y - (height / 2);
+                                            to: addTrans.ViewTransition.destination.y;
+                                            duration: 100;
+                                            easing.type: Easing.OutCubic
+                                        }
+                                        NumberAnimation {
+                                            properties: "opacity";
+                                            from: 0;
+                                            to: 1;
+                                            duration: 100;
+                                            easing.type: Easing.OutCubic
+                                        }
+                                    }
+                                }
+                            }
+
                             move: Transition {
+                                id: moveTrans
                                 NumberAnimation {
-                                    properties: "y,x";
+                                    properties: "opacity";
                                     duration: 100;
+                                    to: 0;
                                     easing.type: Easing.OutCubic
                                 }
                             }
@@ -287,12 +318,13 @@ PanelWindow {
                                     required property var modelData
                                     required property var index
                                     width: parent.width
-                                    height: groupColumn.isExpanded ? ( modelData.actions.length > 1 ? 130 : 80 ) : ( groupColumn.notifications.length === 1 ? ( modelData.actions.length > 1 ? 130 : 80 ) : 80 )
+                                    height: contentColumn.height + 20
                                     color: Config.baseBgColor
                                     border.color: "#555555"
                                     border.width: 1
                                     radius: 8
                                     visible: groupColumn.notifications[0].id === modelData.id || groupColumn.isExpanded
+                                    opacity: groupColumn.notifications[0].id === modelData.id ? 1 : 0
 
                                     Connections {
                                         target: groupColumn
@@ -307,6 +339,9 @@ PanelWindow {
                                         if ( visible ) {
                                             // expandAnim.start();
                                         } else {
+                                            if ( groupColumn.notifications[0].id !== modelData.id ) {
+                                                groupHeader.opacity = 0;
+                                            }
                                             groupColumn.isExpanded = false;
                                         }
                                     }
@@ -325,10 +360,15 @@ PanelWindow {
                                     }
 
                                     Column {
-                                        anchors.fill: parent
-                                        anchors.margins: 10
+                                        id: contentColumn
+                                        anchors.centerIn: parent
+                                        width: parent.width - 20
+                                        spacing: 10
+                                        // anchors.left: parent.left
+                                        // anchors.right: parent.right
+                                        // anchors.leftMargin: 10
+                                        // anchors.rightMargin: 10
                                         RowLayout {
-                                            height: 80
                                             width: parent.width
                                             spacing: 10
 
@@ -338,31 +378,32 @@ PanelWindow {
                                                 Layout.preferredHeight: 48
                                                 Layout.alignment: Qt.AlignTop | Qt.AlignLeft
                                                 Layout.topMargin: 5
+                                                visible: groupHeader.modelData.image !== ""
                                             }
 
                                             ColumnLayout {
                                                 Layout.fillWidth: true
                                                 Layout.fillHeight: true
-                                                spacing: 4
+                                                spacing: 2
 
                                                 Text {
                                                     text: groupHeader.modelData.summary
                                                     color: "white"
                                                     font.bold: true
-                                                    font.pointSize: 12
+                                                    font.pointSize: 16
                                                     elide: Text.ElideRight
                                                     Layout.fillWidth: true
                                                 }
 
                                                 Text {
                                                     text: groupHeader.modelData.body
-                                                    font.pointSize: 10
+                                                    font.pointSize: 12
                                                     color: "#dddddd"
                                                     elide: Text.ElideRight
                                                     lineHeightMode: Text.FixedHeight
-                                                    lineHeight: 14
+                                                    lineHeight: 20
                                                     wrapMode: Text.WordWrap
-                                                    maximumLineCount: 3
+                                                    maximumLineCount: 5
                                                     Layout.fillWidth: true
                                                     Layout.fillHeight: true
                                                 }
@@ -380,7 +421,7 @@ PanelWindow {
                                         RowLayout {
                                             spacing: 2
                                             visible: groupColumn.isExpanded ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : ( groupColumn.notifications.length === 1 ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : false )
-                                            height: 15
+                                            height: 30
                                             width: parent.width
 
                                             Repeater {

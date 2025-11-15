@@ -25,10 +25,6 @@ MouseArea {
     Image {
         id: icon
 
-        Component.onCompleted: {
-            console.log(root.item.icon);
-        }
-
         property bool batteryHDPI: root.bar.screen.x < 0 && root.item.icon.includes("battery")
         property bool nmHDPI: root.bar.screen.x < 0 && root.item.icon.includes("nm-")
 
