@@ -26,6 +26,9 @@ Scope {
                 source: WallpaperPath.currentWallpaperPath
                 fillMode: Image.PreserveAspectCrop
 
+                asynchronous: true
+                retainWhileLoading: true
+
                 // Behavior on source {
                 //     Anim {
                 //         properties: "opacity"

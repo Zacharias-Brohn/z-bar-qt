@@ -152,7 +152,7 @@ PanelWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             onClicked: {
-                                for ( const n of NotifServer.notClosed )
+                                for ( const n of NotifServer.list )
                                     n.close();
                             }
                         }
