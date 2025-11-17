@@ -7,6 +7,7 @@ import QtQuick
 import qs.Config
 import qs.Daemons
 import qs.Helpers
+import qs.Effects
 
 PanelWindow {
     id: root
@@ -106,98 +107,109 @@ PanelWindow {
             NotifRegion {}
         }
 
-        delegate: Rectangle {
-            id: backgroundRect
-            required property NotifServer.Notif modelData
+        delegate: Item {
+            id: rootItem
             implicitWidth: 400
             implicitHeight: contentLayout.childrenRect.height + 16
-            color: Config.baseBgColor
-            border.color: "#555555"
-            radius: 8
+            required property NotifServer.Notif modelData
 
-            Component.onCompleted: {
-                root.notifRegions.push( notifRegion.createObject(root, { item: backgroundRect }));
-            }
-
-            Column {
-                id: contentLayout
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.margins: 10
-                spacing: 8
-                RowLayout {
-                    spacing: 12
-                    IconImage {
-                        source: backgroundRect.modelData.image
-                        Layout.preferredWidth: 48
-                        Layout.preferredHeight: 48
-                        Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
-                        visible: backgroundRect.modelData.image !== ""
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        Layout.leftMargin: 0
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-
-                        Text {
-                            text: backgroundRect.modelData.appName
-                            color: "white"
-                            font.bold: true
-                            font.pointSize: 14
-                            elide: Text.ElideRight
-                            wrapMode: Text.NoWrap
-                            Layout.fillWidth: true
-                        }
-
-                        Text {
-                            text: backgroundRect.modelData.summary
-                            color: "white"
-                            font.pointSize: 12
-                            font.bold: true
-                            elide: Text.ElideRight
-                            wrapMode: Text.WordWrap
-                            Layout.fillWidth: true
-                        }
-
-                    }
-                }
-                Text {
-                    text: backgroundRect.modelData.body
-                    color: "#dddddd"
-                    font.pointSize: 14
-                    elide: Text.ElideRight
-                    wrapMode: Text.WordWrap
-                    maximumLineCount: 4
-                    width: parent.width
-                }
+            ShadowRect {
+                anchors.fill: backgroundRect
+                radius: backgroundRect.radius
             }
 
             Rectangle {
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.rightMargin: 6
-                anchors.topMargin: 6
-                width: 18
-                height: 18
-                color: closeArea.containsMouse ? "#FF6077" : "transparent"
-                radius: 9
+                id: backgroundRect
+                implicitWidth: 400
+                implicitHeight: contentLayout.childrenRect.height + 16
+                color: Config.baseBgColor
+                border.color: "#555555"
+                radius: 8
 
-                Text {
-                    anchors.centerIn: parent
-                    text: "✕"
-                    color: closeArea.containsMouse ? "white" : "#888888"
-                    font.pointSize: 12
+                Component.onCompleted: {
+                    root.notifRegions.push( notifRegion.createObject(root, { item: backgroundRect }));
                 }
 
-                MouseArea {
-                    id: closeArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        backgroundRect.modelData.close();
+                Column {
+                    id: contentLayout
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.margins: 10
+                    spacing: 8
+                    RowLayout {
+                        spacing: 12
+                        IconImage {
+                            source: rootItem.modelData.image
+                            Layout.preferredWidth: 48
+                            Layout.preferredHeight: 48
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
+                            visible: rootItem.modelData.image !== ""
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.leftMargin: 0
+                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+
+                            Text {
+                                text: rootItem.modelData.appName
+                                color: "white"
+                                font.bold: true
+                                font.pointSize: 14
+                                elide: Text.ElideRight
+                                wrapMode: Text.NoWrap
+                                Layout.fillWidth: true
+                            }
+
+                            Text {
+                                text: rootItem.modelData.summary
+                                color: "white"
+                                font.pointSize: 12
+                                font.bold: true
+                                elide: Text.ElideRight
+                                wrapMode: Text.WordWrap
+                                Layout.fillWidth: true
+                            }
+
+                        }
+                    }
+                    Text {
+                        text: rootItem.modelData.body
+                        color: "#dddddd"
+                        font.pointSize: 14
+                        elide: Text.ElideRight
+                        wrapMode: Text.WordWrap
+                        maximumLineCount: 4
+                        width: parent.width
+                    }
+                }
+
+                Rectangle {
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    anchors.rightMargin: 6
+                    anchors.topMargin: 6
+                    width: 18
+                    height: 18
+                    color: closeArea.containsMouse ? "#FF6077" : "transparent"
+                    radius: 9
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "✕"
+                        color: closeArea.containsMouse ? "white" : "#888888"
+                        font.pointSize: 12
+                    }
+
+                    MouseArea {
+                        id: closeArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onClicked: {
+                            rootItem.modelData.close();
+                        }
                     }
                 }
             }

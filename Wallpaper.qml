@@ -13,6 +13,7 @@ Scope {
             screen: modelData
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
             WlrLayershell.layer: WlrLayer.Bottom
+            color: "transparent"
 
             anchors {
                 top: true

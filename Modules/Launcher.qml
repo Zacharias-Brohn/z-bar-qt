@@ -7,6 +7,7 @@ import QtQuick.Effects
 import QtQuick.Layouts
 import qs.Config
 import qs.Helpers
+import qs.Effects
 
 Scope {
     id: root
@@ -50,34 +51,15 @@ Scope {
             }
         }
 
-        // mask: Region { item: backgroundRect }
-
-        Rectangle {
-            id: shadowRect
+        ShadowRect {
+            id: effects
             anchors {
                 top: appListRect.top
                 bottom: backgroundRect.bottom
                 left: appListRect.left
                 right: appListRect.right
             }
-            layer.enabled: true
             radius: 8
-            color: "black"
-            visible: false
-        }
-
-        MultiEffect {
-            id: effects
-            source: shadowRect
-            anchors.fill: shadowRect
-            shadowBlur: 2.0
-            shadowEnabled: true
-            shadowOpacity: 1
-            shadowColor: "black"
-            maskSource: shadowRect
-            maskEnabled: true
-            maskInverted: true
-            autoPaddingEnabled: true
         }
 
         Rectangle {

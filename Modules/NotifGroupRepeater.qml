@@ -21,7 +21,7 @@ Repeater {
         property bool previewHidden: groupColumn.shouldShow && index > 0
 
         width: parent.width
-        height: contentColumn.height + 20
+        height: contentColumn.height + 15
         color: Config.baseBgColor
         border.color: "#555555"
         border.width: 1
@@ -107,19 +107,25 @@ Repeater {
             }
         }
 
-        Behavior on height {
-            Anim {
-                duration: MaterialEasing.expressiveDefaultSpatialTime
-                easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
-            }
-        }
+        // Behavior on height {
+        //     Anim {
+        //         duration: MaterialEasing.expressiveDefaultSpatialTime
+        //         easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
+        //     }
+        // }
 
         Column {
             id: contentColumn
-            anchors.centerIn: parent
-            width: parent.width - 20
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.topMargin: 5
+            // width: parent.width - 20
             spacing: 10
             RowLayout {
+                id: infoRow
                 width: parent.width
                 spacing: 10
 
@@ -135,7 +141,6 @@ Repeater {
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 2
 
                     Text {
                         text: groupHeader.modelData.summary
@@ -144,6 +149,7 @@ Repeater {
                         font.pointSize: 16
                         elide: Text.ElideRight
                         Layout.fillWidth: true
+                        Layout.alignment: Qt.AlignTop
                     }
 
                     Text {
@@ -161,7 +167,7 @@ Repeater {
                 }
 
                 Text {
-                    text: groupColumn.notifications.length > 1 ? ( groupColumn.isExpanded ? "" : "(" + groupColumn.notifications.length + ")" ) : ""
+                    text: groupHeader.modelData.timeStr
                     font.pointSize: 10
                     color: "#666666"
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

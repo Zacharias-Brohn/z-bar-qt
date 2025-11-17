@@ -4,10 +4,12 @@ import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick.Controls.FluentWinUI3
+import QtQuick.Effects
 import QtQuick
 import qs.Config
 import qs.Helpers
 import qs.Daemons
+import qs.Effects
 
 PanelWindow {
     id: root
@@ -92,6 +94,11 @@ PanelWindow {
     TrackedNotification {
         centerShown: root.centerShown
         bar: root.bar
+    }
+
+    ShadowRect {
+        anchors.fill: backgroundRect
+        radius: backgroundRect.radius
     }
 
     Rectangle {
