@@ -12,6 +12,7 @@ MouseArea {
     required property SystemTrayItem item
     required property PanelWindow bar
     property point globalPos
+    property bool hasLoaded: false
 
     implicitWidth: 22
 
@@ -53,6 +54,12 @@ MouseArea {
             if ( !trayMenu.visible ) {
                 trayMenu.trayMenu = null;
             }
+        }
+
+        function onFinishedLoading() {
+            if ( !root.hasLoaded )
+                trayMenu.visible = false;
+                root.hasLoaded = true;
         }
     }
 

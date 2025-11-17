@@ -12,6 +12,7 @@ PanelWindow {
     id: root
 
     signal menuActionTriggered()
+    signal finishedLoading()
     required property QsMenuHandle trayMenu
     required property point trayItemRect
     required property PanelWindow bar
@@ -20,6 +21,7 @@ PanelWindow {
     property alias focusGrab: grab.active
     property int entryHeight: 30
     property int biggestWidth: 0
+    property int menuItemCount: menuOpener.children.values.length
 
     QsMenuOpener {
         id: menuOpener
@@ -30,7 +32,7 @@ PanelWindow {
     //     listLayout.forceLayout();
     // }
 
-    visible: false
+    visible: true
     color: "transparent"
     anchors {
         top: true
@@ -198,6 +200,7 @@ PanelWindow {
 
                 delegate: Rectangle {
                     id: menuItem
+                    required property int index
                     required property QsMenuEntry modelData
                     property var child: QsMenuOpener {
                         menu: menuItem.modelData
@@ -218,6 +221,9 @@ PanelWindow {
                         if ( currentWidth > biggestWidth ) {
                             root.biggestWidth = currentWidth;
                         }
+
+                        if ( menuItem.index === menuOpener.children.values.length - 1 )
+                            root.finishedLoading();
                     }
 
                     TextMetrics {

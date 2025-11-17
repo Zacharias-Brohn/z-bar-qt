@@ -475,6 +475,8 @@ PanelWindow {
                                         }
 
                                         RowLayout {
+                                            id: actionRow
+                                            property NotifServer.Notif notif: groupHeader.modelData
                                             spacing: 2
                                             // visible: groupColumn.isExpanded ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : ( groupColumn.notifications.length === 1 ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : false )
                                             visible: true
@@ -482,7 +484,7 @@ PanelWindow {
                                             width: parent.width
 
                                             Repeater {
-                                                model: groupHeader.modelData.actions
+                                                model: [ ...actionRow.notif.actions ]
                                                 Rectangle {
                                                     id: actionButton
                                                     Layout.fillWidth: true
@@ -501,6 +503,7 @@ PanelWindow {
                                                         anchors.fill: parent
                                                         hoverEnabled: true
                                                         onClicked: {
+                                                            console.log( groupHeader.modelData.actions );
                                                             actionButton.modelData.invoke();
                                                         }
                                                     }
