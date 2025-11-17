@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import QtQuick
 import Quickshell.Services.Notifications
 import qs.Config
+import qs.Daemons
 
 PanelWindow {
     id: root
@@ -21,7 +22,6 @@ PanelWindow {
     required property Notification notif
     required property int centerX
     required property list<int> notifIndex
-    required property list<TrackedNotification> notifList
     property int index: notifIndex.indexOf(notif.id)
     property alias y: backgroundRect.y
     property alias notifHeight: backgroundRect.implicitHeight
