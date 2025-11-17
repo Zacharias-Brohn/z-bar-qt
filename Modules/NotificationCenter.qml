@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
 import Quickshell.Io
+import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick.Controls.FluentWinUI3
 import QtQuick.Effects
@@ -9,6 +10,7 @@ import QtQuick
 import Quickshell.Services.Notifications
 import qs.Config
 import qs.Helpers
+import qs.Daemons
 
 PanelWindow {
     id: root
@@ -19,21 +21,14 @@ PanelWindow {
         left: true
         bottom: true
     }
-    required property list<Notification> notifications
+
+    WlrLayershell.layer: WlrLayer.Overlay
+    required property PanelWindow bar
     property bool centerShown: false
     property alias posX: backgroundRect.x
-    property alias doNotDisturb: dndSwitch.checked
     visible: false
 
     mask: Region { item: backgroundRect }
-
-    onNotificationsChanged: {
-        if ( root.notifications.length > 0 ) {
-            HasNotifications.hasNotifications = true;
-        } else {
-            HasNotifications.hasNotifications = false;
-        }
-    }
 
     IpcHandler {
         id: ipcHandler
@@ -69,10 +64,10 @@ PanelWindow {
         id: showAnimation
         target: backgroundRect
         property: "x"
-        from: Screen.width
-        to: Screen.width - backgroundRect.implicitWidth - 10
-        duration: 300
-        easing.type: Easing.OutCubic
+        to: root.bar.screen.width - backgroundRect.implicitWidth - 10
+        from: root.bar.screen.width
+        duration: MaterialEasing.expressiveEffectsTime
+        easing.bezierCurve: MaterialEasing.expressiveEffects
         onStopped: {
             focusGrab.active = true;
         }
@@ -82,42 +77,10 @@ PanelWindow {
         id: closeAnimation
         target: backgroundRect
         property: "x"
-        from: Screen.width - backgroundRect.implicitWidth - 10
-        to: Screen.width
-        duration: 300
-        easing.type: Easing.OutCubic
-    }
-
-    QtObject {
-        id: groupedData
-        property var groups: ({})
-
-        function updateGroups() {
-            var newGroups = {};
-            for ( var i = 0; i < root.notifications.length; i++ ) {
-                var notif = root.notifications[ i ];
-                var appName = notif.appName || "Unknown";
-                if ( !newGroups[ appName ]) {
-                    newGroups[ appName ] = [];
-                }
-                newGroups[ appName ].push( notif );
-            }
-            // Sort notifications within each group (latest first)
-            for ( var app in newGroups ) {
-                newGroups[ app ].sort(( a, b ) => b.receivedTime - a.receivedTime );
-            }
-            groups = newGroups;
-            groupsChanged();
-        }
-
-        Component.onCompleted: updateGroups()
-    }
-
-    Connections {
-        target: root
-        function onNotificationsChanged() {
-            groupedData.updateGroups();
-        }
+        from: root.bar.screen.width - backgroundRect.implicitWidth - 10
+        to: root.bar.screen.width
+        duration: MaterialEasing.expressiveEffectsTime
+        easing.bezierCurve: MaterialEasing.expressiveEffects
     }
 
     HyprlandFocusGrab {
@@ -129,10 +92,16 @@ PanelWindow {
         }
     }
 
+    TrackedNotification {
+        centerShown: root.centerShown
+        bar: root.bar
+    }
+
     Rectangle {
         id: backgroundRect
         y: 10
         x: Screen.width
+        z: 1
         implicitWidth: 400
         implicitHeight: root.height - 20
         color: Config.baseBgColor
@@ -154,6 +123,9 @@ PanelWindow {
                     focus: false
                     activeFocusOnTab: false
                     focusPolicy: Qt.NoFocus
+                    onCheckedChanged: {
+                        NotifServer.dnd = dndSwitch.checked;
+                    }
                 }
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -180,9 +152,8 @@ PanelWindow {
                             anchors.fill: parent
                             hoverEnabled: true
                             onClicked: {
-                                for ( var app in groupedData.groups ) {
-                                    groupedData.groups[ app ].forEach( function( n ) { n.dismiss(); });
-                                }
+                                for ( const n of NotifServer.notClosed )
+                                    n.close();
                             }
                         }
                     }
@@ -198,6 +169,7 @@ PanelWindow {
             Flickable {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                pixelAligned: true
                 contentHeight: notificationColumn.implicitHeight
                 clip: true
 
@@ -216,26 +188,50 @@ PanelWindow {
 
                     move: Transition {
                         NumberAnimation {
-                            properties: "y,x";
+                            properties: "x";
                             duration: 200;
                             easing.type: Easing.OutCubic
                         }
                     }
 
                     Repeater {
-                        model: Object.keys( groupedData.groups )
+                        model: ScriptModel {
+                            values: {
+                                const map = new Map();
+                                for ( const n of NotifServer.notClosed )
+                                    map.set( n.appName, null );
+                                for ( const n of NotifServer.list )
+                                    map.set( n.appName, null );
+                                return [ ...map.keys() ];
+                            }
+                            onValuesChanged: {
+                                root.flagChanged();
+                            }
+                        }
                         Column {
                             id: groupColumn
                             required property string modelData
-                            property var notifications: groupedData.groups[ modelData ]
+                            property list<var> notifications: NotifServer.list.filter( n => n.appName === modelData )
                             width: parent.width
                             spacing: 10
 
                             property bool shouldShow: false
                             property bool isExpanded: false
 
+                            function closeAll(): void {
+                                for ( const n of NotifServer.notClosed.filter( n => n.appName === modelData ))
+                                    n.close();
+                            }
+
                             Behavior on height {
                                 Anim {}
+                            }
+
+                            Behavior on y {
+                                Anim {
+                                    duration: MaterialEasing.expressiveEffectsTime
+                                    easing.bezierCurve: MaterialEasing.expressiveEffects
+                                }
                             }
 
                             add: Transition {
@@ -259,6 +255,13 @@ PanelWindow {
                                             duration: 100;
                                             easing.type: Easing.OutCubic
                                         }
+                                        NumberAnimation {
+                                            properties: "scale";
+                                            from: 0.7;
+                                            to: 1.0;
+                                            duration: 100
+                                            easing.type: Easing.InOutQuad
+                                        }
                                     }
                                 }
                             }
@@ -266,9 +269,8 @@ PanelWindow {
                             move: Transition {
                                 id: moveTrans
                                 NumberAnimation {
-                                    properties: "opacity";
+                                    properties: "y";
                                     duration: 100;
-                                    to: 0;
                                     easing.type: Easing.OutCubic
                                 }
                             }
@@ -305,46 +307,38 @@ PanelWindow {
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         onClicked: {
-                                            groupColumn.isExpanded = false;
+                                            groupColumn.shouldShow = false;
                                         }
                                     }
                                 }
                             }
 
                             Repeater {
-                                model: groupColumn.notifications
+                                id: groupListView
+                                model: ScriptModel {
+                                    id: groupModel
+                                    values: groupColumn.isExpanded ? groupColumn.notifications : groupColumn.notifications.slice( 0, 1 )
+                                }
+
                                 Rectangle {
                                     id: groupHeader
-                                    required property var modelData
-                                    required property var index
+                                    required property int index
+                                    required property NotifServer.Notif modelData
+                                    property alias notifHeight: groupHeader.height
+
+                                    property bool previewHidden: groupColumn.shouldShow && index > 0
+
                                     width: parent.width
                                     height: contentColumn.height + 20
                                     color: Config.baseBgColor
                                     border.color: "#555555"
                                     border.width: 1
                                     radius: 8
-                                    visible: groupColumn.notifications[0].id === modelData.id || groupColumn.isExpanded
-                                    opacity: groupColumn.notifications[0].id === modelData.id ? 1 : 0
+                                    opacity: previewHidden ? 0 : 1.0
+                                    scale: previewHidden ? 0.7 : 1.0
 
-                                    Connections {
-                                        target: groupColumn
-                                        function onShouldShowChanged() {
-                                            if ( !shouldShow ) {
-                                                // collapseAnim.start();
-                                            }
-                                        }
-                                    }
-
-                                    onVisibleChanged: {
-                                        if ( visible ) {
-                                            // expandAnim.start();
-                                        } else {
-                                            if ( groupColumn.notifications[0].id !== modelData.id ) {
-                                                groupHeader.opacity = 0;
-                                            }
-                                            groupColumn.isExpanded = false;
-                                        }
-                                    }
+                                    Component.onCompleted: modelData.lock(this);
+                                    Component.onDestruction: modelData.unlock(this);
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -354,8 +348,70 @@ PanelWindow {
                                                     groupHeader.modelData.actions[0].invoke();
                                                 }
                                             } else {
+                                                groupColumn.shouldShow = true;
                                                 groupColumn.isExpanded = true;
                                             }
+                                        }
+                                    }
+
+                                    ParallelAnimation {
+                                        id: collapseAnim
+                                        running: !groupColumn.shouldShow && index > 0
+
+                                        Anim {
+                                            target: groupHeader
+                                            property: "opacity"
+                                            duration: 100
+                                            from: 1
+                                            to: index > 0 ? 0 : 1.0
+                                        }
+                                        Anim {
+                                            target: groupHeader
+                                            property: "scale"
+                                            duration: 100
+                                            from: 1
+                                            to: index > 0 ? 0.7 : 1.0
+                                        }
+                                        onFinished: {
+                                            groupColumn.isExpanded = false;
+                                        }
+                                    }
+
+                                    ParallelAnimation {
+                                        running: groupHeader.modelData.closed
+                                        onFinished: groupHeader.modelData.unlock(groupHeader)
+
+                                        Anim {
+                                            target: groupHeader
+                                            property: "opacity"
+                                            to: 0
+                                        }
+                                        Anim {
+                                            target: groupHeader
+                                            property: "x"
+                                            to: groupHeader.x >= 0 ? groupHeader.width : -groupHeader.width
+                                        }
+                                    }
+
+                                    Behavior on opacity {
+                                        Anim {}
+                                    }
+
+                                    Behavior on scale {
+                                        Anim {}
+                                    }
+
+                                    Behavior on x {
+                                        Anim {
+                                            duration: MaterialEasing.expressiveDefaultSpatialTime
+                                            easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
+                                        }
+                                    }
+
+                                    Behavior on y {
+                                        Anim {
+                                            duration: MaterialEasing.expressiveDefaultSpatialTime
+                                            easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                                         }
                                     }
 
@@ -420,13 +476,15 @@ PanelWindow {
 
                                         RowLayout {
                                             spacing: 2
-                                            visible: groupColumn.isExpanded ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : ( groupColumn.notifications.length === 1 ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : false )
+                                            // visible: groupColumn.isExpanded ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : ( groupColumn.notifications.length === 1 ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : false )
+                                            visible: true
                                             height: 30
                                             width: parent.width
 
                                             Repeater {
                                                 model: groupHeader.modelData.actions
                                                 Rectangle {
+                                                    id: actionButton
                                                     Layout.fillWidth: true
                                                     Layout.preferredHeight: 30
                                                     required property var modelData
@@ -434,7 +492,7 @@ PanelWindow {
                                                     radius: 4
                                                     Text {
                                                         anchors.centerIn: parent
-                                                        text: modelData.text
+                                                        text: actionButton.modelData.text
                                                         color: "white"
                                                         font.pointSize: 12
                                                     }
@@ -443,7 +501,7 @@ PanelWindow {
                                                         anchors.fill: parent
                                                         hoverEnabled: true
                                                         onClicked: {
-                                                            modelData.invoke();
+                                                            actionButton.modelData.invoke();
                                                         }
                                                     }
                                                 }
@@ -472,7 +530,7 @@ PanelWindow {
                                             anchors.fill: parent
                                             hoverEnabled: true
                                             onClicked: {
-                                                groupColumn.isExpanded ? groupColumn.notifications[0].dismiss() : groupColumn.notifications.forEach( function( n ) { n.dismiss(); });
+                                                groupColumn.isExpanded ? groupHeader.modelData.close() : groupColumn.closeAll();
                                             }
                                         }
                                     }
