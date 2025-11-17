@@ -238,13 +238,6 @@ Singleton {
     }
 
     Component {
-        id: notificationPopup
-        TrackedNotification {
-            centerX: NotificationCenter.posX
-        }
-    }
-
-    Component {
         id: notifComp
 
         Notif {}

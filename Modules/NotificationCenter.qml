@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
 import Quickshell.Io
+import Quickshell.Wayland
 import QtQuick.Layouts
 import QtQuick.Controls.FluentWinUI3
 import QtQuick.Effects
@@ -20,9 +21,11 @@ PanelWindow {
         left: true
         bottom: true
     }
+
+    WlrLayershell.layer: WlrLayer.Overlay
+    required property PanelWindow bar
     property bool centerShown: false
     property alias posX: backgroundRect.x
-    property alias doNotDisturb: dndSwitch.checked
     visible: false
 
     mask: Region { item: backgroundRect }
@@ -61,10 +64,10 @@ PanelWindow {
         id: showAnimation
         target: backgroundRect
         property: "x"
-        from: Screen.width
-        to: Screen.width - backgroundRect.implicitWidth - 10
-        duration: 300
-        easing.type: Easing.OutCubic
+        to: root.bar.screen.width - backgroundRect.implicitWidth - 10
+        from: root.bar.screen.width
+        duration: MaterialEasing.expressiveEffectsTime
+        easing.bezierCurve: MaterialEasing.expressiveEffects
         onStopped: {
             focusGrab.active = true;
         }
@@ -74,10 +77,10 @@ PanelWindow {
         id: closeAnimation
         target: backgroundRect
         property: "x"
-        from: Screen.width - backgroundRect.implicitWidth - 10
-        to: Screen.width
-        duration: 300
-        easing.type: Easing.OutCubic
+        from: root.bar.screen.width - backgroundRect.implicitWidth - 10
+        to: root.bar.screen.width
+        duration: MaterialEasing.expressiveEffectsTime
+        easing.bezierCurve: MaterialEasing.expressiveEffects
     }
 
     HyprlandFocusGrab {
@@ -89,10 +92,16 @@ PanelWindow {
         }
     }
 
+    TrackedNotification {
+        centerShown: root.centerShown
+        bar: root.bar
+    }
+
     Rectangle {
         id: backgroundRect
         y: 10
         x: Screen.width
+        z: 1
         implicitWidth: 400
         implicitHeight: root.height - 20
         color: Config.baseBgColor
@@ -114,6 +123,9 @@ PanelWindow {
                     focus: false
                     activeFocusOnTab: false
                     focusPolicy: Qt.NoFocus
+                    onCheckedChanged: {
+                        NotifServer.dnd = dndSwitch.checked;
+                    }
                 }
                 RowLayout {
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
@@ -176,7 +188,7 @@ PanelWindow {
 
                     move: Transition {
                         NumberAnimation {
-                            properties: "y,x";
+                            properties: "x";
                             duration: 200;
                             easing.type: Easing.OutCubic
                         }
@@ -215,31 +227,45 @@ PanelWindow {
                                 Anim {}
                             }
 
-                            // add: Transition {
-                            //     id: addTrans
-                            //     SequentialAnimation {
-                            //         PauseAnimation {
-                            //             duration: ( addTrans.ViewTransition.index - addTrans.ViewTransition.targetIndexes[ 0 ]) * 50
-                            //         }
-                            //         ParallelAnimation {
-                            //             NumberAnimation {
-                            //                 properties: "y";
-                            //                 from: addTrans.ViewTransition.destination.y - (height / 2);
-                            //                 to: addTrans.ViewTransition.destination.y;
-                            //                 duration: 100;
-                            //                 easing.type: Easing.OutCubic
-                            //             }
-                            //             NumberAnimation {
-                            //                 properties: "opacity";
-                            //                 from: 0;
-                            //                 to: 1;
-                            //                 duration: 100;
-                            //                 easing.type: Easing.OutCubic
-                            //             }
-                            //         }
-                            //     }
-                            // }
-                            //
+                            Behavior on y {
+                                Anim {
+                                    duration: MaterialEasing.expressiveEffectsTime
+                                    easing.bezierCurve: MaterialEasing.expressiveEffects
+                                }
+                            }
+
+                            add: Transition {
+                                id: addTrans
+                                SequentialAnimation {
+                                    PauseAnimation {
+                                        duration: ( addTrans.ViewTransition.index - addTrans.ViewTransition.targetIndexes[ 0 ]) * 50
+                                    }
+                                    ParallelAnimation {
+                                        NumberAnimation {
+                                            properties: "y";
+                                            from: addTrans.ViewTransition.destination.y - (height / 2);
+                                            to: addTrans.ViewTransition.destination.y;
+                                            duration: 100;
+                                            easing.type: Easing.OutCubic
+                                        }
+                                        NumberAnimation {
+                                            properties: "opacity";
+                                            from: 0;
+                                            to: 1;
+                                            duration: 100;
+                                            easing.type: Easing.OutCubic
+                                        }
+                                        NumberAnimation {
+                                            properties: "scale";
+                                            from: 0.7;
+                                            to: 1.0;
+                                            duration: 100
+                                            easing.type: Easing.InOutQuad
+                                        }
+                                    }
+                                }
+                            }
+
                             move: Transition {
                                 id: moveTrans
                                 NumberAnimation {
@@ -281,79 +307,35 @@ PanelWindow {
                                         anchors.fill: parent
                                         hoverEnabled: true
                                         onClicked: {
-                                            groupColumn.isExpanded = false;
+                                            groupColumn.shouldShow = false;
                                         }
                                     }
                                 }
                             }
 
-                            ListView {
+                            Repeater {
                                 id: groupListView
                                 model: ScriptModel {
                                     id: groupModel
                                     values: groupColumn.isExpanded ? groupColumn.notifications : groupColumn.notifications.slice( 0, 1 )
                                 }
 
-                                width: parent.width
-                                spacing: 10
-                                height: contentHeight
-                                contentHeight: childrenRect.height
-                                clip: false
-
-                                pixelAligned: true
-                                boundsBehavior: Flickable.StopAtBounds
-                                displayMarginBeginning: 0
-                                displayMarginEnd: 5000
-
-                                Behavior on height {
-                                    Anim {
-                                        duration: 20;
-                                    }
-                                }
-
-                                add: Transition {
-                                    id: add
-                                    NumberAnimation {
-                                        properties: "y,opacity";
-                                        duration: 100 * ( add.ViewTransition.targetIndexes.length / ( add.ViewTransition.targetIndexes.length < 3 ? 1 : 3 ));
-                                        easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
-                                    }
-                                }
-
-                                remove: Transition {
-                                    NumberAnimation {
-                                        properties: "opacity";
-                                        from: 1;
-                                        to: 0;
-                                        duration: 300;
-                                        easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
-                                    }
-                                }
-
-                                displaced: Transition {
-                                    NumberAnimation {
-                                        properties: "y";
-                                        duration: 200;
-                                        easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
-                                    }
-                                }
-
-                                delegate: Rectangle {
+                                Rectangle {
                                     id: groupHeader
                                     required property int index
                                     required property NotifServer.Notif modelData
                                     property alias notifHeight: groupHeader.height
 
-                                    property bool previewHidden: !groupColumn.isExpanded && index > 0
+                                    property bool previewHidden: groupColumn.shouldShow && index > 0
 
-                                    width: groupListView.width
+                                    width: parent.width
                                     height: contentColumn.height + 20
                                     color: Config.baseBgColor
                                     border.color: "#555555"
                                     border.width: 1
                                     radius: 8
-                                    opacity: 1
-                                    scale: 1.0
+                                    opacity: previewHidden ? 0 : 1.0
+                                    scale: previewHidden ? 0.7 : 1.0
 
                                     Component.onCompleted: modelData.lock(this);
                                     Component.onDestruction: modelData.unlock(this);
@@ -366,8 +348,32 @@ PanelWindow {
                                                     groupHeader.modelData.actions[0].invoke();
                                                 }
                                             } else {
+                                                groupColumn.shouldShow = true;
                                                 groupColumn.isExpanded = true;
                                             }
+                                        }
+                                    }
+
+                                    ParallelAnimation {
+                                        id: collapseAnim
+                                        running: !groupColumn.shouldShow && index > 0
+
+                                        Anim {
+                                            target: groupHeader
+                                            property: "opacity"
+                                            duration: 100
+                                            from: 1
+                                            to: index > 0 ? 0 : 1.0
+                                        }
+                                        Anim {
+                                            target: groupHeader
+                                            property: "scale"
+                                            duration: 100
+                                            from: 1
+                                            to: index > 0 ? 0.7 : 1.0
+                                        }
+                                        onFinished: {
+                                            groupColumn.isExpanded = false;
                                         }
                                     }
 

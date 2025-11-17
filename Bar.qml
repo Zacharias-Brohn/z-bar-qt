@@ -17,6 +17,10 @@ Scope {
             screen: modelData
             property var root: Quickshell.shellDir
 
+            NotificationCenter {
+                bar: bar
+            }
+
             Process {
                 id: ncProcess
                 command: ["sh", "-c", `qs -p ${bar.root}/shell.qml ipc call root showCenter`]
