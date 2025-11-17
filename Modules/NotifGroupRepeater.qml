@@ -172,7 +172,7 @@ Repeater {
                 id: actionRow
                 property NotifServer.Notif notif: groupHeader.modelData
                 spacing: 2
-                visible: groupColumn.isExpanded ? ( groupHeader.modelData.actions.length > 1 ? true : false ) : false
+                visible: groupHeader.modelData.actions.length > 1 ? true : false
                 height: 30
                 width: parent.width
 
