@@ -92,8 +92,6 @@ Item {
 
     Loader {
         id: popoutLoader
-        z: 0
-        anchors.left: parent.left
         sourceComponent: null
     }
 

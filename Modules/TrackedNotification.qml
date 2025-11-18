@@ -19,6 +19,7 @@ PanelWindow {
         left: true
         bottom: true
     }
+
     mask: Region { regions: root.notifRegions }
     exclusionMode: ExclusionMode.Ignore
     WlrLayershell.layer: WlrLayer.Overlay
@@ -35,6 +36,10 @@ PanelWindow {
         id: notifListView
         model: ScriptModel {
             values: NotifServer.list.filter( n => n.popup )
+            onValuesChanged: {
+                if ( values.length === 0 )
+                    root.notifRegions = [];
+            }
         }
         anchors.top: parent.top
         anchors.bottom: parent.bottom
