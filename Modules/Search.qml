@@ -1,6 +1,6 @@
 pragma Singleton
 
-import Caelestia
+import ZShell
 import Quickshell
 import Quickshell.Io
 

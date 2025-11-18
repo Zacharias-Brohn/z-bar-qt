@@ -104,15 +104,17 @@ Repeater {
                 Layout.fillHeight: true
                 Layout.preferredWidth: 30
                 color: collapseArea.containsMouse ? "#15FFFFFF" : "transparent"
-                radius: 4
-                visible: groupColumn.isExpanded
+                radius: groupColumn.isExpanded ? 4 : Layout.preferredHeight / 2
+                visible: true
+
                 Text {
                     anchors.centerIn: parent
-                    text: "\ue944"
-                    font.family: "Material Symbols Rounded"
+                    text: groupColumn.isExpanded ? "\ue944" : groupColumn.notifications.length
+                    font.family: groupColumn.isExpanded ? "Material Symbols Rounded" : "Rubik"
                     font.pointSize: 18
                     color: "white"
                 }
+
                 MouseArea {
                     id: collapseArea
                     anchors.fill: parent

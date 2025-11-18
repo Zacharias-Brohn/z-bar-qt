@@ -1,7 +1,7 @@
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
-import Caelestia.Models
+import ZShell.Models
 
 Item {
     id: root

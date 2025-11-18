@@ -127,6 +127,10 @@ Item {
                 duration: MaterialEasing.expressiveEffectsTime
                 easing.bezierCurve: MaterialEasing.expressiveEffects
             }
+            onFinished: {
+                if ( !mouseArea.containsMouse )
+                    closeAnim.start();
+            }
         }
 
         ParallelAnimation {

@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import qs.Config
 import qs.Modules
-import Caelestia.Models
+import ZShell.Models
 
 Searcher {
     id: root
