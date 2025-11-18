@@ -35,7 +35,6 @@ Item {
             implicitWidth: 14
             implicitHeight: root.implicitHeight
 
-            // Background circle
             Rectangle {
                 id: backgroundCircle
                 anchors.centerIn: parent
@@ -47,7 +46,6 @@ Item {
                 border.width: 1
             }
 
-            // Pie progress indicator
             Canvas {
                 id: progressCanvas
                 anchors.fill: backgroundCircle
@@ -80,28 +78,6 @@ Item {
                     ctx.fill();
                 }
             }
-
-            // // Percentage text
-            // Item {
-            //     anchors.centerIn: backgroundCircle
-            //     implicitWidth: fullPercentageTextMetrics.width
-            //     implicitHeight: percentageText.implicitHeight
-            //
-            //     TextMetrics {
-            //         id: fullPercentageTextMetrics
-            //         text: "100"
-            //         font.pixelSize: 12
-            //     }
-            //
-            //     Text {
-            //         id: percentageText
-            //         anchors.centerIn: parent
-            //         color: "#ffffff"
-            //         font.pixelSize: 12
-            //         font.bold: true
-            //         text: `${Math.round(percentage * 100).toString()}`
-            //     }
-            // }
         }
     }
 }

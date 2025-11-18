@@ -7,6 +7,7 @@ Singleton {
 
     property alias appCount: adapter.appCount
     property alias baseBgColor: adapter.baseBgColor
+    property alias baseBorderColor: adapter.baseBorderColor
     property alias accentColor: adapter.accentColor
     property alias wallpaperPath: adapter.wallpaperPath
     property alias maxWallpapers: adapter.maxWallpapers
@@ -29,6 +30,7 @@ Singleton {
             property int appCount: 20
             property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
             property string baseBgColor: "#801a1a1a"
+            property string baseBorderColor: "#444444"
             property AccentColor accentColor: AccentColor {}
             property int maxWallpapers: 7
             property bool wallust: false

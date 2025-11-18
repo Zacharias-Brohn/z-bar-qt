@@ -71,7 +71,7 @@ Scope {
             x: Math.round(( parent.width - width ) / 2 )
             color: "#d01a1a1a"
             opacity: 1
-            border.color: "#444444"
+            border.color: Config.baseBorderColor
             border.width: 1
 
             ParallelAnimation {
