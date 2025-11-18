@@ -99,6 +99,7 @@ Scope {
                             color: "white"
                             MouseArea {
                                 anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
                                 onClicked: {
                                     ncProcess.running = true
                                 }

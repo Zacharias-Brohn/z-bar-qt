@@ -27,6 +27,7 @@ Scope {
                 source: WallpaperPath.currentWallpaperPath
                 fillMode: Image.PreserveAspectCrop
 
+                smooth: true
                 asynchronous: true
                 retainWhileLoading: true
 

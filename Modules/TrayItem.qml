@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Io
 import qs.Modules
+import qs.Config
 
 MouseArea {
     id: root
@@ -12,13 +13,29 @@ MouseArea {
     property point globalPos
     property bool hasLoaded: false
 
-    implicitWidth: 22
+    implicitWidth: 24
 
     hoverEnabled: true
     acceptedButtons: Qt.LeftButton | Qt.RightButton
 
     onPositionChanged: {
         globalPos = root.mapToItem(root.bar.backgroundRect, 0, 0);
+    }
+
+    Rectangle {
+        anchors.centerIn: parent
+        implicitHeight: 28
+        implicitWidth: 28
+        radius: 6
+        anchors.verticalCenter: parent.verticalCenter
+        color: root.containsMouse ? Config.colors.backgrounds.hover : "transparent"
+
+        Behavior on color {
+            ColorAnimation {
+                duration: MaterialEasing.expressiveEffectsTime
+                easing.bezierCurve: MaterialEasing.expressiveEffects
+            }
+        }
     }
 
     Image {

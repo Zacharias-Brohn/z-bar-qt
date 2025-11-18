@@ -13,6 +13,7 @@ Singleton {
     property alias maxWallpapers: adapter.maxWallpapers
     property alias wallust: adapter.wallust
     property alias workspaceWidget: adapter.workspaceWidget
+    property alias colors: adapter.colors
 
     FileView {
         id: root
@@ -35,6 +36,7 @@ Singleton {
             property int maxWallpapers: 7
             property bool wallust: false
             property WorkspaceWidget workspaceWidget: WorkspaceWidget {}
+            property Colors colors: Colors {}
         }
     }
 }
