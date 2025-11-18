@@ -1,6 +1,7 @@
 import qs.Modules
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Shapes
 import Quickshell
 import qs.Config
 
@@ -46,36 +47,51 @@ Item {
                 border.width: 1
             }
 
-            Canvas {
-                id: progressCanvas
+            Shape {
                 anchors.fill: backgroundCircle
 
-                Connections {
-                    target: root
-                    function onPercentageChanged() {
-                        progressCanvas.requestPaint()
+                smooth: true
+                preferredRendererType: Shape.CurveRenderer
+
+                ShapePath {
+                    strokeWidth: 0
+                    fillColor: root.warning ? Config.accentColor.accents.warning : Config.accentColor.accents.primary
+                    startX: backgroundCircle.width / 2
+                    startY: backgroundCircle.height / 2
+                    PathLine {
+                        x: backgroundCircle.width / 2
+                        y: 0 + ( 1 / 2 )
                     }
-                    function onWarningChanged() {
-                        progressCanvas.requestPaint()
+
+                    PathAngleArc {
+                        centerX: backgroundCircle.width / 2
+                        centerY: backgroundCircle.height / 2
+                        radiusX: backgroundCircle.width / 2 - ( 1 / 2 )
+                        radiusY: backgroundCircle.height / 2 - ( 1 / 2 )
+                        startAngle: -90
+                        sweepAngle: 360 * root.percentage
+                    }
+
+                    PathLine {
+                        x: backgroundCircle.width / 2
+                        y: backgroundCircle.height / 2
                     }
                 }
 
-                onPaint: {
-                    var ctx = getContext("2d");
-                    ctx.reset();
-                    
-                    var centerX = width / 2;
-                    var centerY = height / 2;
-                    var radius = width / 2;
-                    var startAngle = -Math.PI / 2; // Start at top
-                    var endAngle = startAngle + (2 * Math.PI * percentage);
+                ShapePath {
+                    strokeWidth: 1
+                    strokeColor: root.warning ? Config.accentColor.accents.warningAlt : Config.accentColor.accents.primaryAlt
+                    fillColor: "transparent"
+                    capStyle: ShapePath.FlatCap
 
-                    ctx.fillStyle = warning ? Config.accentColor.accents.warning : Config.accentColor.accents.primary;
-                    ctx.beginPath();
-                    ctx.moveTo(centerX, centerY);
-                    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-                    ctx.lineTo(centerX, centerY);
-                    ctx.fill();
+                    PathAngleArc {
+                        centerX: backgroundCircle.width / 2
+                        centerY: backgroundCircle.height / 2
+                        radiusX: backgroundCircle.width / 2 - ( 1 / 2 )
+                        radiusY: backgroundCircle.height / 2 - ( 1 / 2 )
+                        startAngle: -90
+                        sweepAngle: 360 * root.percentage
+                    }
                 }
             }
         }

@@ -16,15 +16,6 @@ Searcher {
             forward: false
         })
 
-    // FileView {
-    //     path: root.currentNamePath
-    //     watchChanges: true
-    //     onFileChanged: reload()
-    //     onLoaded: {
-    //         root.actualCurrent = text().trim();
-    //     }
-    // }
-
     FileSystemModel {
         id: wallpapers
 

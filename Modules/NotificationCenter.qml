@@ -22,6 +22,7 @@ PanelWindow {
     }
 
     WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     required property PanelWindow bar
     property bool centerShown: false
     property alias posX: backgroundRect.x
@@ -48,6 +49,13 @@ PanelWindow {
             closeTimer.start();
         } else {
             root.visible = true;
+        }
+    }
+
+    Keys.onPressed: {
+        if ( event.key === Qt.Key_Escape ) {
+            root.centerShown = false;
+            event.accepted = true;
         }
     }
 

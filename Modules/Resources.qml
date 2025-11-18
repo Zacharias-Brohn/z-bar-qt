@@ -81,6 +81,7 @@ Item {
     }
 
     MouseArea {
+        id: widgetMouseArea
         anchors.fill: parent
         hoverEnabled: true
         onEntered: {
@@ -97,9 +98,7 @@ Item {
 
     component ResourcePopout: PanelWindow {
         id: popoutWindow
-        property alias containsMouse: popoutWindow.mouseAreaContainsMouse
         property int rectHeight: contentRect.implicitHeight
-        property bool mouseAreaContainsMouse: mouseArea.containsMouse
         WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
         anchors {
@@ -126,10 +125,6 @@ Item {
                 to: 0 - 1
                 duration: MaterialEasing.expressiveEffectsTime
                 easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-            onFinished: {
-                if ( !mouseArea.containsMouse )
-                    closeAnim.start();
             }
         }
 
@@ -171,40 +166,40 @@ Item {
                 spacing: 10
 
                 ResourceDetail {
-                    resourceName: qsTr("Memory Usage")
+                    resourceName: qsTr( "Memory Usage" )
                     iconString: "\uf7a3"
                     percentage: ResourceUsage.memoryUsedPercentage
                     warningThreshold: 95
-                    details: qsTr("%1 of %2 MB used")
-                        .arg(Math.round(ResourceUsage.memoryUsed * 0.001))
-                        .arg(Math.round(ResourceUsage.memoryTotal * 0.001))
+                    details: qsTr( "%1 of %2 MB used" )
+                        .arg( Math.round( ResourceUsage.memoryUsed * 0.001 ))
+                        .arg( Math.round( ResourceUsage.memoryTotal * 0.001 ))
                 }
 
                 ResourceDetail {
-                    resourceName: qsTr("CPU Usage")
+                    resourceName: qsTr( "CPU Usage" )
                     iconString: "\ue322"
                     percentage: ResourceUsage.cpuUsage
                     warningThreshold: 95
-                    details: qsTr("%1% used")
-                        .arg(Math.round(ResourceUsage.cpuUsage * 100))
+                    details: qsTr( "%1% used" )
+                        .arg( Math.round( ResourceUsage.cpuUsage * 100 ))
                 }
 
                 ResourceDetail {
-                    resourceName: qsTr("GPU Usage")
+                    resourceName: qsTr( "GPU Usage" )
                     iconString: "\ue30f"
                     percentage: ResourceUsage.gpuUsage
                     warningThreshold: 95
-                    details: qsTr("%1% used")
-                        .arg(Math.round(ResourceUsage.gpuUsage * 100))
+                    details: qsTr( "%1% used" )
+                        .arg( Math.round( ResourceUsage.gpuUsage * 100 ))
                 }
 
                 ResourceDetail {
-                    resourceName: qsTr("VRAM Usage")
+                    resourceName: qsTr( "VRAM Usage" )
                     iconString: "\ue30d"
                     percentage: ResourceUsage.gpuMemUsage
                     warningThreshold: 95
-                    details: qsTr("%1% used")
-                        .arg(Math.round(ResourceUsage.gpuMemUsage * 100))
+                    details: qsTr( "%1% used" )
+                        .arg( Math.round( ResourceUsage.gpuMemUsage * 100 ))
                 }
             }
             MouseArea {
