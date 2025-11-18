@@ -7,6 +7,7 @@ import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Quickshell.Hyprland
 import QtQml
+import qs.Effects
 
 PanelWindow {
     id: root
@@ -58,26 +59,11 @@ PanelWindow {
     }
 
     onVisibleChanged: {
-        if ( visible ) {
-            scaleValue = 0;
-            scaleAnimation.start();
-        } else {
+        if ( !visible )
             root.menuStack.pop();
             backEntry.visible = false;
-        }
-    }
 
-    NumberAnimation {
-        id: scaleAnimation
-        target: root
-        property: "scaleValue"
-        from: 0
-        to: 1
-        duration: 150
-        easing.type: Easing.OutCubic
-        onStopped: {
-            root.updateMask();
-        }
+        openAnim.start();
     }
 
     HyprlandFocusGrab {
@@ -85,7 +71,7 @@ PanelWindow {
         windows: [ root ]
         active: false
         onCleared: {
-            root.visible = false;
+            closeAnim.start();
         }
     }
 
@@ -143,6 +129,54 @@ PanelWindow {
         }
     }
 
+    ParallelAnimation {
+        id: closeAnim
+        Anim {
+            target: menuRect
+            property: "implicitHeight"
+            to: 0
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+        Anim {
+            targets: [ menuRect, shadowRect ]
+            property: "opacity"
+            from: 1
+            to: 0
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+        onFinished: {
+            root.visible = false;
+        }
+    }
+
+    ParallelAnimation {
+        id: openAnim
+        Anim {
+            target: menuRect
+            property: "implicitHeight"
+            from: 0
+            to: listLayout.contentHeight + ( root.menuStack.length > 0 ? root.entryHeight + 10 : 10 )
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+        Anim {
+            targets: [ menuRect, shadowRect ]
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+    }
+
+    ShadowRect {
+        id: shadowRect
+        anchors.fill: menuRect
+        radius: menuRect.radius
+    }
+
     Rectangle {
         id: menuRect
         x: Math.round( root.trayItemRect.x - ( menuRect.implicitWidth / 2 ) + 11 )
@@ -153,15 +187,6 @@ PanelWindow {
         radius: 8
         border.color: "#40FFFFFF"
         clip: true
-
-        transform: [
-            Scale {
-                origin.x: menuRect.width / 2
-                origin.y: 0
-                xScale: root.scaleValue
-                yScale: root.scaleValue
-            }
-        ]
 
         Behavior on implicitWidth {
             NumberAnimation {
@@ -242,7 +267,7 @@ PanelWindow {
                             if ( !menuItem.modelData.hasChildren ) {
                                 if ( menuItem.modelData.enabled ) {
                                     menuItem.modelData.triggered();
-                                    root.visible = false;
+                                    closeAnim.start();
                                 }
                             } else {
                                 root.menuStack.push(root.trayMenu);

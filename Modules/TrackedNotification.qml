@@ -131,6 +131,20 @@ PanelWindow {
                 border.color: "#555555"
                 radius: 8
 
+                // Rectangle {
+                //     anchors.bottom: parent.bottom
+                //     anchors.left: parent.left
+                //     anchors.right: parent.right
+                //     height: 4
+                //     bottomLeftRadius: parent.radius
+                //     bottomRightRadius: parent.radius
+                //     color: "#40000000"
+                //     Rectangle {
+                //         anchors.fill: parent
+                //         width: parent.width * ( Math.max(0, Math.min( rootItem.modelData.timer ) ) )
+                //     }
+                // }
+
                 Component.onCompleted: {
                     root.notifRegions.push( notifRegion.createObject(root, { item: backgroundRect }));
                 }
@@ -216,6 +230,23 @@ PanelWindow {
                             rootItem.modelData.close();
                         }
                     }
+                }
+
+                ElapsedTimer {
+                    id: timer
+                }
+
+            }
+            MouseArea {
+                property int timePassed
+                anchors.fill: parent
+                hoverEnabled: true
+                onEntered: {
+                    // rootItem.modelData.timer.interval = 5000 - timer.restartMs();
+                    rootItem.modelData.timer.stop();
+                }
+                onExited: {
+                    rootItem.modelData.timer.start();
                 }
             }
         }

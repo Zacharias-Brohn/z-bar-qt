@@ -103,8 +103,8 @@ Repeater {
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                 Layout.fillHeight: true
                 Layout.preferredWidth: 30
-                color: collapseArea.containsMouse ? "#15FFFFFF" : "transparent"
-                radius: groupColumn.isExpanded ? 4 : Layout.preferredHeight / 2
+                color: !groupColumn.isExpanded ? "#E53935" : collapseArea.containsMouse ? "#15FFFFFF" : "transparent"
+                radius: groupColumn.isExpanded ? 4 : height / 2
                 visible: true
 
                 Text {

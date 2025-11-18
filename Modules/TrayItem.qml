@@ -1,5 +1,3 @@
-//@ pragma Env QT_STYLE_OVERRIDE=Breeze
-
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
@@ -50,12 +48,6 @@ MouseArea {
 
     Connections {
         target: trayMenu
-        function onVisibleChanged() {
-            if ( !trayMenu.visible ) {
-                trayMenu.trayMenu = null;
-            }
-        }
-
         function onFinishedLoading() {
             if ( !root.hasLoaded )
                 trayMenu.visible = false;
@@ -67,9 +59,8 @@ MouseArea {
         if ( mouse.button === Qt.LeftButton ) {
             root.item.activate();
         } else if ( mouse.button === Qt.RightButton ) {
-            if ( root.item?.menu !== trayMenu.trayMenu ) {
-                trayMenu.trayMenu = root.item?.menu;
-            }
+            trayMenu.trayMenu = null;
+            trayMenu.trayMenu = root.item?.menu;
             trayMenu.visible = !trayMenu.visible;
             trayMenu.focusGrab = true;
         }

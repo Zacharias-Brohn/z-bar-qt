@@ -3,11 +3,11 @@ pragma ComponentBehavior: Bound
 import ZShell
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Effects
 import qs.Modules
 import qs.Config
+import qs.Helpers
 
 MouseArea {
     id: root
@@ -17,8 +17,8 @@ MouseArea {
 
     property bool onClient
 
-    property real realRounding: 6
-    property real realBorderWidth: 1
+    property real realBorderWidth: onClient ? (Hypr.options["general:border_size"] ?? 1) : 2
+    property real realRounding: onClient ? (Hypr.options["decoration:rounding"] ?? 0) : 0
 
     property real ssx
     property real ssy
@@ -34,14 +34,14 @@ MouseArea {
     property real sh: Math.abs(sy - ey)
 
     property list<var> clients: {
-        const mon = Hyprland.monitorFor(screen);
+        const mon = Hypr.monitorFor(screen);
         if (!mon)
             return [];
 
         const special = mon.lastIpcObject.specialWorkspace;
         const wsId = special.name ? special.id : mon.activeWorkspace.id;
 
-        return Hyprland.toplevels.values.filter(c => c.workspace?.id === wsId).sort((a, b) => {
+        return Hypr.toplevels.values.filter(c => c.workspace?.id === wsId).sort((a, b) => {
             const ac = a.lastIpcObject;
             const bc = b.lastIpcObject;
             return (bc.pinned - ac.pinned) || ((bc.fullscreen !== 0) - (ac.fullscreen !== 0)) || (bc.floating - ac.floating);
@@ -84,6 +84,7 @@ MouseArea {
     cursorShape: Qt.CrossCursor
 
     Component.onCompleted: {
+        Hypr.extras.refreshOptions();
         if (loader.freeze)
             clients = clients;
 

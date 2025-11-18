@@ -41,3 +41,4 @@ qml_module(ZShell
 )
 
 add_subdirectory(Models)
+add_subdirectory(Internal)
