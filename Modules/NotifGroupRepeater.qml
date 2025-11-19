@@ -4,21 +4,21 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Config
 import qs.Daemons
+import qs.Helpers
 
 Repeater {
     id: groupListView
     model: ScriptModel {
         id: groupModel
-        values: groupColumn.isExpanded ? groupColumn.notifications : groupColumn.notifications.slice( 0, 1 )
+        values: groupColumn.isExpanded || groupColumn.shouldShow ? groupColumn.notifications : groupColumn.notifications.slice( 0, 1 )
     }
-
     Rectangle {
         id: groupHeader
         required property int index
         required property NotifServer.Notif modelData
         property alias notifHeight: groupHeader.height
 
-        property bool previewHidden: groupColumn.shouldShow && index > 0
+        property bool previewHidden: !groupColumn.shouldShow && index > 0
 
         width: parent.width
         height: contentColumn.height + 15
@@ -26,10 +26,12 @@ Repeater {
         border.color: "#555555"
         border.width: 1
         radius: 8
-        opacity: previewHidden ? 0 : 1.0
+        opacity: previewHidden ? 0 : 1
         scale: previewHidden ? 0.7 : 1.0
 
-        Component.onCompleted: modelData.lock(this);
+        Component.onCompleted: {
+            modelData.lock(this);
+        }
         Component.onDestruction: modelData.unlock(this);
 
         MouseArea {
@@ -40,7 +42,6 @@ Repeater {
                         groupHeader.modelData.actions[0].invoke();
                     }
                 } else {
-                    groupColumn.shouldShow = true;
                     groupColumn.isExpanded = true;
                 }
             }
@@ -48,7 +49,7 @@ Repeater {
 
         ParallelAnimation {
             id: collapseAnim
-            running: !groupColumn.shouldShow && index > 0
+            running: groupColumn.collapseAnimRunning
 
             Anim {
                 target: groupHeader
@@ -66,6 +67,8 @@ Repeater {
             }
             onFinished: {
                 groupColumn.isExpanded = false;
+                groupColumn.shouldShow = false;
+                groupColumn.collapseAnimRunning = false;
             }
         }
 
@@ -107,13 +110,6 @@ Repeater {
             }
         }
 
-        // Behavior on height {
-        //     Anim {
-        //         duration: MaterialEasing.expressiveDefaultSpatialTime
-        //         easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
-        //     }
-        // }
-
         Column {
             id: contentColumn
             anchors.top: parent.top
@@ -122,7 +118,6 @@ Repeater {
             anchors.leftMargin: 10
             anchors.rightMargin: 10
             anchors.topMargin: 5
-            // width: parent.width - 20
             spacing: 10
             RowLayout {
                 id: infoRow
@@ -130,19 +125,19 @@ Repeater {
                 spacing: 10
 
                 IconImage {
-                    source: groupHeader.modelData.image
+                    source: groupHeader.modelData.image === "" ? Qt.resolvedUrl(groupHeader.modelData.appIcon) : Qt.resolvedUrl(groupHeader.modelData.image)
                     Layout.preferredWidth: 48
                     Layout.preferredHeight: 48
                     Layout.alignment: Qt.AlignTop | Qt.AlignLeft
                     Layout.topMargin: 5
-                    visible: groupHeader.modelData.image !== ""
+                    visible: source !== ""
                 }
 
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    Text {
+                    TextRender {
                         text: groupHeader.modelData.summary
                         color: "white"
                         font.bold: true
@@ -152,21 +147,26 @@ Repeater {
                         Layout.alignment: Qt.AlignTop
                     }
 
-                    Text {
+                    TextRender {
                         text: groupHeader.modelData.body
-                        font.pointSize: 12
                         color: "#dddddd"
+                        font.pointSize: 12
                         elide: Text.ElideRight
-                        lineHeightMode: Text.FixedHeight
-                        lineHeight: 20
+                        textFormat: Text.MarkdownText
                         wrapMode: Text.WordWrap
                         maximumLineCount: 5
+                        linkColor: Config.accentColor.accents.primaryAlt
+
+                        onLinkActivated: link => {
+                            Quickshell.execDetached(["app2unit", "-O", "--", link]);
+                        }
+
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                     }
                 }
 
-                Text {
+                TextRender {
                     text: groupHeader.modelData.timeStr
                     font.pointSize: 10
                     color: "#666666"
@@ -191,7 +191,7 @@ Repeater {
                         required property var modelData
                         color: buttonArea.containsMouse ? "#15FFFFFF" : "#09FFFFFF"
                         radius: 4
-                        Text {
+                        TextRender {
                             anchors.centerIn: parent
                             text: actionButton.modelData.text
                             color: "white"
@@ -220,7 +220,7 @@ Repeater {
             color: closeArea.containsMouse ? "#FF6077" : "transparent"
             radius: 9
 
-            Text {
+            TextRender {
                 anchors.centerIn: parent
                 text: "✕"
                 color: closeArea.containsMouse ? "white" : "#888888"

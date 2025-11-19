@@ -71,7 +71,7 @@ PanelWindow {
         id: showAnimation
         target: backgroundRect
         property: "x"
-        to: root.bar.screen.width - backgroundRect.implicitWidth - 10
+        to: Math.round(root.bar.screen.width - backgroundRect.implicitWidth - 10)
         from: root.bar.screen.width
         duration: MaterialEasing.expressiveEffectsTime
         easing.bezierCurve: MaterialEasing.expressiveEffects

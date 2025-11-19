@@ -21,23 +21,7 @@ Scope {
                 right: true
                 bottom: true
             }
-            Image {
-                id: wallpaperImage
-                anchors.fill: parent
-                source: WallpaperPath.currentWallpaperPath
-                fillMode: Image.PreserveAspectCrop
-
-                smooth: true
-                asynchronous: true
-                retainWhileLoading: true
-
-                // Behavior on source {
-                //     Anim {
-                //         properties: "opacity"
-                //         duration: 500
-                //     }
-                // }
-            }
+            Background {}
         }
     }
 }

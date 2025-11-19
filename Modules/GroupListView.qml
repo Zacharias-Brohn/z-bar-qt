@@ -19,6 +19,7 @@ Repeater {
             root.flagChanged();
         }
     }
+
     Column {
         id: groupColumn
         required property string modelData
@@ -28,6 +29,7 @@ Repeater {
 
         property bool shouldShow: false
         property bool isExpanded: false
+        property bool collapseAnimRunning: false
 
         function closeAll(): void {
             for ( const n of NotifServer.notClosed.filter( n => n.appName === modelData ))
@@ -49,7 +51,7 @@ Repeater {
             id: addTrans
             SequentialAnimation {
                 PauseAnimation {
-                    duration: ( addTrans.ViewTransition.index - addTrans.ViewTransition.targetIndexes[ 0 ]) * 50
+                    duration: ( addTrans.ViewTransition.index - addTrans.ViewTransition.targetIndexes[ 0 ]) * 30
                 }
                 ParallelAnimation {
                     NumberAnimation {
@@ -77,12 +79,27 @@ Repeater {
             }
         }
 
+        Timer {
+            interval: addTrans.ViewTransition.targetIndexes.length * 30 + 100
+            running: groupColumn.isExpanded
+            repeat: false
+            onTriggered: {
+                groupColumn.shouldShow = true;
+                console.log("ran timer");
+            }
+        }
+
         move: Transition {
             id: moveTrans
             NumberAnimation {
                 properties: "y";
                 duration: 100;
                 easing.type: Easing.OutCubic
+            }
+
+            NumberAnimation {
+                properties: "opacity, scale";
+                to: 1.0;
             }
         }
 
@@ -120,11 +137,11 @@ Repeater {
                     anchors.fill: parent
                     hoverEnabled: true
                     onClicked: {
-                        groupColumn.shouldShow = false;
+                        groupColumn.collapseAnimRunning = true;
                     }
                 }
             }
         }
-        NotifGroupRepeater { }
+        NotifGroupRepeater { id: groupRepeater }
     }
 }

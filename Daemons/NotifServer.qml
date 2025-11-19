@@ -5,8 +5,10 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
 import QtQuick
+import ZShell
 import qs.Modules
 import qs.Helpers
+import qs.Paths
 
 Singleton {
     id: root
@@ -81,7 +83,7 @@ Singleton {
 
     FileView {
         id: storage
-        path: NotifPath.notifPath
+        path: `${Paths.state}/notifs.json`
 
         onLoaded: {
             const data = JSON.parse(text());
@@ -90,6 +92,7 @@ Singleton {
             root.list.sort((a, b) => b.time - a.time);
             root.loaded = true;
         }
+
         onLoadFailed: err => {
             if (err === FileViewError.FileNotFound) {
                 root.loaded = true;
@@ -144,6 +147,50 @@ Singleton {
             }
         }
 
+        readonly property LazyLoader dummyImageLoader: LazyLoader {
+            active: false
+
+            PanelWindow {
+                implicitWidth: 48
+                implicitHeight: 48
+                color: "transparent"
+                mask: Region {}
+
+                Image {
+                    anchors.fill: parent
+                    source: Qt.resolvedUrl(notif.image)
+                    fillMode: Image.PreserveAspectCrop
+                    cache: false
+                    asynchronous: true
+                    opacity: 0
+
+                    onStatusChanged: {
+                        if (status !== Image.Ready)
+                            return;
+
+                        const cacheKey = notif.appName + notif.summary + notif.id;
+                        let h1 = 0xdeadbeef, h2 = 0x41c6ce57, ch;
+                        for (let i = 0; i < cacheKey.length; i++) {
+                            ch = cacheKey.charCodeAt(i);
+                            h1 = Math.imul(h1 ^ ch, 2654435761);
+                            h2 = Math.imul(h2 ^ ch, 1597334677);
+                        }
+                        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+                        h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+                        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+                        h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+                        const hash = (h2 >>> 0).toString(16).padStart(8, 0) + (h1 >>> 0).toString(16).padStart(8, 0);
+
+                        const cache = `${Paths.notifimagecache}/${hash}.png`;
+                        ZShellIo.saveItem(this, Qt.resolvedUrl(cache), () => {
+                            notif.image = cache;
+                            notif.dummyImageLoader.active = false;
+                        });
+                    }
+                }
+            }
+        }
+
         readonly property Connections conn: Connections {
             target: notif.notification
 
@@ -169,6 +216,8 @@ Singleton {
 
             function onImageChanged(): void {
                 notif.image = notif.notification.image;
+                if (notif.notification?.image)
+                    notif.dummyImageLoader.active = true;
             }
 
             function onExpireTimeoutChanged(): void {
@@ -225,6 +274,8 @@ Singleton {
             appIcon = notification.appIcon;
             appName = notification.appName;
             image = notification.image;
+            if (notification?.image)
+                dummyImageLoader.active = true;
             expireTimeout = notification.expireTimeout;
             urgency = notification.urgency;
             resident = notification.resident;

@@ -259,6 +259,12 @@ Scope {
                         }
 
                         Component.onCompleted: currentIndex = SearchWallpapers.list.findIndex( w => w.path === WallpaperPath.currentWallpaperPath )
+                        Component.onDestruction: SearchWallpapers.stopPreview()
+
+                        onCurrentItemChanged: {
+                            if ( currentItem )
+                                SearchWallpapers.preview( currentItem.modelData.path );
+                        }
 
                         cacheItemCount: 5
                         snapMode: PathView.SnapToItem

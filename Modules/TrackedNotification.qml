@@ -146,11 +146,11 @@ PanelWindow {
                     RowLayout {
                         spacing: 12
                         IconImage {
-                            source: rootItem.modelData.image
+                            source: rootItem.modelData.image === "" ? Qt.resolvedUrl(rootItem.modelData.appIcon) : Qt.resolvedUrl(rootItem.modelData.image)
                             Layout.preferredWidth: 48
                             Layout.preferredHeight: 48
                             Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
-                            visible: rootItem.modelData.image !== ""
+                            // visible: rootItem.modelData.image !== ""
                         }
 
                         ColumnLayout {
@@ -185,10 +185,16 @@ PanelWindow {
                         text: rootItem.modelData.body
                         color: "#dddddd"
                         font.pointSize: 14
+                        textFormat: Text.MarkdownText
                         elide: Text.ElideRight
                         wrapMode: Text.WordWrap
                         maximumLineCount: 4
                         width: parent.width
+                        linkColor: Config.accentColor.accents.primaryAlt
+
+                        onLinkActivated: link => {
+                            Quickshell.execDetached(["app2unit", "-O", "--", link]);
+                        }
                     }
                 }
 

@@ -14,6 +14,7 @@ Singleton {
     property alias wallust: adapter.wallust
     property alias workspaceWidget: adapter.workspaceWidget
     property alias colors: adapter.colors
+    property alias gpuType: adapter.gpuType
 
     FileView {
         id: root
@@ -37,6 +38,7 @@ Singleton {
             property bool wallust: false
             property WorkspaceWidget workspaceWidget: WorkspaceWidget {}
             property Colors colors: Colors {}
+            property string gpuType: ""
         }
     }
 }

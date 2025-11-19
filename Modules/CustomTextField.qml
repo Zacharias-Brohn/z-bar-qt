@@ -83,13 +83,16 @@ TextField {
                 Search.launch(appListLoader.item.currentItem.modelData);
                 launcherWindow.visible = false;
             } else if ( wallpaperPickerLoader.active ) {
-                WallpaperPath.currentWallpaperPath = wallpaperPickerLoader.item.currentItem.modelData.path;
+                SearchWallpapers.setWallpaper(wallpaperPickerLoader.item.currentItem.modelData.path)
                 if ( Config.wallust ) {
                     Wallust.generateColors(WallpaperPath.currentWallpaperPath);
                 }
+                closeAnim.start();
             }
             event.accepted = true;
         } else if ( event.key === Qt.Key_Escape ) {
+            if ( wallpaperPickerLoader.active )
+                SearchWallpapers.stopPreview();
             closeAnim.start();
             event.accepted = true;
         }

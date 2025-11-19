@@ -4,8 +4,10 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Config
 
 Singleton {
+    id: root
 	property double memoryTotal: 1
 	property double memoryFree: 1
 	property double memoryUsed: memoryTotal - memoryFree
@@ -19,6 +21,8 @@ Singleton {
     property double gpuUsage: 0
     property double gpuMemUsage: 0
     property double totalMem: 0
+    readonly property string gpuType: Config.gpuType.toUpperCase() || autoGpuType
+    property string autoGpuType: "NONE"
 
 	Timer {
 		interval: 1
@@ -52,7 +56,9 @@ Singleton {
 
                 previousCpuStats = { total, idle }
             }
-            processGpu.running = true
+            if ( root.gpuType === "NVIDIA" ) {
+                processGpu.running = true
+            }
 
             interval = 1000
         }
@@ -62,9 +68,19 @@ Singleton {
     FileView { id: fileStat; path: "/proc/stat" }
 
     Process {
+        id: gpuTypeCheck
+
+        running: !Config.gpuType
+        command: ["sh", "-c", "if command -v nvidia-smi &>/dev/null && nvidia-smi -L &>/dev/null; then echo NVIDIA; elif ls /sys/class/drm/card*/device/gpu_busy_percent 2>/dev/null | grep -q .; then echo GENERIC; else echo NONE; fi"]
+        stdout: StdioCollector {
+            onStreamFinished: root.autoGpuType = text.trim()
+        }
+    }
+
+    Process {
         id: oneshotMem
         command: ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"]
-        running: true
+        running: root.gpuType === "NVIDIA" && totalMem === 0
         stdout: StdioCollector {
             onStreamFinished: {
                 totalMem = Number(this.text.trim())
