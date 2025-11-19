@@ -16,7 +16,7 @@ Singleton {
     property alias workspaceWidget: adapter.workspaceWidget
     property alias colors: adapter.colors
     property alias gpuType: adapter.gpuType
-    property alias wallFadeDuration: adapter.wallFadeDuration
+    property alias background: adapter.background
 
     FileView {
         id: root
@@ -41,7 +41,7 @@ Singleton {
             property WorkspaceWidget workspaceWidget: WorkspaceWidget {}
             property Colors colors: Colors {}
             property string gpuType: ""
-            property int wallFadeDuration: MaterialEasing.standardTime
+            property BackgroundConfig background: BackgroundConfig {}
         }
     }
 }

@@ -3,9 +3,14 @@ import QtQuick
 import Quickshell.Wayland
 import qs.Helpers
 import qs.Modules
+import qs.Config
 
-Scope {
-    Variants {
+Loader {
+
+    asynchronous: true
+    active: Config.background.enabled
+
+    sourceComponent: Variants {
         model: Quickshell.screens
         PanelWindow {
             id: root

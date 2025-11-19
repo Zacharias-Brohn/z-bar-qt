@@ -1,4 +1,5 @@
 import QtQuick
+import qs.Modules
 
 NumberAnimation {
     duration: 400
