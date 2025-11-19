@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import qs.Helpers
+import qs.Config
 
 Item {
     id: root
@@ -71,6 +72,7 @@ Item {
             Anim {
                 target: img
                 properties: "opacity,scale"
+                duration: Config.wallFadeDuration
             }
         }
     }

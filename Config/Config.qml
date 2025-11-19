@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
+import qs.Modules
 
 Singleton {
 
@@ -39,6 +40,7 @@ Singleton {
             property WorkspaceWidget workspaceWidget: WorkspaceWidget {}
             property Colors colors: Colors {}
             property string gpuType: ""
+            property int wallFadeDuration: MaterialEasing.standardTime
         }
     }
 }
