@@ -72,7 +72,7 @@ Item {
             Anim {
                 target: img
                 properties: "opacity,scale"
-                duration: Config.wallFadeDuration
+                duration: Config.background.wallFadeDuration
             }
         }
     }
