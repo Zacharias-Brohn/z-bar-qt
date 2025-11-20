@@ -10,8 +10,6 @@ import ZShell.Models
 Searcher {
     id: root
 
-    readonly property string currentNamePath: WallpaperPath.currentWallpaperPath
-
     property bool showPreview: false
     readonly property string current: showPreview ? previewPath : actualCurrent
     property string previewPath
@@ -37,15 +35,6 @@ Searcher {
     extraOpts: useFuzzy ? ({}) : ({
             forward: false
         })
-
-    FileView {
-        path: root.currentNamePath
-        watchChanges: true
-        onFileChanged: reload()
-        onLoaded: {
-            root.actualCurrent = this.text;
-        }
-    }
 
     FileSystemModel {
         id: wallpapers

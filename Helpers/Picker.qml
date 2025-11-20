@@ -210,6 +210,8 @@ MouseArea {
         color: "white"
         opacity: 0.3
 
+        radius: root.realRounding
+
         layer.enabled: true
         layer.effect: MultiEffect {
             maskSource: selectionWrapper
