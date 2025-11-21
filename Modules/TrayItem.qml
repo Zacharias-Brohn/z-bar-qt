@@ -63,15 +63,6 @@ MouseArea {
         }
     }
 
-    Connections {
-        target: trayMenu
-        function onFinishedLoading() {
-            if ( !root.hasLoaded )
-                trayMenu.visible = false;
-                root.hasLoaded = true;
-        }
-    }
-
     onClicked: {
         if ( mouse.button === Qt.LeftButton ) {
             root.item.activate();

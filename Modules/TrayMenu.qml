@@ -33,7 +33,7 @@ PanelWindow {
     //     listLayout.forceLayout();
     // }
 
-    visible: true
+    visible: false
     color: "transparent"
     anchors {
         top: true
@@ -246,9 +246,6 @@ PanelWindow {
                         if ( currentWidth > biggestWidth ) {
                             root.biggestWidth = currentWidth;
                         }
-
-                        if ( menuItem.index === menuOpener.children.values.length - 1 )
-                            root.finishedLoading();
                     }
 
                     TextMetrics {
