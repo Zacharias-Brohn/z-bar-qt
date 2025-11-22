@@ -15,6 +15,8 @@ Item {
     implicitWidth: resourceRowLayout.x < 0 ? 0 : resourceRowLayout.implicitWidth
     implicitHeight: 22
     property bool warning: percentage * 100 >= warningThreshold
+    property color usageColor: Config.useDynamicColors ? ( warning ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary ) : ( warning ? Config.accentColor.accents.warning : Config.accentColor.accents.primary )
+    property color borderColor: Config.useDynamicColors ? ( warning ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary ) : ( warning ? Config.accentColor.accents.warningAlt : Config.accentColor.accents.primaryAlt )
 
     Behavior on percentage {
         NumberAnimation {
@@ -55,9 +57,14 @@ Item {
 
                 ShapePath {
                     strokeWidth: 0
-                    fillColor: root.warning ? Config.accentColor.accents.warning : Config.accentColor.accents.primary
+                    fillColor: root.usageColor
                     startX: backgroundCircle.width / 2
                     startY: backgroundCircle.height / 2
+
+                    Behavior on fillColor {
+                        CAnim {}
+                    }
+
                     PathLine {
                         x: backgroundCircle.width / 2
                         y: 0 + ( 1 / 2 )
@@ -80,9 +87,13 @@ Item {
 
                 ShapePath {
                     strokeWidth: 1
-                    strokeColor: root.warning ? Config.accentColor.accents.warningAlt : Config.accentColor.accents.primaryAlt
+                    strokeColor: root.borderColor
                     fillColor: "transparent"
                     capStyle: ShapePath.FlatCap
+
+                    Behavior on strokeColor {
+                        CAnim {}
+                    }
 
                     PathAngleArc {
                         centerX: backgroundCircle.width / 2

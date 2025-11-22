@@ -1,4 +1,3 @@
-// Time.qml
 pragma Singleton
 
 import Quickshell

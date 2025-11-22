@@ -10,6 +10,7 @@ Item {
     id: root
     implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
     implicitHeight: 34
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
 
     Rectangle {
         anchors {
@@ -18,7 +19,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
         implicitHeight: 22
-        color: "#40000000"
+        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
         radius: height / 2
         RowLayout {
             id: rowLayout
@@ -33,7 +34,10 @@ Item {
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 18
                 text: "\uf7a3"
-                color: "#ffffff"
+                color: root.textColor
+                Behavior on color {
+                    CAnim {}
+                }
             }
 
             Resource {
@@ -46,7 +50,10 @@ Item {
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 18
                 text: "\ue322"
-                color: "#ffffff"
+                color: root.textColor
+                Behavior on color {
+                    CAnim {}
+                }
             }
 
             Resource {
@@ -59,7 +66,10 @@ Item {
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 16
                 text: "\ue30f"
-                color: "#ffffff"
+                color: root.textColor
+                Behavior on color {
+                    CAnim {}
+                }
             }
 
             Resource {
@@ -71,7 +81,10 @@ Item {
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 18
                 text: "\ue30d"
-                color: "#ffffff"
+                color: root.textColor
+                Behavior on color {
+                    CAnim {}
+                }
             }
 
             Resource {

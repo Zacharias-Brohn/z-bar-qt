@@ -39,8 +39,12 @@ Scope {
             Rectangle {
                 id: backgroundRect
                 anchors.fill: parent
-                color: Config.baseBgColor
+                color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
                 radius: 0
+
+                Behavior on color {
+                    CAnim {}
+                }
 
                 RowLayout {
                     anchors.fill: parent
@@ -92,11 +96,17 @@ Scope {
 
                         Text {
                             id: notificationCenterIcon
+                            property color iconColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "white"
                             Layout.alignment: Qt.AlignVCenter
                             text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
                             font.family: "Material Symbols Rounded"
                             font.pixelSize: 20
-                            color: "white"
+                            color: iconColor
+
+                            Behavior on color {
+                                CAnim {}
+                            }
+
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor

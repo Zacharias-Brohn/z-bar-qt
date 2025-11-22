@@ -17,6 +17,7 @@ Singleton {
     property alias colors: adapter.colors
     property alias gpuType: adapter.gpuType
     property alias background: adapter.background
+    property alias useDynamicColors: adapter.useDynamicColors
 
     FileView {
         id: root
@@ -42,6 +43,7 @@ Singleton {
             property Colors colors: Colors {}
             property string gpuType: ""
             property BackgroundConfig background: BackgroundConfig {}
+            property bool useDynamicColors: false
         }
     }
 }

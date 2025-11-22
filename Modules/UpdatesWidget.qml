@@ -1,17 +1,22 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Modules
+import qs.Config
 
 Item {
     id: root
     required property int countUpdates
     implicitWidth: contentRow.childrenRect.width + 10
     implicitHeight: 22
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
 
     Rectangle {
         anchors.fill: parent
         radius: height / 2
-        color: "#40000000"
+        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
+        Behavior on color {
+            CAnim {}
+        }
     }
 
     RowLayout {
@@ -28,7 +33,10 @@ Item {
             font.family: "Material Symbols Rounded"
             font.pixelSize: 18
             text: "\uf569"
-            color: "#ffffff"
+            color: root.textColor
+            Behavior on color {
+                CAnim {}
+            }
         }
 
         TextMetrics {
@@ -40,7 +48,10 @@ Item {
         Text {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
             text: textMetrics.text
-            color: "white"
+            color: root.textColor
+            Behavior on color {
+                CAnim {}
+            }
         }
     }
 }

@@ -33,6 +33,7 @@ qml_module(ZShell
     SOURCES
         writefile.hpp writefile.cpp
         appdb.hpp appdb.cpp
+        imageanalyser.hpp imageanalyser.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

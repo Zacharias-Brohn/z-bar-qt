@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
 import qs.Helpers
+import qs.Config
 
 Item {
     id: root
@@ -11,6 +12,7 @@ Item {
     clip: true
 
     property bool showFirst: true
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : "white"
 
     Component.onCompleted: {
         Hyprland.rawEvent.connect(( event ) => {
@@ -37,7 +39,7 @@ Item {
         anchors.fill: parent
         anchors.margins: 5
         text: root.currentTitle
-        color: "white"
+        color: root.textColor
         elide: Text.ElideRight
         font.pixelSize: 16
         horizontalAlignment: Text.AlignHCenter
@@ -46,13 +48,17 @@ Item {
         Behavior on opacity {
             NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
         }
+
+        Behavior on color {
+            CAnim {}
+        }
     }
 
     Text {
         id: titleText2
         anchors.fill: parent
         anchors.margins: 5
-        color: "white"
+        color: root.textColor
         elide: Text.ElideRight
         font.pixelSize: 16
         horizontalAlignment: Text.AlignHCenter
@@ -60,6 +66,10 @@ Item {
         opacity: root.showFirst ? 0 : 1
         Behavior on opacity {
             NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+        }
+
+        Behavior on color {
+            CAnim {}
         }
     }
 }

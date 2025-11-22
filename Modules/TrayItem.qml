@@ -2,8 +2,11 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Io
+import Quickshell.Widgets
 import qs.Modules
 import qs.Config
+import Caelestia
+import QtQuick.Effects
 
 MouseArea {
     id: root

@@ -5,6 +5,7 @@ import Quickshell.Io
 import Quickshell.Services.Pipewire
 import Quickshell.Widgets
 import qs.Modules
+import qs.Config
 
 Item {
     id: root
@@ -12,6 +13,7 @@ Item {
     implicitHeight: 34
 
     property bool expanded: false
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
 
     Behavior on implicitWidth {
         NumberAnimation {
@@ -34,8 +36,11 @@ Item {
         anchors.right: parent.right
         height: 22
         radius: height / 2
-        color: "#40000000"
+        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
 
+        Behavior on color {
+            CAnim {}
+        }
 
         // Background circle
         Rectangle {
@@ -66,8 +71,11 @@ Item {
                     Layout.alignment: Qt.AlignVCenter
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: 18
-                    text: "\ue050"  // volume_up icon
-                    color: "#ffffff"
+                    text: "\ue050"  // volumeUp icon
+                    color: root.textColor
+                    Behavior on color {
+                        CAnim {}
+                    }
                 }
 
                 Rectangle {
@@ -87,7 +95,7 @@ Item {
 
                         implicitWidth: parent.width * ( Pipewire.defaultAudioSink?.audio.volume ?? 0 )
                         radius: parent.radius
-                        color: "#ffffff"
+                        color: root.textColor
                     }
 
                     Rectangle {
@@ -97,7 +105,7 @@ Item {
                         width: sinkVolumeMouseArea.pressed ? 25 : 12
                         height: sinkVolumeMouseArea.pressed ? 25 : 12
                         radius: width / 2
-                        color: sinkVolumeMouseArea.containsMouse || sinkVolumeMouseArea.pressed ? "#ffffff" : "#aaaaaa"
+                        color: sinkVolumeMouseArea.containsMouse || sinkVolumeMouseArea.pressed ? (Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "#ffffff") : (Config.useDynamicColors ? DynamicColors.palette.m3onSurfaceVariant : "#aaaaaa")
                         border.color: "#40000000"
                         border.width: 2
                         anchors.verticalCenter: parent.verticalCenter
@@ -171,7 +179,11 @@ Item {
                     font.family: "Material Symbols Rounded"
                     font.pixelSize: 18
                     text: "\ue029"
-                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? "#ff4444" : "#ffffff"
+                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3error : "#ff4444") : root.textColor
+
+                    Behavior on color {
+                        CAnim {}
+                    }
                 }
 
                 Rectangle {
@@ -191,7 +203,11 @@ Item {
 
                         implicitWidth: parent.width * ( Pipewire.defaultAudioSource?.audio.volume ?? 0 )
                         radius: parent.radius
-                        color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? "#ff4444" : "#ffffff"
+                        color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3error : "#ff4444") : root.textColor
+
+                        Behavior on color {
+                            CAnim {}
+                        }
                     }
 
                     Rectangle {
@@ -201,7 +217,7 @@ Item {
                         width: sourceVolumeMouseArea.pressed ? 25 : 12
                         height: sourceVolumeMouseArea.pressed ? 25 : 12
                         radius: width / 2
-                        color: sourceVolumeMouseArea.containsMouse || sourceVolumeMouseArea.pressed ? "#ffffff" : "#aaaaaa"
+                        color: sourceVolumeMouseArea.containsMouse || sourceVolumeMouseArea.pressed ? (Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "#ffffff") : (Config.useDynamicColors ? DynamicColors.palette.m3onSurfaceVariant : "#aaaaaa")
                         border.color: "#40000000"
                         border.width: 2
                         anchors.verticalCenter: parent.verticalCenter
