@@ -10,6 +10,9 @@ Item {
     required property int warningThreshold
     required property string details
     required property string iconString
+    property color barColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary
+    property color warningBarColor: Config.useDynamicColors ? DynamicColors.palette.m3error : Config.accentColor.accents.warning
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "#ffffff"
 
     height: columnLayout.childrenRect.height
     anchors.left: parent.left
@@ -29,14 +32,14 @@ Item {
                 font.family: "Material Symbols Rounded"
                 font.pixelSize: 32
                 text: root.iconString
-                color: "#ffffff"
+                color: root.textColor
             }
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.resourceName
                 font.pixelSize: 14
-                color: "#ffffff"
+                color: root.textColor
             }
         }
 
@@ -51,7 +54,7 @@ Item {
                 width: parent.width * Math.min(root.percentage, 1)
                 height: parent.height
                 radius: height / 2
-                color: root.percentage * 100 >= root.warningThreshold ? Config.accentColor.accents.warning : Config.accentColor.accents.primary
+                color: root.percentage * 100 >= root.warningThreshold ? root.warningBarColor : root.barColor
 
                 Behavior on width {
                     Anim {

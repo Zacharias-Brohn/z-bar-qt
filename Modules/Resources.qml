@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import Quickshell
 import QtQuick.Layouts
@@ -93,49 +95,24 @@ Item {
         }
     }
 
-    MouseArea {
-        id: widgetMouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onEntered: {
-            if (popoutLoader.sourceComponent === null) {
-                popoutLoader.sourceComponent = resourcePopout;
-            }
-        }
-    }
-
-    Loader {
-        id: popoutLoader
-        sourceComponent: null
-    }
-
-    component ResourcePopout: PanelWindow {
+    Item {
         id: popoutWindow
+        z: 0
         property int rectHeight: contentRect.implicitHeight
-        WlrLayershell.exclusionMode: ExclusionMode.Ignore
+        anchors.fill: parent
+        visible: true
 
-        anchors {
-            left: true
-            top: true
-            right: true
-            bottom: true
-        }
-
-        color: "transparent"
-
-        mask: Region { item: contentRect }
-
-        ShadowRect {
-            anchors.fill: contentRect
-            radius: 8
-        }
+        // ShadowRect {
+        //     anchors.fill: contentRect
+        //     radius: 8
+        // }
 
         ParallelAnimation {
             id: openAnim
             Anim {
                 target: contentRect
-                property: "y"
-                to: 0 - 1
+                property: "implicitHeight"
+                to: contentColumn.childrenRect.height + 20
                 duration: MaterialEasing.expressiveEffectsTime
                 easing.bezierCurve: MaterialEasing.expressiveEffects
             }
@@ -145,32 +122,24 @@ Item {
             id: closeAnim
             Anim {
                 target: contentRect
-                property: "y"
-                to: - contentRect.implicitHeight
+                property: "implicitHeight"
+                to: 0
                 duration: MaterialEasing.expressiveEffectsTime
                 easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-            onStopped: {
-                popoutLoader.sourceComponent = null
             }
         }
 
         Rectangle {
             id: contentRect
-            x: mapFromItem(root, 0, 0).x
-            y: - implicitHeight
-            implicitHeight: contentColumn.childrenRect.height + 20
-            implicitWidth: root.implicitWidth
-            color: Config.baseBgColor
-            border.color: Config.baseBorderColor
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.bottom
+            color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+            border.color: Config.useDynamicColors ? "transparent" : Config.baseBorderColor
             border.width: 1
             bottomLeftRadius: 8
             bottomRightRadius: 8
-
-
-            Component.onCompleted: {
-                openAnim.start();
-            }
+            clip: true
 
             Column {
                 id: contentColumn
@@ -184,8 +153,8 @@ Item {
                     percentage: ResourceUsage.memoryUsedPercentage
                     warningThreshold: 95
                     details: qsTr( "%1 of %2 MB used" )
-                        .arg( Math.round( ResourceUsage.memoryUsed * 0.001 ))
-                        .arg( Math.round( ResourceUsage.memoryTotal * 0.001 ))
+                    .arg( Math.round( ResourceUsage.memoryUsed * 0.001 ))
+                    .arg( Math.round( ResourceUsage.memoryTotal * 0.001 ))
                 }
 
                 ResourceDetail {
@@ -194,7 +163,7 @@ Item {
                     percentage: ResourceUsage.cpuUsage
                     warningThreshold: 95
                     details: qsTr( "%1% used" )
-                        .arg( Math.round( ResourceUsage.cpuUsage * 100 ))
+                    .arg( Math.round( ResourceUsage.cpuUsage * 100 ))
                 }
 
                 ResourceDetail {
@@ -203,7 +172,7 @@ Item {
                     percentage: ResourceUsage.gpuUsage
                     warningThreshold: 95
                     details: qsTr( "%1% used" )
-                        .arg( Math.round( ResourceUsage.gpuUsage * 100 ))
+                    .arg( Math.round( ResourceUsage.gpuUsage * 100 ))
                 }
 
                 ResourceDetail {
@@ -212,23 +181,24 @@ Item {
                     percentage: ResourceUsage.gpuMemUsage
                     warningThreshold: 95
                     details: qsTr( "%1% used" )
-                        .arg( Math.round( ResourceUsage.gpuMemUsage * 100 ))
-                }
-            }
-            MouseArea {
-                id: mouseArea
-                anchors.fill: parent
-                hoverEnabled: true
-                onExited: {
-                    closeAnim.start();
+                    .arg( Math.round( ResourceUsage.gpuMemUsage * 100 ))
                 }
             }
         }
-    }
-
-    Component {
-        id: resourcePopout
-
-        ResourcePopout { }
+        MouseArea {
+            id: widgetMouseArea
+            z: 1
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: contentRect.bottom
+            hoverEnabled: true
+            onEntered: {
+                openAnim.start();
+            }
+            onExited: {
+                closeAnim.start();
+            }
+        }
     }
 }

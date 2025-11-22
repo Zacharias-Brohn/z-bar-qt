@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 import qs.Modules
 import qs.Config
 import qs.Helpers
@@ -16,6 +17,20 @@ Scope {
             property bool trayMenuVisible: false
             screen: modelData
             property var root: Quickshell.shellDir
+            WlrLayershell.exclusionMode: ExclusionMode.Ignore
+
+            PanelWindow {
+                id: wrapper
+                screen: bar.screen
+                WlrLayershell.layer: WlrLayer.Bottom
+                anchors {
+                    left: true
+                    right: true
+                    top: true
+                }
+                color: "transparent"
+                implicitHeight: 34
+            }
 
             NotificationCenter {
                 bar: bar
@@ -31,14 +46,19 @@ Scope {
                 top: true
                 left: true
                 right: true
+                bottom: true
             }
 
-            implicitHeight: 34
+            mask: Region { item: backgroundRect }
+
             color: "transparent"
 
             Rectangle {
                 id: backgroundRect
-                anchors.fill: parent
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                implicitHeight: 34
                 color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
                 radius: 0
 
