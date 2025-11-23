@@ -1,4 +1,5 @@
 {
+  rev,
   lib,
   stdenv,
   makeWrapper,
