@@ -7,12 +7,36 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import qs.Config
 import qs.Components
+import qs.Daemons
 
-Item {
+CustomRect {
     id: root
 
     implicitWidth: layout.implicitWidth + 10 * 2
-    implicitHeight: layout.implicitHeight + 10 * 2
+    implicitHeight: 0
+    color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : "#40000000"
+    clip: true
+
+    property alias expanded: root.isExpanded
+    property bool isExpanded: false
+
+    Anim {
+        id: expandAnim
+        running: root.isExpanded
+        target: root
+        property: "implicitHeight"
+        to: layout.implicitHeight + 10 * 2
+        duration: MaterialEasing.standardTime
+    }
+
+    Anim {
+        id: collapseAnim
+        running: !root.isExpanded
+        target: root
+        property: "implicitHeight"
+        to: 0
+        duration: MaterialEasing.standardTime
+    }
 
     ButtonGroup {
         id: sinks
@@ -58,7 +82,7 @@ Item {
         Repeater {
             model: Audio.sources
 
-            StyledRadioButton {
+            CustomRadioButton {
                 required property PwNode modelData
 
                 ButtonGroup.group: sources
@@ -114,7 +138,7 @@ Item {
                 color: DynamicColors.palette.m3onPrimaryContainer
 
                 function onClicked(): void {
-                    root.wrapper.hasCurrent = false;
+                    root.isExpanded = !root.isExpanded;
                     Quickshell.execDetached(["app2unit", "--", "pavucontrol"]);
                 }
             }
@@ -123,18 +147,18 @@ Item {
                 id: expandBtn
 
                 anchors.centerIn: parent
-                spacing: Appearance.spacing.small
+                spacing: 7
 
-                StyledText {
-                    Layout.leftMargin: Appearance.padding.smaller
+                CustomText {
+                    Layout.leftMargin: 7
                     text: qsTr("Open settings")
-                    color: Colours.palette.m3onPrimaryContainer
+                    color: DynamicColors.palette.m3onPrimaryContainer
                 }
 
                 MaterialIcon {
                     text: "chevron_right"
-                    color: Colours.palette.m3onPrimaryContainer
-                    font.pointSize: Appearance.font.size.large
+                    color: DynamicColors.palette.m3onPrimaryContainer
+                    font.pointSize: 18
                 }
             }
         }

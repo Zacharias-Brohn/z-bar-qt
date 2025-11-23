@@ -41,6 +41,7 @@ Item {
         text: root.currentTitle
         color: root.textColor
         elide: Text.ElideRight
+        font.family: "Rubik"
         font.pixelSize: 16
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
