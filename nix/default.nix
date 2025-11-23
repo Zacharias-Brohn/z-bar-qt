@@ -1,13 +1,10 @@
 {
-  rev,
   lib,
   stdenv,
   makeWrapper,
   makeFontsConf,
   app2unit,
-  lm_sensors,
   swappy,
-  wl-clipboard,
   libqalculate,
   bash,
   hyprland,
@@ -16,10 +13,7 @@
   nerd-fonts,
   qt6,
   quickshell,
-  aubio,
-  fftw,
   pipewire,
-  xkeyboard-config,
   cmake,
   ninja,
   pkg-config,
@@ -31,57 +25,46 @@
 
   runtimeDeps =
     [
-      ddcutil
-      brightnessctl
       app2unit
-      networkmanager
-      lm_sensors
       swappy
       wl-clipboard
       libqalculate
       bash
       hyprland
-    ]
-    ++ extraRuntimeDeps
+    ];
 
   fontconfig = makeFontsConf {
     fontDirectories = [material-symbols rubik nerd-fonts.caskaydia-cove];
   };
 
-  cmakeBuildType =
-    if debug
-    then "Debug"
-    else "RelWithDebInfo";
-
   plugin = stdenv.mkDerivation {
     inherit cmakeBuildType;
-    name = "zshell-qml-plugin${lib.optionalString debug "-debug"}";
+    name = "zshell-qml-plugin";
     src = lib.fileset.toSource {
       root = ./..;
       fileset = lib.fileset.union ./../CMakeLists.txt ./../Plugins;
     };
 
     nativeBuildInputs = [cmake ninja pkg-config];
-    buildInputs = [qt6.qtbase qt6.qtdeclarative libqalculate pipewire aubio libcava fftw];
+    buildInputs = [qt6.qtbase qt6.qtdeclarative libqalculate pipewire];
 
     dontWrapQtApps = true;
   };
 in
   stdenv.mkDerivation {
     inherit version cmakeBuildType;
-    pname = "zshell${lib.optionalString debug "-debug"}";
+    pname = "zshell";
     src = ./..;
 
     nativeBuildInputs = [cmake ninja makeWrapper qt6.wrapQtAppsHook];
-    buildInputs = [quickshell extras plugin xkeyboard-config qt6.qtbase];
+    buildInputs = [quickshell plugin qt6.qtbase];
     propagatedBuildInputs = runtimeDeps;
 
     cmakeFlags =
       [
         (lib.cmakeFeature "ENABLE_MODULES" "shell")
         (lib.cmakeFeature "INSTALL_QSCONFDIR" "${placeholder "out"}/share/zshell")
-      ]
-      ++ cmakeVersionFlags;
+      ];
 
     dontStrip = debug;
 
