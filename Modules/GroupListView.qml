@@ -30,6 +30,7 @@ Repeater {
         property bool shouldShow: false
         property bool isExpanded: false
         property bool collapseAnimRunning: false
+        property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
 
         function closeAll(): void {
             for ( const n of NotifServer.notClosed.filter( n => n.appName === modelData ))
@@ -111,16 +112,21 @@ Repeater {
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
                 Layout.leftMargin: 5
                 text: groupColumn.modelData
-                color: "white"
+                color: groupColumn.textColor
                 font.pointSize: 14
                 font.bold: true
             }
 
             Rectangle {
+                id: collapseRect
+
+                property color notifyBgColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : "#E53935"
+                property color notifyColor: Config.useDynamicColors ? DynamicColors.palette.m3onPrimary : "#FFCDD2"
+
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                 Layout.fillHeight: true
                 Layout.preferredWidth: 30
-                color: !groupColumn.isExpanded ? "#E53935" : collapseArea.containsMouse ? "#15FFFFFF" : "transparent"
+                color: !groupColumn.isExpanded ? collapseRect.notifyBgColor : ( collapseArea.containsMouse ? "#15FFFFFF" : "transparent" )
                 radius: groupColumn.isExpanded ? 4 : height / 2
                 visible: true
 
@@ -129,7 +135,7 @@ Repeater {
                     text: groupColumn.isExpanded ? "\ue944" : groupColumn.notifications.length
                     font.family: groupColumn.isExpanded ? "Material Symbols Rounded" : "Rubik"
                     font.pointSize: 18
-                    color: "white"
+                    color: groupColumn.isExpanded ? groupColumn.textColor : collapseRect.notifyColor
                 }
 
                 MouseArea {

@@ -4,8 +4,13 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.FluentWinUI3
 import qs.Daemons
+import qs.Config
 
 RowLayout {
+    id: root
+
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
+
     Layout.fillWidth: true
 
     Switch {
@@ -27,7 +32,7 @@ RowLayout {
         Text {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
             text: "Clear all"
-            color: "white"
+            color: root.textColor
         }
 
         Rectangle {
@@ -42,7 +47,7 @@ RowLayout {
                 text: "\ue0b8"
                 font.family: "Material Symbols Rounded"
                 font.pointSize: 18
-                color: "white"
+                color: root.textColor
             }
 
             MouseArea {

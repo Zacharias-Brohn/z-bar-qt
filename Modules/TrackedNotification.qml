@@ -26,6 +26,8 @@ PanelWindow {
     property list<Region> notifRegions: []
     required property bool centerShown
     required property PanelWindow bar
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
+    property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
     visible: Hyprland.monitorFor(screen).focused
 
     Component.onCompleted: {
@@ -127,7 +129,8 @@ PanelWindow {
                 id: backgroundRect
                 implicitWidth: 400
                 implicitHeight: contentLayout.childrenRect.height + 16
-                color: Config.baseBgColor
+                color: root.backgroundColor
+                border.width: Config.useDynamicColors ? 0 : 1
                 border.color: "#555555"
                 radius: 8
 
@@ -161,7 +164,7 @@ PanelWindow {
 
                             Text {
                                 text: rootItem.modelData.appName
-                                color: "white"
+                                color: root.textColor
                                 font.bold: true
                                 font.pointSize: 14
                                 elide: Text.ElideRight
@@ -171,7 +174,7 @@ PanelWindow {
 
                             Text {
                                 text: rootItem.modelData.summary
-                                color: "white"
+                                color: root.textColor
                                 font.pointSize: 12
                                 font.bold: true
                                 elide: Text.ElideRight
@@ -183,7 +186,7 @@ PanelWindow {
                     }
                     Text {
                         text: rootItem.modelData.body
-                        color: "#dddddd"
+                        color: root.textColor
                         font.pointSize: 14
                         textFormat: Text.MarkdownText
                         elide: Text.ElideRight

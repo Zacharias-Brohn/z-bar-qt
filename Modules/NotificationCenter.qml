@@ -114,12 +114,15 @@ PanelWindow {
         y: 10
         x: Screen.width
         z: 1
+
+        property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+
         implicitWidth: 400
         implicitHeight: root.height - 20
-        color: Config.baseBgColor
+        color: backgroundColor
         radius: 8
         border.color: "#555555"
-        border.width: 1
+        border.width: Config.useDynamicColors ? 0 : 1
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 10
@@ -129,7 +132,7 @@ PanelWindow {
 
             Rectangle {
                 color: "#333333"
-                Layout.preferredHeight: 1
+                Layout.preferredHeight: Config.useDynamicColors ? 0 : 1
                 Layout.fillWidth: true
             }
 

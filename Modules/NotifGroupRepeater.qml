@@ -22,9 +22,9 @@ Repeater {
 
         width: parent.width
         height: contentColumn.height + 15
-        color: Config.baseBgColor
+        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : Config.baseBgColor
         border.color: "#555555"
-        border.width: 1
+        border.width: Config.useDynamicColors ? 0 : 1
         radius: 8
         opacity: previewHidden ? 0 : 1
         scale: previewHidden ? 0.7 : 1.0
@@ -124,6 +124,8 @@ Repeater {
                 width: parent.width
                 spacing: 10
 
+                property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3secondaryFixed : "#FFFFFF"
+
                 IconImage {
                     source: groupHeader.modelData.image === "" ? Qt.resolvedUrl(groupHeader.modelData.appIcon) : Qt.resolvedUrl(groupHeader.modelData.image)
                     Layout.preferredWidth: 48
@@ -139,7 +141,7 @@ Repeater {
 
                     TextRender {
                         text: groupHeader.modelData.summary
-                        color: "white"
+                        color: infoRow.textColor
                         font.bold: true
                         font.pointSize: 16
                         elide: Text.ElideRight
@@ -149,7 +151,7 @@ Repeater {
 
                     TextRender {
                         text: groupHeader.modelData.body
-                        color: "#dddddd"
+                        color: infoRow.textColor
                         font.pointSize: 12
                         elide: Text.ElideRight
                         textFormat: Text.MarkdownText
@@ -169,7 +171,7 @@ Repeater {
                 TextRender {
                     text: groupHeader.modelData.timeStr
                     font.pointSize: 10
-                    color: "#666666"
+                    color: infoRow.textColor
                     Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 }
             }
@@ -189,18 +191,24 @@ Repeater {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 30
                         required property var modelData
-                        color: buttonArea.containsMouse ? "#15FFFFFF" : "#09FFFFFF"
+                        required property int index
+
+                        property color btnColor: Config.useDynamicColors ? ( actionButton.index === 0 ? DynamicColors.palette.m3primary : DynamicColors.palette.m3secondary ) : Config.accentColor.accents.primary
+                        property color textColor: Config.useDynamicColors ? ( actionButton.index === 0 ? DynamicColors.palette.m3onPrimaryFixed : DynamicColors.palette.m3onSecondaryFixed ) : "white"
+
+                        color: buttonArea.containsMouse ? DynamicColors.layer(btnColor, 0) : btnColor
                         radius: 4
                         TextRender {
                             anchors.centerIn: parent
                             text: actionButton.modelData.text
-                            color: "white"
+                            color: actionButton.textColor
                             font.pointSize: 12
                         }
                         MouseArea {
                             id: buttonArea
                             anchors.fill: parent
                             hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 console.log( groupHeader.modelData.actions );
                                 actionButton.modelData.invoke();

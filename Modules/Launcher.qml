@@ -64,15 +64,18 @@ Scope {
 
         Rectangle {
             id: backgroundRect
+
+            property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: -1
+            anchors.bottomMargin: Config.useDynamicColors ? 0 : -1
             implicitHeight: mainLayout.childrenRect.height + 20
             implicitWidth: appListRect.implicitWidth
             x: Math.round(( parent.width - width ) / 2 )
-            color: "#d01a1a1a"
+            color: backgroundColor
             opacity: 1
-            border.color: Config.baseBorderColor
-            border.width: 1
+            border.width: Config.useDynamicColors ? 0 : 1
+            border.color: Config.useDynamicColors ? "transparent" : Config.baseBorderColor
 
             ParallelAnimation {
                 id: openAnim
@@ -173,11 +176,11 @@ Scope {
             implicitWidth: appListContainer.implicitWidth + 20
             implicitHeight: appListContainer.implicitHeight + 20
             anchors.bottom: backgroundRect.top
-            anchors.bottomMargin: -1
+            anchors.bottomMargin: Config.useDynamicColors ? 0 : -1
             color: backgroundRect.color
             topRightRadius: 8
             topLeftRadius: 8
-            border.color: backgroundRect.border.color
+            border.color: Config.useDynamicColors ? "transparent" : backgroundRect.border.color
             clip: true
 
             Behavior on implicitHeight {
@@ -308,6 +311,9 @@ Scope {
                     anchors.fill: parent
                     sourceComponent: ListView {
                         id: appListView
+
+                        property color highlightColor: Config.useDynamicColors ? DynamicColors.tPalette.m3onSurface : "#FFFFFF"
+
                         anchors.fill: parent
                         model: ScriptModel {
                             id: appModel
@@ -327,8 +333,8 @@ Scope {
                         focus: true
                         highlight: Rectangle {
                             radius: 4
-                            color: "#FFFFFF"
-                            opacity: 0.08
+                            color: appListView.highlightColor
+                            opacity: Config.useDynamicColors ? 0.20 : 0.08
 
                             y: appListView.currentItem?.y
                             implicitWidth: appListView.width
