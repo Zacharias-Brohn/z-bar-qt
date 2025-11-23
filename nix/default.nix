@@ -38,7 +38,6 @@
   };
 
   plugin = stdenv.mkDerivation {
-    inherit cmakeBuildType;
     name = "zshell-qml-plugin";
     src = lib.fileset.toSource {
       root = ./..;
