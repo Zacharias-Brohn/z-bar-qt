@@ -27,7 +27,6 @@
     [
       app2unit
       swappy
-      wl-clipboard
       libqalculate
       bash
       hyprland
