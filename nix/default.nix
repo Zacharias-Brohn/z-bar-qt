@@ -6,7 +6,6 @@
   makeFontsConf,
   app2unit,
   swappy,
-  libqalculate,
   bash,
   hyprland,
   material-symbols,
@@ -18,9 +17,6 @@
   cmake,
   ninja,
   pkg-config,
-  debug ? false,
-  withCli ? false,
-  extraRuntimeDeps ? [],
 }: let
   version = "1.0.0";
 
@@ -28,7 +24,6 @@
     [
       app2unit
       swappy
-      libqalculate
       bash
       hyprland
     ];
@@ -60,18 +55,10 @@ in
 
     cmakeFlags =
       [
-        (lib.cmakeFeature "ENABLE_MODULES" "shell")
         (lib.cmakeFeature "INSTALL_QSCONFDIR" "${placeholder "out"}/share/zshell")
       ];
 
     dontStrip = debug;
-
-    prePatch = ''
-      substituteInPlace assets/pam.d/fprint \
-        --replace-fail pam_fprintd.so /run/current-system/sw/lib/security/pam_fprintd.so
-      substituteInPlace shell.qml \
-        --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
-    '';
 
     passthru = {
       inherit plugin;
