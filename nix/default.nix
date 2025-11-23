@@ -73,11 +73,6 @@ in
         --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
     '';
 
-    postInstall = ''
-      mkdir -p $out/lib
-      ln -s ${extras}/lib/* $out/lib/
-    '';
-
     passthru = {
       inherit plugin;
     };
