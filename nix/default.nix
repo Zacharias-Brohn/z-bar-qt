@@ -50,7 +50,6 @@
   };
 in
   stdenv.mkDerivation {
-    inherit version cmakeBuildType;
     pname = "zshell";
     src = ./..;
 
