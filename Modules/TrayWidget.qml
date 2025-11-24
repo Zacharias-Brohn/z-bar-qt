@@ -5,27 +5,21 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
 
-Rectangle {
+Row {
     id: root
     required property PanelWindow bar
-    implicitHeight: parent.height
-    implicitWidth: rowL.implicitWidth + 10
-    color: "transparent"
-
-    RowLayout {
-        spacing: 5
-        id: rowL
-        anchors.centerIn: parent
-        Repeater {
-            id: repeater
-            model: SystemTray.items
-            TrayItem {
-                id: trayItem
-                required property SystemTrayItem modelData
-                implicitHeight: root.implicitHeight
-                item: modelData
-                bar: root.bar
-            }
+    readonly property alias items: repeater
+    spacing: 0
+    Repeater {
+        id: repeater
+        model: SystemTray.items
+        TrayItem {
+            id: trayItem
+            required property SystemTrayItem modelData
+            implicitHeight: 34
+            implicitWidth: 28
+            item: modelData
+            bar: root.bar
         }
     }
 }

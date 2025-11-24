@@ -14,9 +14,8 @@ Item {
     property color warningBarColor: Config.useDynamicColors ? DynamicColors.palette.m3error : Config.accentColor.accents.warning
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "#ffffff"
 
-    height: columnLayout.childrenRect.height
-    anchors.left: parent.left
-    anchors.right: parent.right
+    Layout.preferredWidth: 158
+    Layout.preferredHeight: columnLayout.implicitHeight
 
     ColumnLayout {
         id: columnLayout

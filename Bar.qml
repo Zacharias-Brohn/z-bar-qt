@@ -1,11 +1,15 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.Modules
+import qs.Modules.Bar
 import qs.Config
 import qs.Helpers
+import qs.Drawers
 
 Scope {
     Variants {
@@ -16,11 +20,12 @@ Scope {
             required property var modelData
             property bool trayMenuVisible: false
             screen: modelData
+            color: "transparent"
             property var root: Quickshell.shellDir
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
             PanelWindow {
-                id: wrapper
+                id: exclusionZone
                 screen: bar.screen
                 WlrLayershell.layer: WlrLayer.Bottom
                 anchors {
@@ -49,99 +54,89 @@ Scope {
                 bottom: true
             }
 
-            mask: Region { item: backgroundRect }
+            mask: Region {
+                x: 0
+                y: 34
 
-            color: "transparent"
+                width: bar.width
+                height: bar.screen.height - backgroundRect.implicitHeight
+                intersection: Intersection.Xor
 
-            Rectangle {
-                id: backgroundRect
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                implicitHeight: 34
-                color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
-                radius: 0
+                regions: popoutRegions.instances
+            }
 
-                Behavior on color {
-                    CAnim {}
+            Variants {
+                id: popoutRegions
+                model: panels.children
+                
+                Region {
+                    required property Item modelData
+
+                    x: modelData.x
+                    y: modelData.y + backgroundRect.implicitHeight
+                    width: modelData.width
+                    height: modelData.height
+                    intersection: Intersection.Subtract
+                }
+            }
+
+            Item {
+                anchors.fill: parent
+                Backgrounds {
+                    panels: panels
+                    bar: backgroundRect
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+
+                onContainsMouseChanged: {
+                    if ( !containsMouse ) {
+                        panels.popouts.hasCurrent = false;
+                    }
                 }
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 5
-                    anchors.rightMargin: 5
-
-                    RowLayout {
-                        id: leftSection
-                        Layout.fillHeight: true
-                        Layout.preferredWidth: leftSection.childrenRect.width
-
-                        Workspaces {
-                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                            bar: bar
-                        }
-
-                        AudioWidget {
-                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                        }
-
-                        Resources {
-                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                        }
-
-                        UpdatesWidget {
-                            Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-                            countUpdates: Updates.availableUpdates
-                        }
-                    }
-
-                    RowLayout {
-                        id: centerSection
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                    }
-
-                    RowLayout {
-                        id: rightSection
-                        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-
-                        TrayWidget {
-                            id: systemTrayModule
-                            bar: bar
-                            Layout.alignment: Qt.AlignVCenter
-                        }
-
-                        Clock {
-                            Layout.alignment: Qt.AlignVCenter
-                        }
-
-                        Text {
-                            id: notificationCenterIcon
-                            property color iconColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "white"
-                            Layout.alignment: Qt.AlignVCenter
-                            text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
-                            font.family: "Material Symbols Rounded"
-                            font.pixelSize: 20
-                            color: iconColor
-
-                            Behavior on color {
-                                CAnim {}
-                            }
-
-                            MouseArea {
-                                anchors.fill: parent
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: {
-                                    ncProcess.running = true
-                                }
-                            }
-                        }
+                onPositionChanged: event => {
+                    if ( mouseY < backgroundRect.implicitHeight ) {
+                        barLoader.checkPopout(mouseX);
                     }
                 }
-                WindowTitle {
-                    anchors.centerIn: parent
-                    width: Math.min( 300, parent.width * 0.4 )
-                    height: parent.height
-                    z: 1
+
+                Panels {
+                    id: panels
+                    screen: bar.modelData
+                    bar: backgroundRect
+                }
+
+                Rectangle {
+                    id: backgroundRect
+                    property Wrapper popouts: panels.popouts
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: parent.top
+                    implicitHeight: 34
+                    color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+                    radius: 0
+
+                    Behavior on color {
+                        CAnim {}
+                    }
+
+                    BarLoader {
+                        id: barLoader
+                        anchors.fill: parent
+                        popouts: panels.popouts
+                        bar: bar
+                    }
+
+                    WindowTitle {
+                        anchors.centerIn: parent
+                        width: Math.min( 300, parent.width * 0.4 )
+                        height: parent.height
+                        z: 1
+                    }
                 }
             }
         }

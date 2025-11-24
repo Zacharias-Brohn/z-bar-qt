@@ -8,38 +8,12 @@ import qs.Config
 import Caelestia
 import QtQuick.Effects
 
-MouseArea {
+Item {
     id: root
 
     required property SystemTrayItem item
     required property PanelWindow bar
-    property point globalPos
     property bool hasLoaded: false
-
-    implicitWidth: 24
-
-    hoverEnabled: true
-    acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-    onPositionChanged: {
-        globalPos = root.mapToItem(root.bar.backgroundRect, 0, 0);
-    }
-
-    Rectangle {
-        anchors.centerIn: parent
-        implicitHeight: 28
-        implicitWidth: 28
-        radius: 6
-        anchors.verticalCenter: parent.verticalCenter
-        color: root.containsMouse ? Config.colors.backgrounds.hover : "transparent"
-
-        Behavior on color {
-            ColorAnimation {
-                duration: MaterialEasing.expressiveEffectsTime
-                easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        }
-    }
 
     Image {
         id: icon
@@ -58,22 +32,5 @@ MouseArea {
         sourceSize.height: ( batteryHDPI || nmHDPI ) ? 16 : 22
         fillMode: Image.PreserveAspectFit
 
-        TrayMenu {
-            id: trayMenu
-            trayMenu: root.item?.menu
-            trayItemRect: root.globalPos
-            bar: root.bar
-        }
-    }
-
-    onClicked: {
-        if ( mouse.button === Qt.LeftButton ) {
-            root.item.activate();
-        } else if ( mouse.button === Qt.RightButton ) {
-            trayMenu.trayMenu = null;
-            trayMenu.trayMenu = root.item?.menu;
-            trayMenu.visible = !trayMenu.visible;
-            trayMenu.focusGrab = true;
-        }
     }
 }

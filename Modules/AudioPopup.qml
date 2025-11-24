@@ -9,34 +9,13 @@ import qs.Config
 import qs.Components
 import qs.Daemons
 
-CustomRect {
+Item {
     id: root
 
     implicitWidth: layout.implicitWidth + 10 * 2
-    implicitHeight: 0
-    color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : "#40000000"
-    clip: true
+    implicitHeight: layout.implicitHeight + 10 * 2
 
-    property alias expanded: root.isExpanded
-    property bool isExpanded: false
-
-    Anim {
-        id: expandAnim
-        running: root.isExpanded
-        target: root
-        property: "implicitHeight"
-        to: layout.implicitHeight + 10 * 2
-        duration: MaterialEasing.standardTime
-    }
-
-    Anim {
-        id: collapseAnim
-        running: !root.isExpanded
-        target: root
-        property: "implicitHeight"
-        to: 0
-        duration: MaterialEasing.standardTime
-    }
+    required property var wrapper
 
     ButtonGroup {
         id: sinks
@@ -49,8 +28,8 @@ CustomRect {
     ColumnLayout {
         id: layout
 
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
         spacing: 12
 
         CustomText {
@@ -95,20 +74,13 @@ CustomRect {
         CustomText {
             Layout.topMargin: 10
             Layout.bottomMargin: -7 / 2
-            text: qsTr("Volume (%1)").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
+            text: qsTr("Output Volume (%1)").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`)
             font.weight: 500
         }
 
         CustomMouseArea {
             Layout.fillWidth: true
             implicitHeight: 10 * 3
-
-            onWheel: event => {
-                if (event.angleDelta.y > 0)
-                    Audio.incrementVolume();
-                else if (event.angleDelta.y < 0)
-                    Audio.decrementVolume();
-            }
 
             CustomSlider {
                 anchors.left: parent.left
@@ -117,6 +89,31 @@ CustomRect {
 
                 value: Audio.volume
                 onMoved: Audio.setVolume(value)
+
+                Behavior on value {
+                    Anim {}
+                }
+            }
+        }
+
+        CustomText {
+            Layout.topMargin: 10
+            Layout.bottomMargin: -7 / 2
+            text: qsTr("Input Volume (%1)").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`)
+            font.weight: 500
+        }
+
+        CustomMouseArea {
+            Layout.fillWidth: true
+            implicitHeight: 10 * 3
+
+            CustomSlider {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                implicitHeight: parent.implicitHeight
+
+                value: Audio.sourceVolume
+                onMoved: Audio.setSourceVolume(value)
 
                 Behavior on value {
                     Anim {}
@@ -138,7 +135,6 @@ CustomRect {
                 color: DynamicColors.palette.m3onPrimaryContainer
 
                 function onClicked(): void {
-                    root.isExpanded = !root.isExpanded;
                     Quickshell.execDetached(["app2unit", "--", "pavucontrol"]);
                 }
             }

@@ -1,79 +1,64 @@
-pragma ComponentBehavior: Bound
-
 import QtQuick
-import qs.Helpers
+import QtQuick.Shapes
 import qs.Config
 
-Item {
+ShapePath {
     id: root
 
-    property string source: SearchWallpapers.current
-    property Image current: one
+    required property Wrapper wrapper
+    readonly property real rounding: 8
+    readonly property bool flatten: wrapper.height < rounding * 2
+    readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 
-    anchors.fill: parent
+    strokeWidth: -1
+    fillColor: DynamicColors.tPalette.m3surface
 
-    onSourceChanged: {
-        if (!source) {
-            current = null;
-        } else if (current === one) {
-            two.update();
-        } else {
-            one.update();
-        }
+    PathArc {
+        relativeX: root.rounding
+        relativeY: root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
     }
 
-    Component.onCompleted: {
-        console.log(root.source)
-        if (source)
-            Qt.callLater(() => one.update());
+    PathLine {
+        relativeX: 0
+        relativeY: root.wrapper.height - root.roundingY * 2
     }
 
-    Img {
-        id: one
+    PathArc {
+        relativeX: root.rounding
+        relativeY: root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+        direction: PathArc.Counterclockwise
     }
 
-    Img {
-        id: two
+    PathLine {
+        relativeX: root.wrapper.width - root.rounding * 2
+        relativeY: 0
     }
 
-    component Img: CachingImage {
-        id: img
+    PathArc {
+        relativeX: root.rounding
+        relativeY: -root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+        direction: PathArc.Counterclockwise
+    }
 
-        function update(): void {
-            if (path === root.source) {
-                root.current = this;
-            } else {
-                path = root.source;
-            }
-        }
+    PathLine {
+        relativeX: 0
+        relativeY: -(root.wrapper.height - root.roundingY * 2)
+    }
 
-        anchors.fill: parent
+    PathArc {
+        relativeX: root.rounding
+        relativeY: -root.roundingY
+        radiusX: root.rounding
+        radiusY: Math.min(root.rounding, root.wrapper.height)
+    }
 
-        opacity: 0
-        scale: SearchWallpapers.showPreview ? 1 : 0.8
-        asynchronous: true
-        onStatusChanged: {
-            if (status === Image.Ready) {
-                root.current = this;
-            }
-        }
-
-        states: State {
-            name: "visible"
-            when: root.current === img
-
-            PropertyChanges {
-                img.opacity: 1
-                img.scale: 1
-            }
-        }
-
-        transitions: Transition {
-            Anim {
-                target: img
-                properties: "opacity,scale"
-                duration: Config.background.wallFadeDuration
-            }
-        }
+    Behavior on fillColor {
+        CAnim {}
     }
 }

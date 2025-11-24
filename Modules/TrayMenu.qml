@@ -8,6 +8,8 @@ import Qt5Compat.GraphicalEffects
 import Quickshell.Hyprland
 import QtQml
 import qs.Effects
+import qs.Config
+import qs.Modules
 
 PanelWindow {
     id: root
@@ -23,6 +25,12 @@ PanelWindow {
     property int entryHeight: 30
     property int biggestWidth: 0
     property int menuItemCount: menuOpener.children.values.length
+
+    property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+    property color highlightColor: Config.useDynamicColors ? DynamicColors.tPalette.m3primaryContainer : "#15FFFFFF"
+    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
+    property color disabledHighlightColor: Config.useDynamicColors ? DynamicColors.layer(DynamicColors.palette.m3primaryContainer, 0) : "#08FFFFFF"
+    property color disabledTextColor: Config.useDynamicColors ? DynamicColors.layer(DynamicColors.palette.m3onSurface, 0) : "#80FFFFFF"
 
     QsMenuOpener {
         id: menuOpener
@@ -183,8 +191,9 @@ PanelWindow {
         y: Math.round( root.trayItemRect.y - 5 )
         implicitWidth: listLayout.contentWidth + 10
         implicitHeight: listLayout.contentHeight + ( root.menuStack.length > 0 ? root.entryHeight + 10 : 10 )
-        color: "#80151515"
+        color: root.backgroundColor
         radius: 8
+        border.width: Config.useDynamicColors ? 0 : 1
         border.color: "#40FFFFFF"
         clip: true
 
@@ -218,7 +227,7 @@ PanelWindow {
                 id: listLayout
                 Layout.fillWidth: true
                 Layout.preferredHeight: contentHeight
-                spacing: 2
+                spacing: 0
                 contentWidth: root.biggestWidth
                 contentHeight: contentItem.childrenRect.height
                 model: menuOpener.children
@@ -236,9 +245,15 @@ PanelWindow {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: menuItem.modelData.isSeparator ? 1 : root.entryHeight
-                    color: menuItem.modelData.isSeparator ? "#20FFFFFF" : containsMouseAndEnabled ? "#15FFFFFF" : containsMouseAndNotEnabled ? "#08FFFFFF" : "transparent"
+                    color: menuItem.modelData.isSeparator ? "#20FFFFFF" : containsMouseAndEnabled ? root.highlightColor : containsMouseAndNotEnabled ? root.disabledHighlightColor : "transparent"
                     radius: 4
                     visible: true
+
+                    Behavior on color {
+                        CAnim {
+                            duration: 150
+                        }
+                    }
 
                     Component.onCompleted: {
                         var biggestWidth = root.biggestWidth;
@@ -284,7 +299,7 @@ PanelWindow {
                             Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
                             Layout.leftMargin: 10
                             text: menuItem.modelData.text
-                            color: menuItem.modelData.enabled ? "white" : "gray"
+                            color: menuItem.modelData.enabled ? root.textColor : root.disabledTextColor
                         }
                         Image {
                             id: iconImage

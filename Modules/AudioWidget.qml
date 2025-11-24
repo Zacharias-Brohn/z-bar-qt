@@ -53,19 +53,11 @@ Item {
             border.width: 0
         }
 
-        AudioPopup {
-            id: audioPopup
-            anchors.left: parent.left
-            anchors.top: parent.bottom
-        }
-
         MouseArea {
             id: mouseArea
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onEntered: audioPopup.expanded = true
-            onExited: audioPopup.expanded = false
 
             RowLayout {
                 anchors {

@@ -26,7 +26,7 @@ Loader {
                 right: true
                 bottom: true
             }
-            Background {}
+            WallBackground {}
         }
     }
 }

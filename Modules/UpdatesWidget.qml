@@ -5,7 +5,7 @@ import qs.Config
 
 Item {
     id: root
-    required property int countUpdates
+    property int countUpdates: Updates.availableUpdates
     implicitWidth: contentRow.childrenRect.width + 10
     implicitHeight: 22
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
