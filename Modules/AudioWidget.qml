@@ -13,6 +13,7 @@ Item {
 
     property bool expanded: false
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
+    property color barColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : "#ffffff"
 
     Behavior on implicitWidth {
         NumberAnimation {
@@ -82,7 +83,7 @@ Item {
 
                     implicitWidth: parent.width * ( Pipewire.defaultAudioSink?.audio.volume ?? 0 )
                     radius: parent.radius
-                    color: root.textColor
+                    color: root.barColor
                 }
             }
 
@@ -90,7 +91,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: Pipewire.defaultAudioSource?.audio.muted ? "mic_off" : "mic"
-                color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3error : "#ff4444") : root.textColor
+                color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3onError : "#ff4444") : root.textColor
             }
 
             Rectangle {
@@ -110,7 +111,7 @@ Item {
 
                     implicitWidth: parent.width * ( Pipewire.defaultAudioSource?.audio.volume ?? 0 )
                     radius: parent.radius
-                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3error : "#ff4444") : root.textColor
+                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3onError : "#ff4444") : root.barColor
 
                     Behavior on color {
                         CAnim {}
