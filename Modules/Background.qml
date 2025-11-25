@@ -11,7 +11,7 @@ ShapePath {
     readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 
     strokeWidth: -1
-    fillColor: DynamicColors.tPalette.m3surface
+    fillColor: DynamicColors.palette.m3surface
 
     PathArc {
         relativeX: root.rounding

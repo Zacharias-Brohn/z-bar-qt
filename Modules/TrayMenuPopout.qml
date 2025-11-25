@@ -182,7 +182,7 @@ StackView {
 
                 Item {
                     anchors.bottom: parent.bottom
-                    implicitWidth: back.implicitWidth
+                    implicitWidth: back.implicitWidth + 10
                     implicitHeight: back.implicitHeight
 
                     CustomRect {

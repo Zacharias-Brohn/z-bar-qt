@@ -45,7 +45,7 @@ RowLayout {
             const trayItem = item.items.itemAt(index);
             if (trayItem) {
                 popouts.currentName = `traymenu${index}`;
-                popouts.currentCenter = Qt.binding(() => trayItem.mapToItem(root, trayItem.implicitWidth / 2, 0).x);
+                popouts.currentCenter = Qt.binding(() => trayItem.mapToItem(root, trayItem.implicitWidth / 2 + 4, 0).x);
                 popouts.hasCurrent = true;
             } else {
                 popouts.hasCurrent = false;

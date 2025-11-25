@@ -80,7 +80,7 @@ Item {
 
         CustomMouseArea {
             Layout.fillWidth: true
-            implicitHeight: 10 * 3
+            implicitHeight: 10
 
             CustomSlider {
                 anchors.left: parent.left
@@ -105,7 +105,7 @@ Item {
 
         CustomMouseArea {
             Layout.fillWidth: true
-            implicitHeight: 10 * 3
+            implicitHeight: 10
 
             CustomSlider {
                 anchors.left: parent.left
@@ -128,7 +128,7 @@ Item {
             implicitWidth: expandBtn.implicitWidth + 10 * 2
             implicitHeight: expandBtn.implicitHeight + 5
 
-            radius: 17
+            radius: 4
             color: DynamicColors.palette.m3primaryContainer
 
             StateLayer {
@@ -136,6 +136,7 @@ Item {
 
                 function onClicked(): void {
                     Quickshell.execDetached(["app2unit", "--", "pavucontrol"]);
+                    root.wrapper.hasCurrent = false;
                 }
             }
 
@@ -152,6 +153,7 @@ Item {
                 }
 
                 MaterialIcon {
+                    Layout.topMargin: 2
                     text: "chevron_right"
                     color: DynamicColors.palette.m3onPrimaryContainer
                     font.pointSize: 18

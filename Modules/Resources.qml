@@ -7,6 +7,7 @@ import Quickshell.Wayland
 import qs.Modules
 import qs.Config
 import qs.Effects
+import qs.Components
 
 Item {
     id: root
@@ -31,15 +32,11 @@ Item {
             anchors.leftMargin: 5
             anchors.rightMargin: 5
 
-            Text {
+            MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
-                font.family: "Material Symbols Rounded"
                 font.pixelSize: 18
-                text: "\uf7a3"
+                text: "memory_alt"
                 color: root.textColor
-                Behavior on color {
-                    CAnim {}
-                }
             }
 
             Resource {
@@ -47,15 +44,11 @@ Item {
                 warningThreshold: 95
             }
 
-            Text {
+            MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
-                font.family: "Material Symbols Rounded"
                 font.pixelSize: 18
-                text: "\ue322"
+                text: "memory"
                 color: root.textColor
-                Behavior on color {
-                    CAnim {}
-                }
             }
 
             Resource {
@@ -63,30 +56,22 @@ Item {
                 warningThreshold: 80
             }
 
-            Text {
+            MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
-                font.family: "Material Symbols Rounded"
-                font.pixelSize: 16
-                text: "\ue30f"
+                font.pixelSize: 18
+                text: "gamepad"
                 color: root.textColor
-                Behavior on color {
-                    CAnim {}
-                }
             }
 
             Resource {
                 percentage: ResourceUsage.gpuUsage
             }
 
-            Text {
+            MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
-                font.family: "Material Symbols Rounded"
                 font.pixelSize: 18
-                text: "\ue30d"
+                text: "developer_board"
                 color: root.textColor
-                Behavior on color {
-                    CAnim {}
-                }
             }
 
             Resource {

@@ -1,11 +1,12 @@
 import QtQuick
 import qs.Config
 import qs.Helpers
+import qs.Components
 
 Item {
     implicitWidth: 20
     implicitHeight: 18
-    Text {
+    MaterialIcon {
         id: notificationCenterIcon
         property color iconColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "white"
         text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"

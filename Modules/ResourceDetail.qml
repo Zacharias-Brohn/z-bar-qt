@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import qs.Config
+import qs.Components
 
 Item {
     id: root
@@ -27,17 +28,17 @@ Item {
             Layout.alignment: Qt.AlignLeft
             Layout.fillWidth: true
 
-            Text {
+            MaterialIcon {
                 font.family: "Material Symbols Rounded"
-                font.pixelSize: 32
+                font.pointSize: 28
                 text: root.iconString
                 color: root.textColor
             }
 
-            Text {
+            CustomText {
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.resourceName
-                font.pixelSize: 14
+                font.pointSize: 12
                 color: root.textColor
             }
         }
@@ -64,10 +65,10 @@ Item {
             }
         }
 
-        Text {
+        CustomText {
             Layout.alignment: Qt.AlignLeft
             text: root.details
-            font.pixelSize: 12
+            font.pointSize: 10
             color: "#cccccc"
         }
     }

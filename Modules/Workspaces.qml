@@ -63,9 +63,9 @@ Item {
                     height: 16
                     radius: height / 2
 
-                    color: modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3inverseOnSurface : "#606060" )
+                    color: modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3outline : "#606060" )
 
-                    border.color: modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3onPrimary : Config.accentColor.accents.primaryAlt ) : ( Config.useDynamicColors ? DynamicColors.palette.m3inverseOnSurface : "#808080" )
+                    border.color: modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3onPrimary : Config.accentColor.accents.primaryAlt ) : ( Config.useDynamicColors ? DynamicColors.palette.m3outlineVariant : "#808080" )
                     border.width: 1
 
                     visible: root.shouldShow( modelData.monitor )

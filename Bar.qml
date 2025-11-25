@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
@@ -72,16 +73,28 @@ Scope {
                 Region {
                     required property Item modelData
 
-                    x: modelData.x
+                    x: modelData.x + 9
                     y: modelData.y + backgroundRect.implicitHeight
                     width: modelData.width
-                    height: modelData.height
+                    height: panels.popouts.hasCurrent ? modelData.height + 70 : 0
                     intersection: Intersection.Subtract
                 }
             }
 
             Item {
                 anchors.fill: parent
+                opacity: Config.transparency.enabled ? DynamicColors.transparency.base : 1
+                layer.enabled: true
+                layer.effect: MultiEffect {
+                    shadowEnabled: true
+                    blurMax: 32
+                    shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 1)
+                }
+
+                Border {
+                    bar: backgroundRect
+                }
+
                 Backgrounds {
                     panels: panels
                     bar: backgroundRect
@@ -117,7 +130,7 @@ Scope {
                     anchors.right: parent.right
                     anchors.top: parent.top
                     implicitHeight: 34
-                    color: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+                    color: "transparent"
                     radius: 0
 
                     Behavior on color {

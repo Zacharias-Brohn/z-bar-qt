@@ -41,8 +41,9 @@ Slider {
     handle: CustomRect {
         x: root.visualPosition * root.availableWidth - implicitWidth / 2
 
-        implicitWidth: root.implicitHeight / 4.5
-        implicitHeight: root.implicitHeight
+        implicitWidth: 5
+        implicitHeight: 15
+        anchors.verticalCenter: parent.verticalCenter
 
         color: DynamicColors.palette.m3primary
         radius: 1000

@@ -19,6 +19,7 @@ Singleton {
     property alias background: adapter.background
     property alias useDynamicColors: adapter.useDynamicColors
     property alias barConfig: adapter.barConfig
+    property alias transparency: adapter.transparency
 
     FileView {
         id: root
@@ -46,6 +47,7 @@ Singleton {
             property BackgroundConfig background: BackgroundConfig {}
             property bool useDynamicColors: false
             property BarConfig barConfig: BarConfig {}
+            property Transparency transparency: Transparency {}
         }
     }
 }

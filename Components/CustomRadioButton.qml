@@ -14,8 +14,8 @@ RadioButton {
     indicator: Rectangle {
         id: outerCircle
 
-        implicitWidth: 20
-        implicitHeight: 20
+        implicitWidth: 16
+        implicitHeight: 16
         radius: 1000
         color: "transparent"
         border.color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
