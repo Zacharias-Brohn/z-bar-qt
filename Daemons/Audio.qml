@@ -1,7 +1,6 @@
 pragma Singleton
 
 import qs.Config
-import Caelestia.Services
 import Quickshell
 import Quickshell.Services.Pipewire
 import QtQuick
@@ -36,8 +35,6 @@ Singleton {
 
     readonly property bool sourceMuted: !!source?.audio?.muted
     readonly property real sourceVolume: source?.audio?.volume ?? 0
-
-    readonly property alias beatTracker: beatTracker
 
     function setVolume(newVolume: real): void {
         if (sink?.ready && sink?.audio) {
@@ -102,9 +99,5 @@ Singleton {
 
     PwObjectTracker {
         objects: [...root.sinks, ...root.sources]
-    }
-
-    BeatTracker {
-        id: beatTracker
     }
 }
