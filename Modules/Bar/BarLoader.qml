@@ -38,7 +38,7 @@ RowLayout {
             popouts.hasCurrent = true;
         } else if ( id === "resources" && Config.barConfig.popouts.resources ) {
             popouts.currentName = "resources";
-            popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
+            popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2 + 5, 0).x);
             popouts.hasCurrent = true;
         } else if (id === "tray" && Config.barConfig.popouts.tray) {
             const index = Math.floor(((x - top - 6) / item.implicitWidth) * item.items.count);

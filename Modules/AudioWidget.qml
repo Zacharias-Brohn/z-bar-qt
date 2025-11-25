@@ -84,6 +84,10 @@ Item {
                     implicitWidth: parent.width * ( Pipewire.defaultAudioSink?.audio.volume ?? 0 )
                     radius: parent.radius
                     color: root.barColor
+
+                    Behavior on color {
+                        CAnim {}
+                    }
                 }
             }
 

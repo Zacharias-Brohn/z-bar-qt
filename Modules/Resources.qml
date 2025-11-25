@@ -24,6 +24,9 @@ Item {
         implicitHeight: 22
         color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
         radius: height / 2
+        Behavior on color {
+            CAnim {}
+        }
         RowLayout {
             id: rowLayout
 
