@@ -20,6 +20,7 @@ Singleton {
     property alias useDynamicColors: adapter.useDynamicColors
     property alias barConfig: adapter.barConfig
     property alias transparency: adapter.transparency
+    property alias baseFont: adapter.baseFont
 
     FileView {
         id: root
@@ -48,6 +49,7 @@ Singleton {
             property bool useDynamicColors: false
             property BarConfig barConfig: BarConfig {}
             property Transparency transparency: Transparency {}
+            property string baseFont: "Segoe UI Variable Text"
         }
     }
 }

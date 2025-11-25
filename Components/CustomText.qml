@@ -16,7 +16,7 @@ Text {
     renderType: Text.NativeRendering
     textFormat: Text.PlainText
     color: DynamicColors.palette.m3onSurface
-    font.family: "Segoe UI Variable Text"
+    font.family: Config.baseFont
     font.pointSize: 12
 
     Behavior on color {
