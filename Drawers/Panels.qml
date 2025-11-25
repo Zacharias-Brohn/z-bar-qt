@@ -27,7 +27,7 @@ Item {
             const diff = root.width - Math.floor(off + nonAnimWidth);
             if (diff < 0)
                 return off + diff;
-            return Math.max(off, 0);
+            return Math.floor(Math.max(off, 0));
         }
     }
 }

@@ -16,7 +16,7 @@ Shape {
     Modules.Background {
         wrapper: root.panels.popouts
 
-        startX: Math.floor(wrapper.x - rounding)
+        startX: wrapper.x - rounding
         startY: wrapper.y
     }
 }
