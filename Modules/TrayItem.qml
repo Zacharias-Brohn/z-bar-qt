@@ -5,7 +5,6 @@ import Quickshell.Io
 import Quickshell.Widgets
 import qs.Modules
 import qs.Config
-import Caelestia
 import QtQuick.Effects
 
 Item {
@@ -31,6 +30,5 @@ Item {
         sourceSize.width: ( batteryHDPI || nmHDPI ) ? 16 : 22
         sourceSize.height: ( batteryHDPI || nmHDPI ) ? 16 : 22
         fillMode: Image.PreserveAspectFit
-
     }
 }
