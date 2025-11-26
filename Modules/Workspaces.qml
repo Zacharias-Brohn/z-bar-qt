@@ -7,6 +7,7 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import qs.Config
+import qs.Components
 
 Item {
     id: itemRoot
@@ -18,7 +19,7 @@ Item {
 
         property HyprlandMonitor monitor: Hyprland.monitorFor( itemRoot.bar?.screen )
 
-        implicitWidth: workspacesRow.implicitWidth + 6
+        implicitWidth: workspacesRow.implicitWidth + 10
         implicitHeight: 22
 
         function shouldShow(monitor) {
@@ -49,69 +50,71 @@ Item {
             id: workspacesRow
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 3
+            anchors.leftMargin: 6
             spacing: 8
 
             Repeater {
                 model: Hyprland.workspaces
 
-                Rectangle {
+                RowLayout {
                     id: workspaceIndicator
                     required property var modelData
+                    visible: root.shouldShow( workspaceIndicator.modelData.monitor )
+                    CustomText {
+                        text: workspaceIndicator.modelData.name
+                        font.pointSize: 12
+                        color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3onSurfaceVariant : "#606060" )
+                        visible: true
+                    }
 
-                    width: 16
-                    height: 16
-                    radius: height / 2
+                    Rectangle {
 
-                    color: modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3outline : "#606060" )
+                        implicitWidth: 14
+                        implicitHeight: 14
+                        radius: height / 2
+                        border.width: 1
 
-                    border.color: modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3onPrimary : Config.accentColor.accents.primaryAlt ) : ( Config.useDynamicColors ? DynamicColors.palette.m3outlineVariant : "#808080" )
-                    border.width: 1
+                        color: "transparent"
+                        border.color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3onSurfaceVariant : "#606060" )
 
-                    visible: root.shouldShow( modelData.monitor )
 
-                    scale: 1.0
-                    opacity: 1.0
+                        scale: 1.0
+                        opacity: 1.0
 
-                    Behavior on color {
-                        ColorAnimation {
-                            duration: 150
-                            easing.type: Easing.InOutQuad
+                        CustomRect {
+                            anchors.centerIn: parent
+                            implicitWidth: 8
+                            implicitHeight: 8
+
+                            radius: implicitHeight / 2
+                            color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : "transparent"
                         }
-                    }
 
-                    Behavior on border.color {
-                        ColorAnimation {
-                            duration: 150
-                            easing.type: Easing.InOutQuad
+                        Behavior on border.color {
+                            ColorAnimation {
+                                duration: 150
+                                easing.type: Easing.InOutQuad
+                            }
                         }
-                    }
 
-                    NumberAnimation on scale {
-                        from: 0.0
-                        to: 1.0
-                        duration: 300
-                        easing.type: Easing.OutBack
-                    }
-                    
-                    NumberAnimation on opacity {
-                        from: 0.0
-                        to: 1.0
-                        duration: 200
-                    }
+                        NumberAnimation on scale {
+                            from: 0.0
+                            to: 1.0
+                            duration: 300
+                            easing.type: Easing.OutBack
+                        }
+                        
+                        NumberAnimation on opacity {
+                            from: 0.0
+                            to: 1.0
+                            duration: 200
+                        }
 
-                    // Text {
-                    //     anchors.centerIn: parent
-                    //     text: modelData.id
-                    //     font.pixelSize: 10
-                    //     font.family: "Rubik"
-                    //     color: modelData.id === Hyprland.focusedWorkspace.id ? Config.workspaceWidget.textColor : Config.workspaceWidget.inactiveTextColor
-                    // }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            Hyprland.dispatch("workspace " + modelData.id)
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                workspaceIndicator.modelData.activate();
+                            }
                         }
                     }
                 }

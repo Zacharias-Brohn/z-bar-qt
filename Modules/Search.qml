@@ -16,7 +16,7 @@ Searcher {
 
         Quickshell.execDetached({
             command: ["app2unit", "--", ...entry.command],
-            workingDirectory: entry.workingDirectory
+            workingDirectory: entry.workingDirectory || Quickshell.env("HOME")
         });
     }
 

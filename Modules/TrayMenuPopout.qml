@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Widgets
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 
 StackView {
     id: root
@@ -13,6 +14,7 @@ StackView {
     required property Item popouts
     required property QsMenuHandle trayItem
 
+    property int rootWidth: 0
     property int biggestWidth: 0
 
     implicitWidth: currentItem.implicitWidth
@@ -97,12 +99,14 @@ StackView {
 
                             function onClicked(): void {
                                 const entry = item.modelData;
-                                if (entry.hasChildren)
+                                if (entry.hasChildren) {
+                                    root.rootWidth = root.biggestWidth;
+                                    root.biggestWidth = 0;
                                     root.push(subMenuComp.createObject(null, {
                                         handle: entry,
                                         isSubMenu: true
                                     }));
-                                else {
+                                } else {
                                     item.modelData.triggered();
                                     root.popouts.hasCurrent = false;
                                 }
@@ -119,10 +123,22 @@ StackView {
                             active: item.modelData.icon !== ""
                             asynchronous: true
 
-                            sourceComponent: IconImage {
-                                implicitSize: label.implicitHeight
+                            sourceComponent: Item {
+                                implicitHeight: label.implicitHeight
+                                implicitWidth: label.implicitHeight
+                                IconImage {
+                                    id: iconImage
+                                    implicitSize: parent.implicitHeight
+                                    source: item.modelData.icon
+                                    visible: false
+                                }
 
-                                source: item.modelData.icon
+                                MultiEffect {
+                                    anchors.fill: iconImage
+                                    source: iconImage
+                                    colorization: 1.0
+                                    colorizationColor: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
+                                }
                             }
                         }
 
@@ -187,7 +203,7 @@ StackView {
 
                     CustomRect {
                         anchors.fill: parent
-                        radius: 1000
+                        radius: 4
                         color: DynamicColors.palette.m3secondaryContainer
 
                         StateLayer {
@@ -196,6 +212,7 @@ StackView {
 
                             function onClicked(): void {
                                 root.pop();
+                                root.biggestWidth = root.rootWidth;
                             }
                         }
                     }
