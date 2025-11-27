@@ -85,8 +85,6 @@ TextField {
                 launcherWindow.visible = false;
             } else if ( wallpaperPickerLoader.active ) {
                 SearchWallpapers.setWallpaper(wallpaperPickerLoader.item.currentItem.modelData.path)
-                if ( Config.useDynamicColors )
-                    Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${wallpaperPickerLoader.item.currentItem.modelData.path}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`]);
                 if ( Config.wallust ) {
                     Wallust.generateColors(WallpaperPath.currentWallpaperPath);
                 }

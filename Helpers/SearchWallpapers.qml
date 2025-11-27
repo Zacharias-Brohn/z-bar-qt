@@ -2,10 +2,11 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
+import ZShell.Models
 import qs.Config
 import qs.Modules
 import qs.Helpers
-import ZShell.Models
+import qs.Paths
 
 Searcher {
     id: root
@@ -27,6 +28,7 @@ Searcher {
 
     function stopPreview(): void {
         showPreview = false;
+        Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${root.actualCurrent}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`]);
     }
 
     list: wallpapers.entries
