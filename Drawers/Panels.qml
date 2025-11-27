@@ -21,6 +21,8 @@ Item {
 
         screen: root.screen
 
+        anchors.top: parent.top
+
         x: {
             const off = currentCenter - nonAnimWidth / 2;
             const diff = root.width - Math.floor(off + nonAnimWidth);

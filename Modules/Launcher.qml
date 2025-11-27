@@ -3,11 +3,10 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
-import QtQuick.Layouts
 import qs.Config
 import qs.Helpers
 import qs.Effects
+import qs.Paths
 
 Scope {
     id: root
@@ -267,6 +266,7 @@ Scope {
                         onCurrentItemChanged: {
                             if ( currentItem )
                                 SearchWallpapers.preview( currentItem.modelData.path );
+                                Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${currentItem.modelData.path}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`]);
                         }
 
                         cacheItemCount: 5
@@ -374,14 +374,6 @@ Scope {
                                     appListView.delegate: noResultsItem
                                 }
                             }
-                            // State {
-                            //     name: "wallpaperpicker"
-                            //     PropertyChanges {
-                            //         appModel.values: SearchWallpapers.query( searchInput.text.split(" ").slice(1).join(" ") )
-                            //         appListView.delegate: wallpaperItem
-                            //         appListView.orientation: ListView.Horizontal
-                            //     }
-                            // }
                         ]
 
                         Component {

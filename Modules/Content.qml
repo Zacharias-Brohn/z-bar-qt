@@ -77,7 +77,9 @@ Item {
         required property string name
         readonly property bool shouldBeActive: root.wrapper.currentName === name
 
-        anchors.centerIn: parent
+        anchors.top: parent.top
+        anchors.topMargin: 5
+        anchors.horizontalCenter: parent.horizontalCenter
 
         opacity: 0
         scale: 0.8
