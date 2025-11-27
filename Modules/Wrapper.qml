@@ -71,8 +71,6 @@ Item {
 
         shouldBeActive: root.hasCurrent
         asynchronous: true
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
 
         sourceComponent: Content {
             wrapper: root

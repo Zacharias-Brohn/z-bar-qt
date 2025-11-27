@@ -11,8 +11,6 @@ import qs.Daemons
 RowLayout {
     id: root
     anchors.fill: parent
-    anchors.leftMargin: 5
-    anchors.rightMargin: 5
 
     readonly property int vPadding: 6
     required property Wrapper popouts
@@ -34,26 +32,22 @@ RowLayout {
 
         if (id === "audio" && Config.barConfig.popouts.audio) {
             popouts.currentName = "audio";
-            popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
+            popouts.currentCenter = Qt.binding( () => item.mapToItem(root, itemWidth / 2, 0 ).x );
             popouts.hasCurrent = true;
         } else if ( id === "resources" && Config.barConfig.popouts.resources ) {
             popouts.currentName = "resources";
-            popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2 + 5, 0).x);
+            popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
             popouts.hasCurrent = true;
-        } else if (id === "tray" && Config.barConfig.popouts.tray) {
-            const index = Math.floor(((x - top - 6) / item.implicitWidth) * item.items.count);
-            const trayItem = item.items.itemAt(index);
-            if (trayItem) {
-                popouts.currentName = `traymenu${index}`;
-                popouts.currentCenter = Qt.binding(() => trayItem.mapToItem(root, trayItem.implicitWidth / 2 + 4, 0).x);
+        } else if ( id === "tray" && Config.barConfig.popouts.tray ) {
+            const index = Math.floor((( x - top ) / item.implicitWidth ) * item.items.count );
+            const trayItem = item.items.itemAt( index );
+            if ( trayItem ) {
+                popouts.currentName = `traymenu${ index }`;
+                popouts.currentCenter = Qt.binding( () => trayItem.mapToItem( root, trayItem.implicitWidth / 2, 0 ).x );
                 popouts.hasCurrent = true;
             } else {
                 popouts.hasCurrent = false;
             }
-        } else if (id === "activeWindow" && Config.barConfig.popouts.activeWindow) {
-            popouts.currentName = id.toLowerCase();
-            popouts.currentCenter = item.mapToItem(root, 0, itemHeight / 2).y;
-            popouts.hasCurrent = true;
         }
     }
 
@@ -107,17 +101,13 @@ RowLayout {
             DelegateChoice {
                 roleValue: "notifBell"
                 delegate: WrappedLoader {
-                    sourceComponent: NotifBell {
-                        Layout.alignment: Qt.AlignHCenter
-                    }
+                    sourceComponent: NotifBell {}
                 }
             }
             DelegateChoice {
                 roleValue: "clock"
                 delegate: WrappedLoader {
-                    sourceComponent: Clock {
-                        Layout.alignment: Qt.AlignHCenter
-                    }
+                    sourceComponent: Clock {}
                 }
             }
             DelegateChoice {
@@ -133,6 +123,9 @@ RowLayout {
         required property bool enabled
         required property string id
         required property int index
+
+        Layout.alignment: Qt.AlignVCenter
+        Layout.fillHeight: true
 
         function findFirstEnabled(): Item {
             const count = repeater.count;
@@ -153,11 +146,8 @@ RowLayout {
             return null;
         }
 
-        Layout.alignment: Qt.AlignHCenter
-
-        // Cursed ahh thing to add padding to first and last enabled components
-        Layout.topMargin: findFirstEnabled() === this ? root.vPadding : 0
-        Layout.bottomMargin: findLastEnabled() === this ? root.vPadding : 0
+        Layout.leftMargin: findFirstEnabled() === this ? root.vPadding : 0
+        Layout.rightMargin: findLastEnabled() === this ? root.vPadding : 0
 
         visible: enabled
         active: enabled

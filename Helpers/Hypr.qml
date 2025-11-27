@@ -14,10 +14,14 @@ Singleton {
     readonly property var workspaces: Hyprland.workspaces
     readonly property var monitors: Hyprland.monitors
 
-    readonly property HyprlandToplevel activeToplevel: Hyprland.activeToplevel?.wayland?.activated ? Hyprland.activeToplevel : null
+    readonly property HyprlandToplevel activeToplevel: Hyprland.activeToplevel
     readonly property HyprlandWorkspace focusedWorkspace: Hyprland.focusedWorkspace
     readonly property HyprlandMonitor focusedMonitor: Hyprland.focusedMonitor
     readonly property int activeWsId: focusedWorkspace?.id ?? 1
+
+    property string activeName
+    property string applicationDir: "/usr/share/applications/"
+    property string desktopName: ""
 
     readonly property HyprKeyboard keyboard: extras.devices.keyboards.find(kb => kb.main) ?? null
     readonly property bool capsLock: keyboard?.capsLock ?? false
@@ -49,6 +53,19 @@ Singleton {
 
     Component.onCompleted: reloadDynamicConfs()
 
+    function updateActiveWindow(): void {
+        root.desktopName = root.applicationDir + root.activeToplevel?.lastIpcObject.class + ".desktop";
+    }
+
+    Connections {
+        target: Hyprland
+
+        function onRawEvent( event: HyprlandEvent ): void {
+            if ( event.name === "activewindow" ) {
+            }
+        }
+    }
+
     Connections {
         target: Hyprland
 
@@ -63,15 +80,38 @@ Singleton {
             } else if (["workspace", "moveworkspace", "activespecial", "focusedmon"].includes(n)) {
                 Hyprland.refreshWorkspaces();
                 Hyprland.refreshMonitors();
+                Qt.callLater( root.updateActiveWindow );
             } else if (["openwindow", "closewindow", "movewindow"].includes(n)) {
                 Hyprland.refreshToplevels();
                 Hyprland.refreshWorkspaces();
+                Qt.callLater( root.updateActiveWindow );
             } else if (n.includes("mon")) {
                 Hyprland.refreshMonitors();
+                Qt.callLater( root.updateActiveWindow );
             } else if (n.includes("workspace")) {
                 Hyprland.refreshWorkspaces();
+                Qt.callLater( root.updateActiveWindow );
             } else if (n.includes("window") || n.includes("group") || ["pin", "fullscreen", "changefloatingmode", "minimize"].includes(n)) {
                 Hyprland.refreshToplevels();
+                Qt.callLater( root.updateActiveWindow );
+            }
+        }
+    }
+
+    FileView {
+        id: desktopEntryName
+
+        path: root.desktopName
+
+        onLoaded: {
+            const lines = text().split( "\n" );
+            for ( const line of lines ) {
+                if ( line.startsWith( "Name=" )) {
+                    let name = line.replace( "Name=", "" );
+                    let caseFix = name[ 0 ].toUpperCase() + name.slice( 1 );
+                    root.activeName = caseFix;
+                    break;
+                }
             }
         }
     }

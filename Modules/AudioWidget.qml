@@ -9,7 +9,8 @@ import qs.Components
 Item {
     id: root
     implicitWidth: expanded ? 300 : 150
-    implicitHeight: 34
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
 
     property bool expanded: false
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"

@@ -14,8 +14,10 @@ Item {
     implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
     implicitHeight: 34
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
+    clip: true
 
     Rectangle {
+        id: backgroundRect
         anchors {
             left: parent.left
             right: parent.right

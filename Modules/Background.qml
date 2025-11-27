@@ -48,7 +48,7 @@ ShapePath {
 
     PathLine {
         relativeX: 0
-        relativeY: -(root.wrapper.height - root.roundingY * 2)
+        relativeY: -( root.wrapper.height - root.roundingY * 2 )
     }
 
     PathArc {

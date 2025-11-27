@@ -1,22 +1,18 @@
 pragma Singleton
-import Quickshell.Io
+
 import Quickshell
+import Quickshell.Hyprland
+import qs.Helpers
 
 Singleton {
-
     function getInitialTitle(callback) {
-        initialTitleProc.running = true
-        initialTitleProc.stdout.streamFinished.connect( function() {
-            let cleaned = initialTitleProc.stdout.text.trim().replace(/\"/g, "")
-            callback(cleaned === "null" ? "" : cleaned)
-        })
-    }
+        let activeWindow = Hypr.activeToplevel.title
+        let activeClass = Hypr.activeToplevel.lastIpcObject.class.toString()
+        let regex = new RegExp(activeClass, "i")
 
-    Process {
-        id: initialTitleProc
-        command: ["./scripts/initialTitle.sh"]
-        running: false
-        stdout: StdioCollector {
-        }
+        console.log("ActiveWindow", activeWindow, "ActiveClass", activeClass, "Regex", regex)
+
+        const evalTitle = activeWindow.match(regex)
+        callback(evalTitle)
     }
 }

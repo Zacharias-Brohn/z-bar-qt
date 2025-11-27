@@ -13,7 +13,7 @@ Item {
     readonly property alias popouts: popouts
 
     anchors.fill: parent
-    anchors.margins: 8
+    // anchors.margins: 8
     anchors.topMargin: bar.implicitHeight
 
     Modules.Wrapper {
@@ -21,13 +21,12 @@ Item {
 
         screen: root.screen
 
-        anchors.top: parent.top
         x: {
-            const off = currentCenter - 8 - nonAnimWidth / 2;
+            const off = currentCenter - nonAnimWidth / 2;
             const diff = root.width - Math.floor(off + nonAnimWidth);
-            if (diff < 0)
+            if ( diff < 0 )
                 return off + diff;
-            return Math.floor(Math.max(off, 0));
+            return Math.floor( Math.max( off, 0 ));
         }
     }
 }

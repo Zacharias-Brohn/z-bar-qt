@@ -12,14 +12,17 @@ import qs.Components
 Item {
     id: itemRoot
     required property PanelWindow bar
-    implicitHeight: 28
-    implicitWidth: root.implicitWidth
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
+    implicitWidth: workspacesRow.implicitWidth + 10
     Rectangle {
         id: root
 
         property HyprlandMonitor monitor: Hyprland.monitorFor( itemRoot.bar?.screen )
 
-        implicitWidth: workspacesRow.implicitWidth + 10
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
         implicitHeight: 22
 
         function shouldShow(monitor) {

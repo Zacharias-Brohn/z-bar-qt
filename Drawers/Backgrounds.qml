@@ -9,14 +9,14 @@ Shape {
     required property Item bar
 
     anchors.fill: parent
-    anchors.margins: 8
+    // anchors.margins: 8
     anchors.topMargin: bar.implicitHeight
     preferredRendererType: Shape.CurveRenderer
 
     Modules.Background {
         wrapper: root.panels.popouts
 
-        startX: wrapper.x - rounding
+        startX: wrapper.x - 8
         startY: wrapper.y
     }
 }

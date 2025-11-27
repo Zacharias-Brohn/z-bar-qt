@@ -12,16 +12,13 @@ Item {
     readonly property Popout currentPopout: content.children.find(c => c.shouldBeActive) ?? null
     readonly property Item current: currentPopout?.item ?? null
 
-    anchors.centerIn: parent
-
-    implicitWidth: (currentPopout?.implicitWidth ?? 0) + 10 * 2
-    implicitHeight: (currentPopout?.implicitHeight ?? 0) + 10 * 2
+    implicitWidth: (currentPopout?.implicitWidth ?? 0) + 5 * 2
+    implicitHeight: (currentPopout?.implicitHeight ?? 0) + 5 * 2
 
     Item {
         id: content
 
         anchors.fill: parent
-        anchors.margins: 10
 
         Popout {
             name: "audio"
@@ -80,8 +77,7 @@ Item {
         required property string name
         readonly property bool shouldBeActive: root.wrapper.currentName === name
 
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.centerIn: parent
 
         opacity: 0
         scale: 0.8

@@ -6,12 +6,16 @@ import qs.Config
 Item {
     id: root
     property int countUpdates: Updates.availableUpdates
-    implicitWidth: contentRow.childrenRect.width + 10
-    implicitHeight: 22
+    implicitWidth: textMetrics.width + contentRow.spacing + 30
+    anchors.top: parent.top
+    anchors.bottom: parent.bottom
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
 
     Rectangle {
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        implicitHeight: 22
         radius: height / 2
         color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
         Behavior on color {
