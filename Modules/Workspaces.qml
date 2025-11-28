@@ -15,6 +15,14 @@ Item {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     implicitWidth: workspacesRow.implicitWidth + 10
+
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+    }
+
     Rectangle {
         id: root
 
@@ -37,13 +45,6 @@ Item {
 
         color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
         radius: height / 2
-
-        Behavior on implicitWidth {
-            NumberAnimation {
-                duration: 100
-                easing.type: Easing.InOutQuad
-            }
-        }
 
         Behavior on color {
             CAnim {}

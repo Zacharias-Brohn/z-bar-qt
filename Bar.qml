@@ -73,7 +73,7 @@ Scope {
                 Region {
                     required property Item modelData
 
-                    x: modelData.x + 9
+                    x: modelData.x
                     y: modelData.y + backgroundRect.implicitHeight
                     width: modelData.width
                     height: panels.popouts.hasCurrent ? modelData.height + 70 : 0
