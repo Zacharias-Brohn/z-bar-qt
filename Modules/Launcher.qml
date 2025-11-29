@@ -80,7 +80,7 @@ Scope {
                 id: openAnim
                 Anim {
                     target: appListRect
-                    duration: MaterialEasing.expressiveFastSpatialTime
+                    duration: MaterialEasing.expressiveDefaultSpatialTime
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                     property: "implicitHeight"
                     from: 40
@@ -116,11 +116,11 @@ Scope {
                 id: closeAnim
                 Anim {
                     target: appListRect
-                    duration: MaterialEasing.expressiveFastSpatialTime
+                    duration: MaterialEasing.expressiveDefaultSpatialTime
                     easing.bezierCurve: MaterialEasing.expressiveDefaultSpatial
                     property: "implicitHeight"
                     from: appListContainer.implicitHeight
-                    to: 40
+                    to: 0
                 }
                 SequentialAnimation {
                     PauseAnimation { duration: 120 }

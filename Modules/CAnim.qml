@@ -1,8 +1,9 @@
 import QtQuick
 import qs.Modules
+import qs.Config
 
 ColorAnimation {
-    duration: 400
+    duration: MaterialEasing.standardTime
     easing.type: Easing.BezierSpline
     easing.bezierCurve: MaterialEasing.standard
 }

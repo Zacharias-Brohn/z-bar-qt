@@ -22,7 +22,7 @@ Item {
     property string queuedMode
     readonly property bool isDetached: detachedMode.length > 0
 
-    property int animLength: 400
+    property int animLength: MaterialEasing.emphasizedDecelTime
     property list<real> animCurve: MaterialEasing.emphasized
 
     function detach(mode: string): void {
@@ -39,7 +39,7 @@ Item {
     function close(): void {
         hasCurrent = false;
         animCurve = MaterialEasing.emphasizedDecel;
-        animLength = 400;
+        animLength = MaterialEasing.emphasizedDecelTime;
         detachedMode = "";
         animCurve = MaterialEasing.emphasized;
     }
