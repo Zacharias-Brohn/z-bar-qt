@@ -15,6 +15,7 @@ Shape {
 
     Modules.Background {
         wrapper: root.panels.popouts
+        invertBottomRounding: wrapper.x <= 0
 
         startX: wrapper.x - 8
         startY: wrapper.y
