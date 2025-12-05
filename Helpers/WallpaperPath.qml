@@ -2,11 +2,13 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
+import qs.Paths
 
 Singleton {
     id: root
 
     property alias currentWallpaperPath: adapter.currentWallpaperPath
+	property alias lockscreenBg: adapter.lockscreenBg
 
     FileView {
         id: fileView
@@ -18,6 +20,7 @@ Singleton {
         JsonAdapter {
             id: adapter
             property string currentWallpaperPath: ""
+			property string lockscreenBg: `${Paths.state}/lockscreen_bg.png`
         }
     }
 }

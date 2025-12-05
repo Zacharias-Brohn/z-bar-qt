@@ -23,6 +23,8 @@ Scope {
             screen: modelData
             color: "transparent"
             property var root: Quickshell.shellDir
+
+			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
             PanelWindow {
@@ -69,7 +71,7 @@ Scope {
             Variants {
                 id: popoutRegions
                 model: panels.children
-                
+
                 Region {
                     required property Item modelData
 

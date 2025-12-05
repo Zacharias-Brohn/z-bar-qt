@@ -21,6 +21,7 @@ PanelWindow {
         bottom: true
     }
 
+	WlrLayershell.namespace: "ZShell-Notifs"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
     required property PanelWindow bar

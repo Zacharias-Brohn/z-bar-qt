@@ -22,6 +22,7 @@ Scope {
         color: "transparent"
         visible: false
 
+		WlrLayershell.namespace: "ZShell-Launcher"
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 

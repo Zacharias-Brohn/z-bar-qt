@@ -22,6 +22,8 @@ Singleton {
     property alias transparency: adapter.transparency
     property alias baseFont: adapter.baseFont
     property alias animScale: adapter.animScale
+    property alias lock: adapter.lock
+	property alias idle: adapter.idle
 
     FileView {
         id: root
@@ -52,6 +54,8 @@ Singleton {
             property Transparency transparency: Transparency {}
             property string baseFont: "Segoe UI Variable Text"
             property real animScale: 1.0
+            property LockConf lock: LockConf {}
+			property IdleTimeout idle: IdleTimeout {}
         }
     }
 }

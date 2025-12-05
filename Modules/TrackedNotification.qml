@@ -13,6 +13,7 @@ PanelWindow {
     id: root
     color: "transparent"
     screen: root.bar.screen
+
     anchors {
         top: true
         right: true
@@ -20,19 +21,17 @@ PanelWindow {
         bottom: true
     }
 
+	WlrLayershell.namespace: "ZShell-Notifs"
+	WlrLayershell.layer: WlrLayer.Overlay
+
     mask: Region { regions: root.notifRegions }
     exclusionMode: ExclusionMode.Ignore
-    WlrLayershell.layer: WlrLayer.Overlay
     property list<Region> notifRegions: []
     required property bool centerShown
     required property PanelWindow bar
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
     property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
     visible: Hyprland.monitorFor(screen).focused
-
-    Component.onCompleted: {
-        console.log(NotifServer.list.filter( n => n.popup ).length + " notification popups loaded.");
-    }
 
     ListView {
         id: notifListView
