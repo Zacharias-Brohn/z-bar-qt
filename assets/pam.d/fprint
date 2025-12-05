@@ -1,3 +1,0 @@
-auth	required	pam_fprintd.so
-auth	include		common-auth
-account	include		common-account
