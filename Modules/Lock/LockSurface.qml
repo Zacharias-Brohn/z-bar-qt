@@ -17,9 +17,11 @@ WlSessionLockSurface {
 
 	required property WlSessionLock lock
 	required property Pam pam
+	required property Scope scope
+
 	property string buffer
 
-	color: "transparent"
+	color: overlay.visible ? "black" : "transparent"
 
 	Connections {
 		target: root.pam
@@ -32,6 +34,18 @@ WlSessionLockSurface {
 			}
 
 			root.buffer = root.pam.buffer;
+		}
+	}
+
+	Timer {
+		interval: 100
+		running: true
+		repeat: false
+		onTriggered: {
+			if ( Config.lock.fixLockScreen && root.scope.seenOnce === 0 ) {
+				Quickshell.execDetached(["hyprctl", "keyword", "misc:session_lock_xray", "false;"]);
+				root.scope.seenOnce += 1;
+			}
 		}
 	}
 
@@ -51,6 +65,8 @@ WlSessionLockSurface {
 	ScreencopyView {
 		id: background
 
+		live: false
+
 		anchors.fill: parent
 		captureSource: root.screen
 		opacity: 1
@@ -69,12 +85,15 @@ WlSessionLockSurface {
 	// 	id: backgroundImage
 	// 	anchors.fill: parent
 	// 	asynchronous: true
-	// 	source: WallpaperPath.lockscreenBg
+	// 	source: root.backgroundImage
 	// }
 
 	Rectangle {
+		id: overlay
 		anchors.fill: parent
 		color: "transparent"
+
+		visible: background.hasContent
 
 		Rectangle {
 			id: contentBox
@@ -93,7 +112,7 @@ WlSessionLockSurface {
 				blurMax: 12
 				shadowBlur: 1
 				shadowColor: DynamicColors.palette.m3shadow
-				shadowOpacity: 0.3
+				shadowOpacity: 1
 				shadowEnabled: true
 				autoPaddingEnabled: true
 			}
@@ -104,20 +123,22 @@ WlSessionLockSurface {
 				width: childrenRect.width
 				spacing: 0
 
-				LockTime {
+				RowLayout {
 					Layout.alignment: Qt.AlignHCenter
-					Layout.bottomMargin: 8
-				}
+					Layout.bottomMargin: 16
+					spacing: 16
 
-				CustomText {
-					id: supportText
-					Layout.alignment: Qt.AlignHCenter
-					Layout.bottomMargin: 24
+					UserImage {
+						Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
+						Layout.bottomMargin: 16
+						Layout.preferredWidth: 128
+						Layout.preferredHeight: 128
+					}
 
-					text: "Please enter your password to unlock"
-					font.pixelSize: 14
-					font.weight: Font.Medium
-					color: DynamicColors.palette.m3onSurfaceVariant
+					LockTime {
+						Layout.alignment: Qt.AlignHCenter
+						Layout.bottomMargin: 8
+					}
 				}
 
 				Rectangle {
@@ -145,6 +166,124 @@ WlSessionLockSurface {
 						ColorAnimation { duration: 150 }
 					}
 
+					transform: Translate {
+						id: wobbleTransform
+						x: 0
+					}
+
+					SequentialAnimation {
+						id: wobbleAnimation
+
+						ColorAnimation {
+							target: inputContainer
+							property: "color"
+							to: DynamicColors.tPalette.m3onError
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+						ParallelAnimation {
+							NumberAnimation {
+								target: wobbleTransform
+								property: "x"
+								to: -8
+								duration: MaterialEasing.expressiveFastSpatialTime / 4
+								easing.bezierCurve: MaterialEasing.expressiveFastSpatial
+							}
+						}
+						NumberAnimation {
+							target: wobbleTransform
+							property: "x"
+							to: 8
+							duration: MaterialEasing.expressiveFastSpatialTime / 4
+							easing.bezierCurve: MaterialEasing.expressiveFastSpatial
+						}
+						NumberAnimation {
+							target: wobbleTransform
+							property: "x"
+							to: -8
+							duration: MaterialEasing.expressiveFastSpatialTime / 4
+							easing.bezierCurve: MaterialEasing.expressiveFastSpatial
+						}
+						NumberAnimation {
+							target: wobbleTransform
+							property: "x"
+							to: 0
+							duration: MaterialEasing.expressiveFastSpatialTime / 4
+							easing.bezierCurve: MaterialEasing.expressiveFastSpatial
+						}
+						ColorAnimation {
+							target: inputContainer
+							property: "color"
+							to: DynamicColors.tPalette.m3surfaceContainerHigh
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+					}
+
+					Connections {
+						target: root.pam
+
+						function onStateChanged(): void {
+							if (root.pam.state === "error" || root.pam.state === "fail") {
+								wobbleAnimation.start();
+							}
+						}
+					}
+
+					CustomText {
+						id: messageDisplay
+
+						anchors.centerIn: inputContainer
+
+						text: {
+							if ( root.pam.buffer.length > 0 || root.pam.passwd.active ) {
+								return "";
+							}
+							if (root.pam.lockMessage) {
+								return root.pam.lockMessage;
+							}
+							if (root.pam.state === "error") {
+								return "Authentication error";
+							}
+							if (root.pam.state === "fail") {
+								return "Invalid password";
+							}
+							if (root.pam.state === "max") {
+								return "Maximum attempts reached";
+							}
+							return "Enter your password";
+						}
+						visible: true
+						font.pointSize: 14
+						font.weight: Font.Medium
+
+						animate: true
+
+						Behavior on text {
+							SequentialAnimation {
+								OAnim {
+									target: messageDisplay
+									property: "opacity"
+									to: 0
+								}
+								PropertyAction {}
+								OAnim {
+									target: messageDisplay
+									property: "opacity"
+									to: 1
+								}
+							}
+						}
+
+						component OAnim: NumberAnimation {
+							target: messageDisplay
+							property: "opacity"
+							duration: 100
+						}
+
+						color: root.pam.state === "max" ? DynamicColors.palette.m3error : DynamicColors.palette.m3onSurfaceVariant
+						wrapMode: Text.WordWrap
+						horizontalAlignment: Text.AlignHCenter
+					}
+
 					ListView {
 						id: charList
 
@@ -157,7 +296,7 @@ WlSessionLockSurface {
 						}
 
 						anchors.centerIn: parent
-						anchors.horizontalCenterOffset: implicitWidth > inputContainer.width ? -(implicitWidth - inputContainer.width) / 2 : 0
+						anchors.horizontalCenterOffset: implicitWidth > inputContainer.width - 20 ? -(implicitWidth - inputContainer.width + 20) / 2 : 0
 
 						implicitWidth: fullWidth
 						implicitHeight: 16
@@ -232,54 +371,6 @@ WlSessionLockSurface {
 							Anim {}
 						}
 					}
-
-					Rectangle {
-						anchors.fill: parent
-						radius: 12
-						color: "transparent"
-						border.width: 2
-						border.color: DynamicColors.palette.m3primary
-						opacity: 0
-						visible: hiddenInput.activeFocus
-
-						Behavior on opacity {
-							NumberAnimation { duration: 150 }
-						}
-					}
-
-					Component.onCompleted: {
-						if (hiddenInput.activeFocus) opacity = 1;
-					}
-				}
-
-				CustomText {
-					id: messageDisplay
-
-					Layout.alignment: Qt.AlignHCenter
-					Layout.topMargin: 8
-
-					text: {
-						if (root.pam.lockMessage) {
-							return root.pam.lockMessage;
-						}
-						if (root.pam.state === "error") {
-							return "Authentication error";
-						}
-						if (root.pam.state === "fail") {
-							return "Invalid password";
-						}
-						if (root.pam.state === "max") {
-							return "Maximum attempts reached";
-						}
-						return "";
-					}
-					visible: text.length > 0
-					font.pixelSize: 12
-					font.weight: Font.Medium
-					color: root.pam.state === "max" ? DynamicColors.palette.m3error : DynamicColors.palette.m3onSurfaceVariant
-					wrapMode: Text.WordWrap
-					horizontalAlignment: Text.AlignHCenter
-					Layout.preferredWidth: 320
 				}
 			}
 		}

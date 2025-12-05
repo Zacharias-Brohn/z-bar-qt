@@ -41,7 +41,8 @@ Text {
 
     component Anim: NumberAnimation {
         target: root
-        property: root.animateProp
+        property: root.animateProp.split(",").length === 1 ? root.animateProp : ""
+        properties: root.animateProp.split(",").length > 1 ? root.animateProp : ""
         duration: root.animateDuration / 2
         easing.type: Easing.BezierSpline
     }
