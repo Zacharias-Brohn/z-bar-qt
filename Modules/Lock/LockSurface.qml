@@ -89,7 +89,9 @@ WlSessionLockSurface {
 		anchors.fill: parent
 		asynchronous: false
 		cache: false
-		source: WallpaperPath.lockscreenBg
+		source: WallpaperPath.currentWallpaperPath
+		sourceSize.width: root.screen.width
+		sourceSize.height: root.screen.height
 		visible: Config.lock.useWallpaper
 
 		Component.onCompleted: {
@@ -106,7 +108,9 @@ WlSessionLockSurface {
 
 		Rectangle {
 			id: contentBox
-			anchors.centerIn: parent
+			anchors.bottom: !Config.lock.useWallpaper ? "" : parent.bottom
+			anchors.centerIn: !Config.lock.useWallpaper ? parent : ""
+			anchors.horizontalCenter: !Config.lock.useWallpaper ? "" : parent.horizontalCenter
 
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: 28

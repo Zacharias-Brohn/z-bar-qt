@@ -29,6 +29,7 @@ Scope {
 
             PanelWindow {
                 id: exclusionZone
+				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
                 screen: bar.screen
                 WlrLayershell.layer: WlrLayer.Bottom
                 anchors {

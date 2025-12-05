@@ -155,6 +155,7 @@ Singleton {
                 implicitHeight: 48
                 color: "transparent"
                 mask: Region {}
+				visible: false
 
                 Image {
                     anchors.fill: parent
