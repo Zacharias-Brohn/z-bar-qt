@@ -17,8 +17,23 @@ WlSessionLockSurface {
 
 	required property WlSessionLock lock
 	required property Pam pam
+	property string buffer
 
 	color: "transparent"
+
+	Connections {
+		target: root.pam
+
+		function onBufferChanged(): void {
+			if (root.pam.buffer.length > root.buffer.length) {
+				charList.bindImWidth();
+			} else if (root.pam.buffer.length === 0) {
+				charList.implicitWidth = charList.implicitWidth;
+			}
+
+			root.buffer = root.pam.buffer;
+		}
+	}
 
 	TextInput {
 		id: hiddenInput
@@ -65,15 +80,12 @@ WlSessionLockSurface {
 			id: contentBox
 			anchors.centerIn: parent
 
-			// Material Design 3: Use surfaceContainer for elevated surfaces
 			color: DynamicColors.tPalette.m3surfaceContainer
 			radius: 28
 
-			// M3 spacing: 24px horizontal, 32px vertical padding
 			implicitWidth: Math.floor(childrenRect.width + 48)
 			implicitHeight: Math.floor(childrenRect.height + 64)
 
-			// M3 Elevation 2 shadow effect
 			layer.enabled: true
 			layer.effect: MultiEffect {
 				source: contentBox
@@ -92,21 +104,12 @@ WlSessionLockSurface {
 				width: childrenRect.width
 				spacing: 0
 
-				// Title: M3 Display Small (32sp, 400 weight)
-				Text {
-					id: titleText
+				LockTime {
 					Layout.alignment: Qt.AlignHCenter
 					Layout.bottomMargin: 8
-
-					text: "Session Locked"
-					font.pixelSize: 32
-					font.weight: Font.Normal
-					font.letterSpacing: 0.5
-					color: DynamicColors.palette.m3onSurface
 				}
 
-				// Support text: M3 Body Medium (14sp, 500 weight)
-				Text {
+				CustomText {
 					id: supportText
 					Layout.alignment: Qt.AlignHCenter
 					Layout.bottomMargin: 24
@@ -117,7 +120,6 @@ WlSessionLockSurface {
 					color: DynamicColors.palette.m3onSurfaceVariant
 				}
 
-				// Input field container
 				Rectangle {
 					id: inputContainer
 					Layout.alignment: Qt.AlignHCenter
@@ -137,6 +139,8 @@ WlSessionLockSurface {
 						return DynamicColors.palette.m3outline;
 					}
 
+					clip: true
+
 					Behavior on border.color {
 						ColorAnimation { duration: 150 }
 					}
@@ -144,7 +148,7 @@ WlSessionLockSurface {
 					ListView {
 						id: charList
 
-						readonly property int fullWidth: count * (implicitHeight + spacing) - spacing
+						readonly property int fullWidth: count * (implicitHeight + spacing)
 
 						function bindImWidth(): void {
 							imWidthBehavior.enabled = false;
@@ -153,7 +157,7 @@ WlSessionLockSurface {
 						}
 
 						anchors.centerIn: parent
-						anchors.horizontalCenterOffset: implicitWidth > root.width ? -(implicitWidth - root.width) / 2 : 0
+						anchors.horizontalCenterOffset: implicitWidth > inputContainer.width ? -(implicitWidth - inputContainer.width) / 2 : 0
 
 						implicitWidth: fullWidth
 						implicitHeight: 16
@@ -229,7 +233,6 @@ WlSessionLockSurface {
 						}
 					}
 
-					// Input focus indicator (M3 focused state)
 					Rectangle {
 						anchors.fill: parent
 						radius: 12
@@ -249,8 +252,7 @@ WlSessionLockSurface {
 					}
 				}
 
-				// Message display: M3 Body Small (12sp, 500 weight) for error messages
-				Text {
+				CustomText {
 					id: messageDisplay
 
 					Layout.alignment: Qt.AlignHCenter
