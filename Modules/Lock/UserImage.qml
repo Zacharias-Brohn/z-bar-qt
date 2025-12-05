@@ -17,7 +17,7 @@ Item {
 			sourceSize.width: parent.width
 			sourceSize.height: parent.height
 			asynchronous: true
-			fillMode: Image.PreserveAspectFit
+			fillMode: Image.PreserveAspectCrop
 			source: `${Paths.home}/.face`
 		}
 	}
