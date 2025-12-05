@@ -17,4 +17,8 @@ Scope {
 	IdleInhibitor {
 		lock: lock
 	}
+
+	NotificationCenter {
+
+	}
 }

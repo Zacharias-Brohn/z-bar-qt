@@ -39,6 +39,10 @@ Singleton {
 
     signal configReloaded
 
+	function getActiveScreen(): ShellScreen {
+		return Quickshell.screens.find(screen => root.monitorFor(screen) === root.focusedMonitor)
+	}
+
     function dispatch(request: string): void {
         Hyprland.dispatch(request);
     }

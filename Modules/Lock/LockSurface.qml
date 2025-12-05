@@ -21,7 +21,7 @@ WlSessionLockSurface {
 
 	property string buffer
 
-	color: overlay.visible ? "black" : "transparent"
+	color: "transparent"
 
 	Connections {
 		target: root.pam
@@ -38,7 +38,7 @@ WlSessionLockSurface {
 	}
 
 	Timer {
-		interval: 100
+		interval: 5
 		running: true
 		repeat: false
 		onTriggered: {
@@ -62,6 +62,7 @@ WlSessionLockSurface {
 		onTextChanged: text = ""
 	}
 
+
 	ScreencopyView {
 		id: background
 
@@ -70,23 +71,31 @@ WlSessionLockSurface {
 		anchors.fill: parent
 		captureSource: root.screen
 		opacity: 1
+		visible: !Config.lock.useWallpaper
 
 		layer.enabled: true
 		layer.effect: MultiEffect {
 			autoPaddingEnabled: false
 			blurEnabled: true
-			blur: 2
-			blurMax: 32
-			blurMultiplier: 0
+			blur: 0.8
+			blurMax: 64
+			blurMultiplier: 1
+			brightness: 0
 		}
 	}
 
-	// Image {
-	// 	id: backgroundImage
-	// 	anchors.fill: parent
-	// 	asynchronous: true
-	// 	source: root.backgroundImage
-	// }
+	Image {
+		id: backgroundImage
+		anchors.fill: parent
+		asynchronous: false
+		cache: false
+		source: WallpaperPath.lockscreenBg
+		visible: Config.lock.useWallpaper
+
+		Component.onCompleted: {
+			console.log(source);
+		}
+	}
 
 	Rectangle {
 		id: overlay

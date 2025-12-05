@@ -1,3 +1,4 @@
+import Quickshell.Hyprland
 import QtQuick
 import qs.Config
 import qs.Helpers
@@ -32,7 +33,7 @@ Item {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                ncProcess.running = true
+                Hyprland.dispatch("global zshell-nc:toggle-nc");
             }
         }
     }

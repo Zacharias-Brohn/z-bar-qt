@@ -12,7 +12,6 @@ import qs.Effects
 PanelWindow {
     id: root
     color: "transparent"
-    screen: root.bar.screen
 
     anchors {
         top: true
@@ -28,10 +27,9 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     property list<Region> notifRegions: []
     required property bool centerShown
-    required property PanelWindow bar
     property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
     property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
-    visible: Hyprland.monitorFor(screen).focused
+    // visible: Hyprland.monitorFor(screen).focused
 
     ListView {
         id: notifListView
@@ -44,7 +42,7 @@ PanelWindow {
         }
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        x: root.centerShown ? root.bar.width - width - 420 : root.bar.width - width - 20
+        x: root.centerShown ? root.screen.width - width - 420 : root.screen.width - width - 20
         z: 0
         anchors.topMargin: 54
         width: 400

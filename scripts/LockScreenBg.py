@@ -3,8 +3,11 @@ import argparse
 
 def gen_blurred_image(input_image, output_path):
     img = Image.open(input_image)
+    size = img.size
+    img = img.resize((size[0] // 2, size[1] // 2), Image.NEAREST)
 
     img = img.filter(ImageFilter.GaussianBlur(40))
+    # img = img.resize(size, Image.LANCZOS)
 
     img.save(output_path, "PNG")
 
