@@ -62,7 +62,6 @@ WlSessionLockSurface {
 		onTextChanged: text = ""
 	}
 
-
 	ScreencopyView {
 		id: background
 
@@ -84,14 +83,11 @@ WlSessionLockSurface {
 		}
 	}
 
-	Image {
+	CachingImage {
 		id: backgroundImage
 		anchors.fill: parent
 		asynchronous: false
-		cache: false
-		source: WallpaperPath.currentWallpaperPath
-		sourceSize.width: root.screen.width
-		sourceSize.height: root.screen.height
+		path: WallpaperPath.currentWallpaperPath
 		visible: Config.lock.useWallpaper
 
 		Component.onCompleted: {

@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import QtQuick
 import qs.Config
+import qs.Modules.Calendar
 
 Item {
     id: root
@@ -69,6 +70,13 @@ Item {
                 }
             }
         }
+
+		Popout {
+			name: "calendar"
+			sourceComponent: CalendarPopup {
+				wrapper: root.wrapper
+			}
+		}
     }
 
     component Popout: Loader {
