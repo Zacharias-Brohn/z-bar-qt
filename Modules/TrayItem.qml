@@ -14,6 +14,14 @@ Item {
     required property PanelWindow bar
     property bool hasLoaded: false
 
+	MouseArea {
+		anchors.fill: parent
+		acceptedButtons: Qt.LeftButton
+		onClicked: {
+			root.item.activate();
+		}
+	}
+
     Image {
         id: icon
 
