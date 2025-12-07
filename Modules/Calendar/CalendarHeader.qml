@@ -15,11 +15,12 @@ RowLayout {
 		color: "transparent"
 		radius: 1000
 
-		CustomText {
-			text: "◀"
-			font.pointSize: 12
-			color: DynamicColors.palette.m3onSurface
+		MaterialIcon {
 			anchors.centerIn: parent
+			text: "arrow_back_2"
+			fill: 1
+			font.pointSize: 24
+			color: DynamicColors.palette.m3onSurface
 		}
 
 		StateLayer {
@@ -52,11 +53,13 @@ RowLayout {
 		color: "transparent"
 		radius: 1000
 
-		CustomText {
-			text: "▶"
-			font.pointSize: 12
-			color: DynamicColors.palette.m3onSurface
+		MaterialIcon {
 			anchors.centerIn: parent
+			text: "arrow_back_2"
+			fill: 1
+			font.pointSize: 24
+			rotation: 180
+			color: DynamicColors.palette.m3onSurface
 		}
 
 		StateLayer {
