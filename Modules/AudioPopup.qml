@@ -135,7 +135,7 @@ Item {
                 color: DynamicColors.palette.m3onPrimaryContainer
 
                 function onClicked(): void {
-                    Quickshell.execDetached(["app2unit", "--", "pavucontrol"]);
+                    Quickshell.execDetached(["app2unit", "--", "hyprpwcenter"]);
                     root.wrapper.hasCurrent = false;
                 }
             }
