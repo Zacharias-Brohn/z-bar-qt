@@ -1,3 +1,6 @@
+<div align="center">
+    <img src="/images/shell.png">
+</div>
 # ZShell
 
 A feature-rich desktop shell for Hyprland built with [Quickshell](https://quickshell.outfoxxed.me/) and Qt6/QML. Provides a modern, Material Design 3 inspired status bar, application launcher, notification center, wallpaper manager with dynamic color theming, and lock screen.
