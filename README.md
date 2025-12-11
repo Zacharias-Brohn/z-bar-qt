@@ -1,4 +1,4 @@
-# z-bar-qt
+# ZShell
 
 A feature-rich desktop shell for Hyprland built with [Quickshell](https://quickshell.outfoxxed.me/) and Qt6/QML. Provides a modern, Material Design 3 inspired status bar, application launcher, notification center, wallpaper manager with dynamic color theming, and lock screen.
 
@@ -34,32 +34,32 @@ This installs the QML plugin to `/usr/lib/qt6/qml`.
 
 Configuration is stored in `~/.config/z-bar/config.json`. Options include:
 
-| Option | Description |
-|--------|-------------|
-| `appCount` | Max apps shown in launcher |
-| `wallpaperPath` | Directory containing wallpapers |
-| `baseBgColor` / `baseBorderColor` | Fallback colors when dynamic colors disabled |
-| `accentColor` | Custom accent color override |
-| `useDynamicColors` | Enable Material Design 3 theming from wallpaper |
-| `barConfig` | Enable/disable widgets and configure popouts |
-| `transparency` | UI transparency levels |
-| `baseFont` | System font |
-| `animScale` | Animation speed multiplier |
-| `gpuType` | GPU type for resource monitoring (`amd`, `nvidia`, `intel`) |
+| Option                            | Description                                                 |
+| --------------------------------- | ----------------------------------------------------------- |
+| `appCount`                        | Max apps shown in launcher                                  |
+| `wallpaperPath`                   | Directory containing wallpapers                             |
+| `baseBgColor` / `baseBorderColor` | Fallback colors when dynamic colors disabled                |
+| `accentColor`                     | Custom accent color override                                |
+| `useDynamicColors`                | Enable Material Design 3 theming from wallpaper             |
+| `barConfig`                       | Enable/disable widgets and configure popouts                |
+| `transparency`                    | UI transparency levels                                      |
+| `baseFont`                        | System font                                                 |
+| `animScale`                       | Animation speed multiplier                                  |
+| `gpuType`                         | GPU type for resource monitoring (`amd`, `nvidia`, `intel`) |
 
 ## Launcher Search Prefixes
 
-| Prefix | Filter |
-|--------|--------|
-| `>i` | App ID |
-| `>c` | Categories |
-| `>d` | Description/comment |
-| `>e` | Exec command |
-| `>w` | WM class |
-| `>g` | Generic name |
-| `>k` | Keywords |
-| `>t` | Terminal apps only |
-| `> ` | Wallpaper picker |
+| Prefix | Filter              |
+| ------ | ------------------- |
+| `>i`   | App ID              |
+| `>c`   | Categories          |
+| `>d`   | Description/comment |
+| `>e`   | Exec command        |
+| `>w`   | WM class            |
+| `>g`   | Generic name        |
+| `>k`   | Keywords            |
+| `>t`   | Terminal apps only  |
+| `> `   | Wallpaper picker    |
 
 ## Project Structure
 
