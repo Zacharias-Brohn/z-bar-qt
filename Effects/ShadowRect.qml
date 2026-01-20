@@ -4,6 +4,7 @@ import QtQuick.Effects
 Item {
     id: root
     property real radius
+
     Rectangle {
         id: shadowRect
         anchors.fill: root

@@ -24,6 +24,7 @@ Singleton {
     property alias animScale: adapter.animScale
     property alias lock: adapter.lock
 	property alias idle: adapter.idle
+	property alias overview: adapter.overview
 
     FileView {
         id: root
@@ -56,6 +57,7 @@ Singleton {
             property real animScale: 1.0
             property LockConf lock: LockConf {}
 			property IdleTimeout idle: IdleTimeout {}
+			property Overview overview: Overview {}
         }
     }
 }

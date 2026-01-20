@@ -3,6 +3,7 @@
 import Quickshell
 import qs.Modules
 import qs.Modules.Lock
+import qs.Modules.WSOverview
 import qs.Helpers
 
 Scope {
@@ -21,4 +22,6 @@ Scope {
 	NotificationCenter {
 
 	}
+
+	Overview {}
 }
