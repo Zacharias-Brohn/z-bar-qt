@@ -56,7 +56,7 @@ Scope {
                 height: bar.screen.height - backgroundRect.implicitHeight
                 intersection: Intersection.Xor
 
-                regions: popoutRegions.instances
+                regions: panels.popouts.hasCurrent ? None : popoutRegions.instances
             }
 
             Variants {

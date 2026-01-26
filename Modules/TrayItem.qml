@@ -12,13 +12,21 @@ Item {
 
     required property SystemTrayItem item
     required property PanelWindow bar
+	required property int ind
+	required property Wrapper popouts
     property bool hasLoaded: false
 
 	MouseArea {
 		anchors.fill: parent
-		acceptedButtons: Qt.LeftButton
+		acceptedButtons: Qt.LeftButton | Qt.RightButton
 		onClicked: {
-			root.item.activate();
+			if ( mouse.button === Qt.LeftButton ) {
+				root.item.activate();
+			} else if ( mouse.button === Qt.RightButton ) {
+				root.popouts.currentName = `traymenu${ root.ind }`;
+				root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.bar, root.implicitWidth / 2, 0 ).x );
+				root.popouts.hasCurrent = true;
+			}
 		}
 	}
 

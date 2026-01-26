@@ -12,6 +12,7 @@ Row {
     anchors.bottom: parent.bottom
 
     required property PanelWindow bar
+	required property Wrapper popouts
     readonly property alias items: repeater
 
     spacing: 0
@@ -22,6 +23,9 @@ Row {
         TrayItem {
             id: trayItem
             required property SystemTrayItem modelData
+			required property int index
+			ind: index
+			popouts: root.popouts
             implicitHeight: 34
             implicitWidth: 28
             item: modelData

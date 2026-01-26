@@ -89,6 +89,7 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: TrayWidget {
 						bar: root.bar
+						popouts: root.popouts
 					}
 				}
 			}

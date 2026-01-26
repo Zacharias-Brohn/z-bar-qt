@@ -74,6 +74,13 @@ Singleton {
         Pipewire.preferredDefaultAudioSource = newSource;
     }
 
+	function setAppAudioVolume(appStream: PwNode, newVolume: real): void {
+		if ( appStream?.ready && appStream?.audio ) {
+			appStream.audio.muted = false;
+			appStream.audio.volume = Math.max(0, Math.min(100, newVolume));
+		}
+	}
+
     onSinkChanged: {
         if (!sink?.ready)
             return;
@@ -100,4 +107,110 @@ Singleton {
     PwObjectTracker {
         objects: [...root.sinks, ...root.sources]
     }
+
+	PwNodeLinkTracker {
+		id: sinkLinkTracker
+		node: root.sink
+	}
+
+	PwObjectTracker {
+		objects: root.appStreams
+	}
+
+	readonly property var appStreams: {
+		var defaultSink = root.sink;
+		var defaultSinkId = defaultSink.id;
+		var connectedStreamIds = {};
+		var connectedStreams = [];
+
+		if ( !sinkLinkTracker.linkGroups ) {
+			return [];
+		}
+
+		var linkGroupsCount = 0;
+		if (sinkLinkTracker.linkGroups.length !== undefined) {
+			linkGroupsCount = sinkLinkTracker.linkGroups.length;
+		} else if (sinkLinkTracker.linkGroups.count !== undefined) {
+			linkGroupsCount = sinkLinkTracker.linkGroups.count;
+		} else {
+			return [];
+		}
+
+		if ( linkGroupsCount === 0 ) {
+			return [];
+		}
+
+		var intermediateNodeIds = {};
+		var nodesToCheck = [];
+
+		for (var i = 0; i < linkGroupsCount; i++) {
+			var linkGroup;
+			if (sinkLinkTracker.linkGroups.get) {
+				linkGroup = sinkLinkTracker.linkGroups.get(i);
+			} else {
+				linkGroup = sinkLinkTracker.linkGroups[i];
+			}
+
+			if (!linkGroup || !linkGroup.source) {
+				continue;
+			}
+
+			var sourceNode = linkGroup.source;
+
+			if (sourceNode.isStream && sourceNode.audio) {
+				if (!connectedStreamIds[sourceNode.id]) {
+					connectedStreamIds[sourceNode.id] = true;
+					connectedStreams.push(sourceNode);
+				}
+			} else {
+				intermediateNodeIds[sourceNode.id] = true;
+				nodesToCheck.push(sourceNode);
+			}
+		}
+
+		if (nodesToCheck.length > 0 || connectedStreams.length === 0) {
+			try {
+				var allNodes = [];
+				if (Pipewire.nodes) {
+					if (Pipewire.nodes.count !== undefined) {
+						var nodeCount = Pipewire.nodes.count;
+						for (var n = 0; n < nodeCount; n++) {
+							var node;
+							if (Pipewire.nodes.get) {
+								node = Pipewire.nodes.get(n);
+							} else {
+								node = Pipewire.nodes[n];
+							}
+							if (node)
+								allNodes.push(node);
+						}
+					} else if (Pipewire.nodes.values) {
+						allNodes = Pipewire.nodes.values;
+					}
+				}
+
+				for (var j = 0; j < allNodes.length; j++) {
+					var node = allNodes[j];
+					if (!node || !node.isStream || !node.audio) {
+						continue;
+					}
+
+					var streamId = node.id;
+					if (connectedStreamIds[streamId]) {
+						continue;
+					}
+
+					if (Object.keys(intermediateNodeIds).length > 0) {
+						connectedStreamIds[streamId] = true;
+						connectedStreams.push(node);
+					} else if (connectedStreams.length === 0) {
+						connectedStreamIds[streamId] = true;
+						connectedStreams.push(node);
+					}
+				}
+			} catch (e)
+			{}
+		}
+		return connectedStreams;
+	}
 }
