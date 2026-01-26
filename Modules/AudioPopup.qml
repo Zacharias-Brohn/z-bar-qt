@@ -76,22 +76,73 @@ Item {
 		StackLayout {
 			id: stack
 			Layout.fillWidth: true
+			Layout.preferredHeight: currentIndex === 0 ? vol.childrenRect.height : dev.childrenRect.height
 			currentIndex: 0
 
-			VolumesTab {}
-			DevicesTab {}
+			VolumesTab { id: vol }
+			DevicesTab { id: dev }
+
+			Behavior on currentIndex {
+				SequentialAnimation {
+					ParallelAnimation {
+						Anim {
+							target: stack
+							property: "opacity"
+							to: 0
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+
+						Anim {
+							target: stack
+							property: "scale"
+							to: 0.9
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+					}
+
+					PropertyAction {}
+
+					ParallelAnimation {
+						Anim {
+							target: stack
+							property: "opacity"
+							to: 1
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+
+						Anim {
+							target: stack
+							property: "scale"
+							to: 1
+							duration: MaterialEasing.expressiveEffectsTime
+						}
+					}
+				}
+			}
 		}
     }
 
 	component VolumesTab: ColumnLayout {
 		spacing: 12
 
-		CustomText {
-			text: qsTr("Output Volume (%1)")
-				.arg(Audio.muted
-					 ? qsTr("Muted")
-					 : `${Math.round(Audio.volume * 100)}%`)
-			font.weight: 500
+		RowLayout {
+			Layout.fillWidth: true
+			Layout.fillHeight: true
+
+			CustomText {
+				text: "Output Volume"
+				elide: Text.ElideRight
+				Layout.fillWidth: true
+				Layout.fillHeight: true
+				Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+			}
+
+			CustomText {
+				text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`);
+				font.bold: true
+				Layout.fillHeight: true
+				Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+			}
 		}
 
 		CustomMouseArea {
@@ -107,13 +158,24 @@ Item {
 			}
 		}
 
-		CustomText {
-			Layout.topMargin: 10
-			text: qsTr("Input Volume (%1)")
-				.arg(Audio.sourceMuted
-					 ? qsTr("Muted")
-					 : `${Math.round(Audio.sourceVolume * 100)}%`)
-			font.weight: 500
+		RowLayout {
+			Layout.fillWidth: true
+			Layout.fillHeight: true
+
+			CustomText {
+				text: "Input Volume"
+				elide: Text.ElideRight
+				Layout.fillWidth: true
+				Layout.fillHeight: true
+				Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+			}
+
+			CustomText {
+				text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`);
+				font.bold: true
+				Layout.fillHeight: true
+				Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+			}
 		}
 
 		CustomMouseArea {
@@ -188,12 +250,23 @@ Item {
 							elideWidth: root.width - 50
 						}
 
-						CustomText {
-							text: metrics.elidedText
-							elide: Text.ElideRight
+						RowLayout {
 							Layout.fillWidth: true
 							Layout.fillHeight: true
-							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+							CustomText {
+								text: metrics.elidedText
+								elide: Text.ElideRight
+								Layout.fillWidth: true
+								Layout.fillHeight: true
+								Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+							}
+
+							CustomText {
+								text: qsTr("%1").arg(appBox.modelData.audio.muted ? qsTr("Muted") : `${Math.round(appBox.modelData.audio.volume * 100)}%`);
+								font.bold: true
+								Layout.fillHeight: true
+								Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+							}
 						}
 
 						CustomMouseArea {
