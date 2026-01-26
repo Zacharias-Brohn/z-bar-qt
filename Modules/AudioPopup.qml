@@ -9,6 +9,7 @@ import QtQuick.Controls
 import qs.Config
 import qs.Components
 import qs.Daemons
+import qs.Helpers
 
 Item {
     id: root
@@ -126,69 +127,116 @@ Item {
 		spacing: 12
 
 		RowLayout {
-			Layout.fillWidth: true
-			Layout.fillHeight: true
+			Layout.topMargin: 10
+			spacing: 15
+			Rectangle {
+				Layout.preferredWidth: 40
+				Layout.preferredHeight: 40
+				Layout.alignment: Qt.AlignVCenter
+				color: DynamicColors.tPalette.m3primaryContainer
+				radius: 1000
+				MaterialIcon {
+					anchors.centerIn: parent
+					color: DynamicColors.palette.m3onPrimaryContainer
+					text: "volume_up"
+					font.pointSize: 22
+				}
+			}
 
-			CustomText {
-				text: "Output Volume"
-				elide: Text.ElideRight
+			ColumnLayout {
 				Layout.fillWidth: true
-				Layout.fillHeight: true
-				Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-			}
+				RowLayout {
+					Layout.fillWidth: true
 
-			CustomText {
-				text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`);
-				font.bold: true
-				Layout.fillHeight: true
-				Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+					CustomText {
+						text: "Output Volume"
+						Layout.fillWidth: true
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+					}
+
+					CustomText {
+						text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`);
+						font.bold: true
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+					}
+				}
+
+				CustomMouseArea {
+					Layout.fillWidth: true
+					Layout.preferredHeight: 10
+					Layout.bottomMargin: 5
+
+					CustomSlider {
+						anchors.fill: parent
+						value: Audio.volume
+						onMoved: Audio.setVolume(value)
+
+						Behavior on value { Anim {} }
+					}
+				}
 			}
 		}
 
-		CustomMouseArea {
-			Layout.fillWidth: true
-			implicitHeight: 10
-
-			CustomSlider {
-				anchors.fill: parent
-				value: Audio.volume
-				onMoved: Audio.setVolume(value)
-
-				Behavior on value { Anim {} }
-			}
-		}
 
 		RowLayout {
-			Layout.fillWidth: true
-			Layout.fillHeight: true
-
-			CustomText {
-				text: "Input Volume"
-				elide: Text.ElideRight
-				Layout.fillWidth: true
-				Layout.fillHeight: true
-				Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+			Layout.topMargin: 10
+			spacing: 15
+			Rectangle {
+				Layout.preferredWidth: 40
+				Layout.preferredHeight: 40
+				Layout.alignment: Qt.AlignVCenter
+				color: DynamicColors.tPalette.m3primaryContainer
+				radius: 1000
+				MaterialIcon {
+					anchors.centerIn: parent
+					anchors.alignWhenCentered: false
+					color: DynamicColors.palette.m3onPrimaryContainer
+					text: "mic"
+					font.pointSize: 22
+				}
 			}
 
-			CustomText {
-				text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`);
-				font.bold: true
-				Layout.fillHeight: true
-				Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+			ColumnLayout {
+				Layout.fillWidth: true
+				RowLayout {
+					Layout.fillWidth: true
+					Layout.fillHeight: true
+
+					CustomText {
+						text: "Input Volume"
+						Layout.fillWidth: true
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+					}
+
+					CustomText {
+						text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`);
+						font.bold: true
+						Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+					}
+				}
+
+				CustomMouseArea {
+					Layout.fillWidth: true
+					Layout.bottomMargin: 5
+					implicitHeight: 10
+
+					CustomSlider {
+						anchors.fill: parent
+						value: Audio.sourceVolume
+						onMoved: Audio.setSourceVolume(value)
+
+						Behavior on value { Anim {} }
+					}
+				}
 			}
 		}
 
-		CustomMouseArea {
+		Rectangle {
+			Layout.topMargin: 10
 			Layout.fillWidth: true
-			implicitHeight: 10
+			Layout.preferredHeight: 1
 
-			CustomSlider {
-				anchors.fill: parent
-				value: Audio.sourceVolume
-				onMoved: Audio.setSourceVolume(value)
-
-				Behavior on value { Anim {} }
-			}
+			color: DynamicColors.tPalette.m3outline
 		}
 
 		Repeater {
@@ -202,6 +250,90 @@ Item {
 				Layout.preferredHeight: 42
 				visible: !isCaptureStream
 				required property PwNode modelData
+
+                function isValidMatch(searchTerm, entry) {
+					if (!entry)
+						return false;
+					var search = searchTerm.toLowerCase();
+					var id = (entry.id || "").toLowerCase();
+					var name = (entry.name || "").toLowerCase();
+					var icon = (entry.icon || "").toLowerCase();
+					// Match is valid if search term appears in entry or entry appears in search
+					return id.includes(search) || name.includes(search) || icon.includes(search) || search.includes(id.split('.').pop()) || search.includes(name.replace(/\s+/g, ''));
+                }
+
+				readonly property string appName: {
+					if (!modelData)
+						return "Unknown App";
+
+					var props = modelData.properties;
+					var desc = modelData.description || "";
+					var name = modelData.name || "";
+					var mediaName = props["media.name"] || "";
+
+					if ( mediaName !== "playStream" ) {
+						return mediaName;
+					}
+
+					if (!props) {
+						if (desc)
+							return desc;
+						if (name) {
+							var nameParts = name.split(/[-_]/);
+							if (nameParts.length > 0 && nameParts[0])
+								return nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+							return name;
+						}
+						return "Unknown App";
+					}
+
+					var binaryName = props["application.process.binary"] || "";
+
+					// Try binary name first (fixes Electron apps like vesktop)
+					if (binaryName) {
+						var binParts = binaryName.split("/");
+						if (binParts.length > 0) {
+							var binName = binParts[binParts.length - 1].toLowerCase();
+							var entry = ThemeIcons.findAppEntry(binName);
+							// Only use entry if it's actually related to binary name
+							if (entry && entry.name && isValidMatch(binName, entry))
+								return entry.name;
+						}
+					}
+
+					var computedAppName = props["application.name"] || "";
+					var mediaName = props["media.name"] || "";
+					var appId = props["application.id"] || "";
+
+					if (appId) {
+						var entry = ThemeIcons.findAppEntry(appId);
+						if (entry && entry.name && isValidMatch(appId, entry))
+							return entry.name;
+						if (!computedAppName) {
+							var parts = appId.split(".");
+							if (parts.length > 0 && parts[0])
+								computedAppName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+						}
+					}
+
+					if (!computedAppName && binaryName) {
+						var binParts = binaryName.split("/");
+						if (binParts.length > 0 && binParts[binParts.length - 1])
+							computedAppName = binParts[binParts.length - 1].charAt(0).toUpperCase() + binParts[binParts.length - 1].slice(1);
+					}
+
+					var result = computedAppName || mediaTitle || mediaName || binaryName || desc || name;
+
+					if (!result || result === "" || result === "Unknown App") {
+						if (name) {
+							var nameParts = name.split(/[-_]/);
+							if (nameParts.length > 0 && nameParts[0])
+								result = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+						}
+					}
+
+					return result || "Unknown App";
+				}
 
 				PwObjectTracker {
 					objects: appBox.modelData ? [appBox.modelData] : []
@@ -233,8 +365,10 @@ Item {
 					spacing: 15
 
 					IconImage {
-						property string iconPath: Quickshell.iconPath(DesktopEntries.byId(appBox.modelData.name).icon)
-						source: iconPath !== "" ? iconPath : Quickshell.iconPath("application-x-executable")
+						id: icon
+						property string iconPath1: Quickshell.iconPath(DesktopEntries.byId(appBox.modelData.name).icon);
+						property string iconPath2: Quickshell.iconPath(DesktopEntries.byId(appBox.appName).icon);
+						source: iconPath1 !== "" ? iconPath1 : iconPath2
 						Layout.alignment: Qt.AlignVCenter
 						implicitSize: 42
 					}
@@ -245,7 +379,7 @@ Item {
 
 						TextMetrics {
 							id: metrics
-							text: appBox.modelData.properties["media.name"]
+							text: appBox.appName
 							elide: Text.ElideRight
 							elideWidth: root.width - 50
 						}
@@ -280,7 +414,7 @@ Item {
 								value: appBox.modelData.audio.volume
 								onMoved: {
 									Audio.setAppAudioVolume(appBox.modelData, value)
-									console.log(layoutVolume.implicitHeight)
+									console.log(icon.iconPath1, icon.iconPath2)
 								}
 							}
 						}
