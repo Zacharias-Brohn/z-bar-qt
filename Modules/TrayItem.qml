@@ -1,11 +1,13 @@
+import QtQuick.Layouts
+import QtQuick.Effects
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Io
 import Quickshell.Widgets
 import qs.Modules
+import qs.Components
 import qs.Config
-import QtQuick.Effects
 
 Item {
     id: root
@@ -14,17 +16,20 @@ Item {
     required property PanelWindow bar
 	required property int ind
 	required property Wrapper popouts
+	required property RowLayout loader
     property bool hasLoaded: false
 
-	MouseArea {
+	StateLayer {
 		anchors.fill: parent
+		anchors.margins: 3
+		radius: 6
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
 		onClicked: {
 			if ( mouse.button === Qt.LeftButton ) {
 				root.item.activate();
 			} else if ( mouse.button === Qt.RightButton ) {
 				root.popouts.currentName = `traymenu${ root.ind }`;
-				root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.bar, root.implicitWidth / 2, 0 ).x );
+				root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.loader, root.implicitWidth / 2, 0 ).x );
 				root.popouts.hasCurrent = true;
 			}
 		}

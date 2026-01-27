@@ -52,11 +52,14 @@ Scope {
                 x: 0
                 y: 34
 
-                width: bar.width
-                height: bar.screen.height - backgroundRect.implicitHeight
+				property list<Region> nullRegions: []
+				property bool hcurrent: panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu")
+
+                width: hcurrent ? 0 : bar.width
+                height: hcurrent ? 0 : bar.screen.height - backgroundRect.implicitHeight
                 intersection: Intersection.Xor
 
-                regions: panels.popouts.hasCurrent ? None : popoutRegions.instances
+                regions: hcurrent ? nullRegions : popoutRegions.instances
             }
 
             Variants {
@@ -69,7 +72,7 @@ Scope {
                     x: modelData.x
                     y: modelData.y + backgroundRect.implicitHeight
                     width: modelData.width
-                    height: panels.popouts.hasCurrent ? modelData.height + 70 : 0
+                    height: panels.popouts.hasCurrent ? modelData.height : 0
                     intersection: Intersection.Subtract
                 }
             }
@@ -109,6 +112,19 @@ Scope {
                         barLoader.checkPopout(mouseX);
                     }
                 }
+
+				onPressed: event => {
+					var withinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
+					var withinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
+
+
+					if ( panels.popouts.hasCurrent ) {
+						if ( withinX && withinY ) {
+						} else {
+							panels.popouts.hasCurrent = false;
+						}
+					}
+				}
 
                 Panels {
                     id: panels

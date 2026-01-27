@@ -339,6 +339,11 @@ Item {
 					objects: appBox.modelData ? [appBox.modelData] : []
 				}
 
+				PwNodePeakMonitor {
+					id: peak
+					node: appBox.modelData
+				}
+
 				readonly property bool isCaptureStream: {
 					if (!modelData || !modelData.properties)
 						return false;
@@ -409,9 +414,10 @@ Item {
 							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 							Layout.bottomMargin: 5
 							implicitHeight: 10
-							CustomSlider {
+							CustomAudioSlider {
 								anchors.fill: parent
 								value: appBox.modelData.audio.volume
+								peak: peak.peak
 								onMoved: {
 									Audio.setAppAudioVolume(appBox.modelData, value)
 									console.log(icon.iconPath1, icon.iconPath2)

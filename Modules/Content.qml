@@ -5,6 +5,7 @@ import Quickshell.Services.SystemTray
 import QtQuick
 import qs.Config
 import qs.Modules.Calendar
+import qs.Modules.WSOverview
 
 Item {
     id: root
@@ -75,6 +76,15 @@ Item {
 			name: "calendar"
 			sourceComponent: CalendarPopup {
 				wrapper: root.wrapper
+			}
+		}
+
+		Popout {
+			name: "overview"
+
+			sourceComponent: OverviewPopout {
+				wrapper: root.wrapper
+				screen: root.wrapper.screen
 			}
 		}
     }

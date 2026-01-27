@@ -13,6 +13,7 @@ Row {
 
     required property PanelWindow bar
 	required property Wrapper popouts
+	required property RowLayout loader
     readonly property alias items: repeater
 
     spacing: 0
@@ -26,8 +27,9 @@ Row {
 			required property int index
 			ind: index
 			popouts: root.popouts
+			loader: root.loader
             implicitHeight: 34
-            implicitWidth: 28
+            implicitWidth: 34
             item: modelData
             bar: root.bar
         }

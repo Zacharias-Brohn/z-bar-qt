@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import qs.Modules
@@ -19,7 +20,7 @@ RowLayout {
 	function checkPopout(x: real): void {
 		const ch = childAt(x, height / 2) as WrappedLoader;
 
-		if (!ch) {
+		if (!ch && !popouts.currentName.includes("traymenu")) {
 			popouts.hasCurrent = false;
 			return;
 		}
@@ -42,11 +43,11 @@ RowLayout {
 			const index = Math.floor((( x - top ) / item.implicitWidth ) * item.items.count );
 			const trayItem = item.items.itemAt( index );
 			if ( trayItem ) {
-				popouts.currentName = `traymenu${ index }`;
-				popouts.currentCenter = Qt.binding( () => trayItem.mapToItem( root, trayItem.implicitWidth / 2, 0 ).x );
-				popouts.hasCurrent = true;
+				// popouts.currentName = `traymenu${ index }`;
+				// popouts.currentCenter = Qt.binding( () => trayItem.mapToItem( root, trayItem.implicitWidth / 2, 0 ).x );
+				// popouts.hasCurrent = true;
 			} else {
-				popouts.hasCurrent = false;
+				// popouts.hasCurrent = false;
 			}
 		} else if ( id === "clock" && Config.barConfig.popouts.clock ) {
 			Calendar.displayYear = new Date().getFullYear();
@@ -54,6 +55,23 @@ RowLayout {
 			popouts.currentName = "calendar";
 			popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
 			popouts.hasCurrent = true;
+		}
+	}
+
+	GlobalShortcut {
+		name: "toggle-overview"
+		appid: "zshell"
+
+		onPressed: {
+			Hyprland.refreshWorkspaces();
+			Hyprland.refreshMonitors();
+			if ( root.popouts.hasCurrent && root.popouts.currentName === "overview" ) {
+				root.popouts.hasCurrent = false;
+			} else {
+				root.popouts.currentName = "overview";
+				root.popouts.currentCenter = root.width / 2;
+				root.popouts.hasCurrent = true;
+			}
 		}
 	}
 
@@ -90,6 +108,7 @@ RowLayout {
 					sourceComponent: TrayWidget {
 						bar: root.bar
 						popouts: root.popouts
+						loader: root
 					}
 				}
 			}
