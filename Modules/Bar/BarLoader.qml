@@ -8,6 +8,7 @@ import qs.Modules
 import qs.Config
 import qs.Helpers
 import qs.Daemons
+import qs.Modules.Polkit
 
 RowLayout {
 	id: root

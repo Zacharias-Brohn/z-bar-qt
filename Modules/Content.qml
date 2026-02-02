@@ -6,6 +6,7 @@ import QtQuick
 import qs.Config
 import qs.Modules.Calendar
 import qs.Modules.WSOverview
+import qs.Modules.Polkit
 
 Item {
     id: root
