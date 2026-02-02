@@ -90,7 +90,7 @@ Scope {
 					spacing: 24
 
 					IconImage {
-						source: Quickshell.iconPath(polkitAgent.flow?.iconName) ?? ""
+						source: Quickshell.iconPath(polkitAgent.flow?.iconName, true) ?? ""
 						implicitSize: 64
 						mipmap: true
 
@@ -130,8 +130,11 @@ Scope {
 							id: passInput
 
 							echoMode: polkitAgent.flow?.responseVisible ? TextInput.Normal : TextInput.Password
+							placeholderText: polkitAgent.flow?.failed ? " Incorrect Password" : " Input Password"
 							selectByMouse: true
 							onAccepted: okButton.clicked()
+
+							placeholderTextColor: polkitAgent.flow?.failed ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurfaceVariant
 
 							Layout.preferredWidth: contentColumn.implicitWidth
 							Layout.preferredHeight: 40
@@ -139,7 +142,7 @@ Scope {
 							background: CustomRect {
 								radius: 8
 								implicitHeight: 40
-								color: passInput.enabled ? DynamicColors.tPalette.m3surfaceVariant : DynamicColors.tPalette.m3onSurfaceVariant
+								color: ( polkitAgent.flow?.failed && passInput.text === "" ) ? DynamicColors.palette.m3error : DynamicColors.tPalette.m3surfaceVariant
 							}
 						}
 
@@ -201,24 +204,17 @@ Scope {
 					ColumnLayout {
 						id: textDetailsColumn
 						spacing: 8
-						anchors.centerIn: parent
+						anchors.fill: parent
+						anchors.margins: 8
 						opacity: 0
 						scale: 0.9
 
 						CustomText {
-							Layout.preferredWidth: 650
-							text: `cookie: ${polkitAgent.flow?.cookie}`
-							wrapMode: Text.WordWrap
-						}
-
-						CustomText {
-							Layout.preferredWidth: 650
 							text: `actionId: ${polkitAgent.flow?.actionId}`
 							wrapMode: Text.WordWrap
 						}
 
 						CustomText {
-							Layout.preferredWidth: 650
 							text: `selectedIdentity: ${polkitAgent.flow?.selectedIdentity}`
 							wrapMode: Text.WordWrap
 						}
@@ -264,7 +260,6 @@ Scope {
 						Layout.alignment: Qt.AlignRight
 						onClicked: {
 							polkitAgent.flow.submit(passInput.text)
-							root.shouldShow = false
 							passInput.text = ""
 							passInput.forceActiveFocus()
 						}
@@ -295,12 +290,15 @@ Scope {
 
 			function onIsResponseRequiredChanged() {
 				passInput.text = ""
-				if ( polkitAgent.flow?.isResponseRequired ) {
+				if ( polkitAgent.flow?.isResponseRequired )
 					root.shouldShow = true
 					passInput.forceActiveFocus()
-				} else {
+			}
+
+			function onIsSuccessfulChanged() {
+				if ( polkitAgent.flow?.isSuccessful )
 					root.shouldShow = false
-				}
+					passInput.text = ""
 			}
 		}
 	}
