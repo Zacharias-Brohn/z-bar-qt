@@ -4,6 +4,7 @@ import qs.Modules
 import qs.Daemons
 import Quickshell
 import Quickshell.Bluetooth
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
@@ -31,12 +32,22 @@ CustomRect {
             spacing: 7
 
             Toggle {
+				id: toggle
                 icon: "notifications_off"
                 checked: NotifServer.dnd
                 onClicked: NotifServer.dnd = !NotifServer.dnd
             }
         }
     }
+
+	GlobalShortcut {
+		name: "toggle-dnd"
+		appid: "zshell-nc"
+
+		onPressed: {
+			toggle.clicked();
+		}
+	}
 
     component Toggle: IconButton {
         Layout.fillWidth: true
