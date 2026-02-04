@@ -16,6 +16,7 @@ RowLayout {
 
 	readonly property int vPadding: 6
 	required property Wrapper popouts
+	required property PersistentProperties visibilities
 	required property PanelWindow bar
 
 	function checkPopout(x: real): void {
@@ -25,6 +26,9 @@ RowLayout {
 			popouts.hasCurrent = false;
 			return;
 		}
+
+		if ( visibilities.sidebar )
+			return;
 
 		const id = ch.id;
 		const top = ch.x;
@@ -55,6 +59,10 @@ RowLayout {
 			Calendar.displayMonth = new Date().getMonth();
 			popouts.currentName = "calendar";
 			popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
+			popouts.hasCurrent = true;
+		} else if ( x > (root.width / 2 + 50) && x < (root.width / 2 - 50) && Config.barConfig.popouts.activeWindow ) {
+			popouts.currentName = "dash";
+			popouts.currentCenter = root.width / 2;
 			popouts.hasCurrent = true;
 		}
 	}
@@ -128,7 +136,9 @@ RowLayout {
 			DelegateChoice {
 				roleValue: "notifBell"
 				delegate: WrappedLoader {
-					sourceComponent: NotifBell {}
+					sourceComponent: NotifBell {
+						visibilities: root.visibilities
+					}
 				}
 			}
 			DelegateChoice {

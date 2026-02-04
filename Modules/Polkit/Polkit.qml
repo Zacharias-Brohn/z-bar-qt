@@ -89,15 +89,31 @@ Scope {
 					id: contentRow
 					spacing: 24
 
-					IconImage {
-						source: Quickshell.iconPath(polkitAgent.flow?.iconName, true) ?? ""
-						implicitSize: 64
-						mipmap: true
-
-						Layout.preferredWidth: implicitSize
-						Layout.preferredHeight: implicitSize
+					Item {
+						Layout.preferredWidth: icon.implicitSize
+						Layout.preferredHeight: icon.implicitSize
 						Layout.leftMargin: 16
 						Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+						IconImage {
+							id: icon
+
+							anchors.fill: parent
+							visible: `${source}`.includes("://")
+
+							source: Quickshell.iconPath(polkitAgent.flow?.iconName, true) ?? ""
+							implicitSize: 64
+							mipmap: true
+						}
+
+						MaterialIcon {
+							visible: !icon.visible
+
+							text: "security"
+							anchors.fill: parent
+							font.pointSize: 64
+							horizontalAlignment: Text.AlignHCenter
+							verticalAlignment: Text.AlignVCenter
+						}
 					}
 
 					ColumnLayout {
@@ -277,6 +293,7 @@ Scope {
 						Layout.alignment: Qt.AlignRight
 						onClicked: {
 							root.shouldShow = false
+							console.log(icon.source, icon.visible)
 							polkitAgent.flow.cancelAuthenticationRequest()
 							passInput.text = ""
 						}

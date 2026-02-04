@@ -4,6 +4,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick.Layouts
 import QtQuick
+import qs.Components
 import qs.Config
 import qs.Daemons
 import qs.Helpers
@@ -122,7 +123,7 @@ PanelWindow {
                 radius: backgroundRect.radius
             }
 
-            Rectangle {
+            CustomClippingRect {
                 id: backgroundRect
                 implicitWidth: 400
                 implicitHeight: contentLayout.childrenRect.height + 16
@@ -130,6 +131,19 @@ PanelWindow {
                 border.width: Config.useDynamicColors ? 0 : 1
                 border.color: "#555555"
                 radius: 8
+
+				CustomRect {
+					anchors.bottom: parent.bottom
+					anchors.right: parent.right
+					color: DynamicColors.palette.m3primary
+
+					implicitHeight: 4
+					implicitWidth: ( rootItem.modelData.timer.remainingTime / rootItem.modelData.timer.totalTime ) * parent.width
+
+					Behavior on implicitWidth {
+						Anim {}
+					}
+				}
 
                 Component.onCompleted: {
                     root.notifRegions.push( notifRegion.createObject(root, { item: backgroundRect }));
@@ -227,18 +241,6 @@ PanelWindow {
 
                 ElapsedTimer {
                     id: timer
-                }
-
-            }
-            MouseArea {
-                z: 1
-                anchors.fill: parent
-                hoverEnabled: true
-                onEntered: {
-                    rootItem.modelData.timer.stop();
-                }
-                onExited: {
-                    rootItem.modelData.timer.start();
                 }
             }
         }

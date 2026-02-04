@@ -1,6 +1,9 @@
 import QtQuick
 import QtQuick.Shapes
 import qs.Modules as Modules
+import qs.Modules.Notifications as Notifications
+import qs.Modules.Notifications.Sidebar as Sidebar
+import qs.Modules.Notifications.Sidebar.Utils as Utils
 
 Shape {
     id: root
@@ -20,4 +23,30 @@ Shape {
         startX: wrapper.x - 8
         startY: wrapper.y
     }
+
+	Notifications.Background {
+		wrapper: root.panels.notifications
+		sidebar: sidebar
+
+		startX: root.width
+		startY: 0
+	}
+
+	Utils.Background {
+		wrapper: root.panels.utilities
+		sidebar: sidebar
+
+		startX: root.width
+		startY: root.height
+	}
+
+	Sidebar.Background {
+		id: sidebar
+
+		wrapper: root.panels.sidebar
+		panels: root.panels
+
+		startX: root.width
+		startY: root.panels.notifications.height
+	}
 }

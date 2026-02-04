@@ -2,6 +2,9 @@ import Quickshell
 import QtQuick
 import QtQuick.Shapes
 import qs.Modules as Modules
+import qs.Modules.Notifications as Notifications
+import qs.Modules.Notifications.Sidebar as Sidebar
+import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Config
 
 Item {
@@ -9,8 +12,12 @@ Item {
 
     required property ShellScreen screen
     required property Item bar
+	required property PersistentProperties visibilities
 
     readonly property alias popouts: popouts
+	readonly property alias sidebar: sidebar
+	readonly property alias notifications: notifications
+	readonly property alias utilities: utilities
 
     anchors.fill: parent
     // anchors.margins: 8
@@ -31,4 +38,36 @@ Item {
             return Math.floor( Math.max( off, 0 ));
         }
     }
+
+	Notifications.Wrapper {
+		id: notifications
+
+		visibilities: root.visibilities
+		panels: root
+
+		anchors.top: parent.top
+		anchors.right: parent.right
+	}
+
+	Utils.Wrapper {
+		id: utilities
+
+		visibilities: root.visibilities
+		sidebar: sidebar
+		popouts: popouts
+
+		anchors.bottom: parent.bottom
+		anchors.right: parent.right
+	}
+
+	Sidebar.Wrapper {
+		id: sidebar
+
+		visibilities: root.visibilities
+		panels: root
+
+		anchors.top: notifications.bottom
+		anchors.bottom: utilities.top
+		anchors.right: parent.right
+	}
 }

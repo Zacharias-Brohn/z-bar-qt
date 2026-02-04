@@ -25,6 +25,10 @@ Singleton {
     property alias lock: adapter.lock
 	property alias idle: adapter.idle
 	property alias overview: adapter.overview
+	property alias services: adapter.services
+	property alias notifs: adapter.notifs
+	property alias sidebar: adapter.sidebar
+	property alias utilities: adapter.utilities
 
     FileView {
         id: root
@@ -58,6 +62,10 @@ Singleton {
             property LockConf lock: LockConf {}
 			property IdleTimeout idle: IdleTimeout {}
 			property Overview overview: Overview {}
+			property Services services: Services {}
+			property NotifConfig notifs: NotifConfig {}
+			property SidebarConfig sidebar: SidebarConfig {}
+			property UtilConfig utilities: UtilConfig {}
         }
     }
 }

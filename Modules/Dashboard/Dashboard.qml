@@ -1,0 +1,133 @@
+pragma ComponentBehavior: Bound
+
+import Quickshell
+import Quickshell.Widgets
+import QtQuick
+import QtQuick.Layouts
+import qs.Config
+import qs.Modules
+
+Item {
+    id: root
+
+	required property var wrapper
+    readonly property PersistentProperties state: PersistentProperties {
+        property int currentTab
+        property date currentDate: new Date()
+
+        reloadableId: "dashboardState"
+    }
+    readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
+    readonly property real nonAnimHeight: tabs.implicitHeight + tabs.anchors.topMargin + view.implicitHeight + viewWrapper.anchors.margins * 2
+
+    implicitWidth: nonAnimWidth
+    implicitHeight: nonAnimHeight
+
+    Tabs {
+        id: tabs
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        nonAnimWidth: root.nonAnimWidth - anchors.margins * 2
+        state: root.state
+    }
+
+    ClippingRectangle {
+        id: viewWrapper
+
+        anchors.top: tabs.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+
+        radius: 8
+        color: "transparent"
+
+        Flickable {
+            id: view
+
+            readonly property int currentIndex: root.state.currentTab
+            readonly property Item currentItem: row.children[currentIndex]
+
+            anchors.fill: parent
+
+            flickableDirection: Flickable.HorizontalFlick
+
+            implicitWidth: currentItem.implicitWidth
+            implicitHeight: currentItem.implicitHeight
+
+            contentX: currentItem.x
+            contentWidth: row.implicitWidth
+            contentHeight: row.implicitHeight
+
+            onContentXChanged: {
+                if (!moving)
+                    return;
+
+                const x = contentX - currentItem.x;
+                if (x > currentItem.implicitWidth / 2)
+                    root.state.currentTab = Math.min(root.state.currentTab + 1, tabs.count - 1);
+                else if (x < -currentItem.implicitWidth / 2)
+                    root.state.currentTab = Math.max(root.state.currentTab - 1, 0);
+            }
+
+            onDragEnded: {
+                const x = contentX - currentItem.x;
+                if (x > currentItem.implicitWidth / 10)
+                    root.state.currentTab = Math.min(root.state.currentTab + 1, tabs.count - 1);
+                else if (x < -currentItem.implicitWidth / 10)
+                    root.state.currentTab = Math.max(root.state.currentTab - 1, 0);
+                else
+                    contentX = Qt.binding(() => currentItem.x);
+            }
+
+            RowLayout {
+                id: row
+
+                Pane {
+                    index: 0
+                    sourceComponent: Dash {
+                        state: root.state
+                    }
+                }
+            }
+
+            Behavior on contentX {
+                Anim {}
+            }
+        }
+    }
+
+    Behavior on implicitWidth {
+        Anim {
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+    }
+
+    Behavior on implicitHeight {
+        Anim {
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
+        }
+    }
+
+    component Pane: Loader {
+        id: pane
+
+        required property int index
+
+        Layout.alignment: Qt.AlignTop
+
+        Component.onCompleted: active = Qt.binding(() => {
+            // Always keep current tab loaded
+            if (pane.index === view.currentIndex)
+                return true;
+            const vx = Math.floor(view.visibleArea.xPosition * view.contentWidth);
+            const vex = Math.floor(vx + view.visibleArea.widthRatio * view.contentWidth);
+            return (vx >= x && vx <= x + implicitWidth) || (vex >= x && vex <= x + implicitWidth);
+        })
+    }
+}

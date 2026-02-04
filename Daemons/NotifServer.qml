@@ -4,6 +4,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Notifications
+import Quickshell.Hyprland
 import QtQuick
 import ZShell
 import qs.Modules
@@ -101,6 +102,40 @@ Singleton {
         }
     }
 
+    GlobalShortcut {
+        name: "clearNotifs"
+        description: "Clear all notifications"
+        onPressed: {
+            for (const notif of root.list.slice())
+                notif.close();
+        }
+    }
+
+    IpcHandler {
+        target: "notifs"
+
+        function clear(): void {
+            for (const notif of root.list.slice())
+                notif.close();
+        }
+
+        function isDndEnabled(): bool {
+            return props.dnd;
+        }
+
+        function toggleDnd(): void {
+            props.dnd = !props.dnd;
+        }
+
+        function enableDnd(): void {
+            props.dnd = true;
+        }
+
+        function disableDnd(): void {
+            props.dnd = false;
+        }
+    }
+
     component Notif: QtObject {
         id: notif
 
@@ -140,10 +175,21 @@ Singleton {
         property list<var> actions
 
         readonly property Timer timer: Timer {
-            running: true
-            interval: 5000
+			property int totalTime: 5000
+			property int remainingTime: totalTime
+			property bool paused: false
+
+            running: !paused
+			repeat: true
+            interval: 50
             onTriggered: {
-                notif.popup = false;
+				remainingTime -= interval;
+
+				if ( remainingTime <= 0 ) {
+					remainingTime = 0;
+					notif.popup = false;
+					stop();
+				}
             }
         }
 
@@ -151,22 +197,14 @@ Singleton {
             active: false
 
             PanelWindow {
-                implicitWidth: 48
-                implicitHeight: 48
+                implicitWidth: Config.notifs.sizes.image
+                implicitHeight: Config.notifs.sizes.image
                 color: "transparent"
                 mask: Region {}
-				visible: false
 
                 Image {
-                    anchors.fill: parent
-                    source: Qt.resolvedUrl(notif.image)
-                    fillMode: Image.PreserveAspectCrop
-                    cache: false
-                    asynchronous: true
-                    opacity: 0
-
-                    onStatusChanged: {
-                        if (status !== Image.Ready)
+                    function tryCache(): void {
+                        if (status !== Image.Ready || width != Config.notifs.sizes.image || height != Config.notifs.sizes.image)
                             return;
 
                         const cacheKey = notif.appName + notif.summary + notif.id;
@@ -183,11 +221,22 @@ Singleton {
                         const hash = (h2 >>> 0).toString(16).padStart(8, 0) + (h1 >>> 0).toString(16).padStart(8, 0);
 
                         const cache = `${Paths.notifimagecache}/${hash}.png`;
-                        ZShellIo.saveItem(this, Qt.resolvedUrl(cache), () => {
+                        ZShell.saveItem(this, Qt.resolvedUrl(cache), () => {
                             notif.image = cache;
                             notif.dummyImageLoader.active = false;
                         });
                     }
+
+                    anchors.fill: parent
+                    source: Qt.resolvedUrl(notif.image)
+                    fillMode: Image.PreserveAspectCrop
+                    cache: false
+                    asynchronous: true
+                    opacity: 0
+
+                    onStatusChanged: tryCache()
+                    onWidthChanged: tryCache()
+                    onHeightChanged: tryCache()
                 }
             }
         }

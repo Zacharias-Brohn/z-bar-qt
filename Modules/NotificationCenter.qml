@@ -11,173 +11,168 @@ import qs.Helpers
 import qs.Daemons
 import qs.Effects
 
-PanelWindow {
-	id: root
-	color: "transparent"
-	anchors {
-		top: true
-		right: true
-		left: true
-		bottom: true
-	}
+Scope {
+	Variants {
+		model: Quickshell.screens
 
-	WlrLayershell.namespace: "ZShell-Notifs"
-	WlrLayershell.layer: WlrLayer.Overlay
-	WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-	property bool centerShown: false
-	property alias posX: backgroundRect.x
-	visible: false
-
-	mask: Region { item: backgroundRect }
-
-	Connections {
-		target: Hypr
-
-		function onFocusedMonitorChanged(): void {
-			if ( !root.centerShown ) {
-				root.screen = Hypr.getActiveScreen();
+		PanelWindow {
+			id: root
+			color: "transparent"
+			anchors {
+				top: true
+				right: true
+				left: true
+				bottom: true
 			}
-		}
-	}
 
-	GlobalShortcut {
-		appid: "zshell-nc"
-		name: "toggle-nc"
-		onPressed: {
-			root.screen = Hypr.getActiveScreen();
-			root.centerShown = !root.centerShown;
-		}
-	}
+			WlrLayershell.namespace: "ZShell-Notifs"
+			WlrLayershell.layer: WlrLayer.Overlay
+			WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+			property bool centerShown: false
+			property alias posX: backgroundRect.x
+			visible: false
 
-	onVisibleChanged: {
-		if ( root.visible ) {
-			showAnimation.start();
-		}
-	}
+			mask: Region { item: backgroundRect }
 
-	onCenterShownChanged: {
-		if ( !root.centerShown ) {
-			closeAnimation.start();
-			closeTimer.start();
-		} else {
-			root.visible = true;
-		}
-	}
+			GlobalShortcut {
+				appid: "zshell-nc"
+				name: "toggle-nc"
+				onPressed: {
+					root.centerShown = !root.centerShown;
+				}
+			}
 
-	Keys.onPressed: {
-		if ( event.key === Qt.Key_Escape ) {
-			root.centerShown = false;
-			event.accepted = true;
-		}
-	}
+			onVisibleChanged: {
+				if ( root.visible ) {
+					showAnimation.start();
+				}
+			}
 
-	Timer {
-		id: closeTimer
-		interval: 300
-		onTriggered: {
-			root.visible = false;
-		}
-	}
+			onCenterShownChanged: {
+				if ( !root.centerShown ) {
+					closeAnimation.start();
+					closeTimer.start();
+				} else if ( Hypr.getActiveScreen() === root.screen ) {
+					root.visible = true;
+				}
+			}
 
-	NumberAnimation {
-		id: showAnimation
-		target: backgroundRect
-		property: "x"
-		to: Math.round(root.screen.width - backgroundRect.implicitWidth - 10)
-		from: root.screen.width
-		duration: MaterialEasing.expressiveEffectsTime
-		easing.bezierCurve: MaterialEasing.expressiveEffects
-		onStopped: {
-			focusGrab.active = true;
-		}
-	}
+			Keys.onPressed: {
+				if ( event.key === Qt.Key_Escape ) {
+					root.centerShown = false;
+					event.accepted = true;
+				}
+			}
 
-	NumberAnimation {
-		id: closeAnimation
-		target: backgroundRect
-		property: "x"
-		from: root.screen.width - backgroundRect.implicitWidth - 10
-		to: root.screen.width
-		duration: MaterialEasing.expressiveEffectsTime
-		easing.bezierCurve: MaterialEasing.expressiveEffects
-	}
+			Timer {
+				id: closeTimer
+				interval: 300
+				onTriggered: {
+					root.visible = false;
+				}
+			}
 
-	HyprlandFocusGrab {
-		id: focusGrab
-		active: false
-		windows: [ root ]
-		onCleared: {
-			root.centerShown = false;
-		}
-	}
+			NumberAnimation {
+				id: showAnimation
+				target: backgroundRect
+				property: "x"
+				to: Math.round(root.screen.width - backgroundRect.implicitWidth - 10)
+				from: root.screen.width
+				duration: MaterialEasing.expressiveEffectsTime
+				easing.bezierCurve: MaterialEasing.expressiveEffects
+				onStopped: {
+					focusGrab.active = true;
+				}
+			}
 
-	TrackedNotification {
-		centerShown: root.centerShown
-		screen: root.screen
-	}
+			NumberAnimation {
+				id: closeAnimation
+				target: backgroundRect
+				property: "x"
+				from: root.screen.width - backgroundRect.implicitWidth - 10
+				to: root.screen.width
+				duration: MaterialEasing.expressiveEffectsTime
+				easing.bezierCurve: MaterialEasing.expressiveEffects
+			}
 
-	ShadowRect {
-		anchors.fill: backgroundRect
-		radius: backgroundRect.radius
-	}
+			HyprlandFocusGrab {
+				id: focusGrab
+				active: false
+				windows: [ root ]
+				onCleared: {
+					root.centerShown = false;
+				}
+			}
 
-	Rectangle {
-		id: backgroundRect
-		y: 10
-		x: Screen.width
-		z: 1
+			TrackedNotification {
+				centerShown: root.centerShown
+				screen: root.screen
+			}
 
-		property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
-
-		implicitWidth: 400
-		implicitHeight: root.height - 20
-		color: backgroundColor
-		radius: 8
-		border.color: "#555555"
-		border.width: Config.useDynamicColors ? 0 : 1
-		ColumnLayout {
-			anchors.fill: parent
-			anchors.margins: 10
-			spacing: 10
-
-			NotificationCenterHeader { }
+			ShadowRect {
+				anchors.fill: backgroundRect
+				radius: backgroundRect.radius
+			}
 
 			Rectangle {
-				color: "#333333"
-				Layout.preferredHeight: Config.useDynamicColors ? 0 : 1
-				Layout.fillWidth: true
-			}
+				id: backgroundRect
+				y: 10
+				x: Screen.width
+				z: 1
 
-			Flickable {
-				Layout.fillWidth: true
-				Layout.fillHeight: true
-				pixelAligned: true
-				contentHeight: notificationColumn.implicitHeight
-				clip: true
+				property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
 
-				Column {
-					id: notificationColumn
-					width: parent.width
+				implicitWidth: 400
+				implicitHeight: root.height - 20
+				color: backgroundColor
+				radius: 8
+				border.color: "#555555"
+				border.width: Config.useDynamicColors ? 0 : 1
+				ColumnLayout {
+					anchors.fill: parent
+					anchors.margins: 10
 					spacing: 10
 
-					add: Transition {
-						NumberAnimation {
-							properties: "x";
-							duration: 300;
-							easing.type: Easing.OutCubic
-						}
+					NotificationCenterHeader { }
+
+					Rectangle {
+						color: "#333333"
+						Layout.preferredHeight: Config.useDynamicColors ? 0 : 1
+						Layout.fillWidth: true
 					}
 
-					move: Transition {
-						NumberAnimation {
-							properties: "x";
-							duration: 200;
-							easing.type: Easing.OutCubic
+					Flickable {
+						Layout.fillWidth: true
+						Layout.fillHeight: true
+						pixelAligned: true
+						contentHeight: notificationColumn.implicitHeight
+						clip: true
+
+						Column {
+							id: notificationColumn
+							width: parent.width
+							spacing: 10
+
+							add: Transition {
+								NumberAnimation {
+									properties: "x";
+									duration: 300;
+									easing.type: Easing.OutCubic
+								}
+							}
+
+							move: Transition {
+								NumberAnimation {
+									properties: "x";
+									duration: 200;
+									easing.type: Easing.OutCubic
+								}
+							}
+
+							GroupListView { }
+
 						}
 					}
-
-					GroupListView { }
-
 				}
 			}
 		}

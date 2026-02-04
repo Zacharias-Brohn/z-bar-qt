@@ -28,9 +28,13 @@ Item {
 			if ( mouse.button === Qt.LeftButton ) {
 				root.item.activate();
 			} else if ( mouse.button === Qt.RightButton ) {
-				root.popouts.currentName = `traymenu${ root.ind }`;
-				root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.loader, root.implicitWidth / 2, 0 ).x );
-				root.popouts.hasCurrent = true;
+				if ( visibilities.sidebar ) {
+					return;
+				} else {
+					root.popouts.currentName = `traymenu${ root.ind }`;
+					root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.loader, root.implicitWidth / 2, 0 ).x );
+					root.popouts.hasCurrent = true;
+				}
 			}
 		}
 	}

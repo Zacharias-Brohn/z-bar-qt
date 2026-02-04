@@ -49,7 +49,7 @@ JsonObject {
 	component Popouts: JsonObject {
 		property bool tray: true
 		property bool audio: true
-		property bool activeWindow: false
+		property bool activeWindow: true
 		property bool resources: true
 		property bool clock: true
 	}

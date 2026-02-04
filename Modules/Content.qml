@@ -7,6 +7,7 @@ import qs.Config
 import qs.Modules.Calendar
 import qs.Modules.WSOverview
 import qs.Modules.Polkit
+import qs.Modules.Dashboard
 
 Item {
     id: root
@@ -86,6 +87,14 @@ Item {
 			sourceComponent: OverviewPopout {
 				wrapper: root.wrapper
 				screen: root.wrapper.screen
+			}
+		}
+
+		Popout {
+			name: "dash"
+
+			sourceComponent: Dashboard {
+				wrapper: root.wrapper
 			}
 		}
     }

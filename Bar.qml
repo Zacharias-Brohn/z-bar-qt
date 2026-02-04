@@ -12,15 +12,15 @@ import qs.Config
 import qs.Helpers
 import qs.Drawers
 
-Scope {
-    Variants {
-        model: Quickshell.screens
-
+Variants {
+	model: Quickshell.screens
+	Scope {
+		id: scope
+		required property var modelData
         PanelWindow {
             id: bar
-            required property var modelData
             property bool trayMenuVisible: false
-            screen: modelData
+            screen: scope.modelData
             color: "transparent"
             property var root: Quickshell.shellDir
 
@@ -53,7 +53,7 @@ Scope {
                 y: 34
 
 				property list<Region> nullRegions: []
-				property bool hcurrent: panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu")
+				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar
 
                 width: hcurrent ? 0 : bar.width
                 height: hcurrent ? 0 : bar.screen.height - backgroundRect.implicitHeight
@@ -72,10 +72,18 @@ Scope {
                     x: modelData.x
                     y: modelData.y + backgroundRect.implicitHeight
                     width: modelData.width
-                    height: panels.popouts.hasCurrent ? modelData.height : 0
+                    height: modelData.height
                     intersection: Intersection.Subtract
                 }
             }
+
+			PersistentProperties {
+				id: visibilities
+
+				property bool sidebar
+
+				Component.onCompleted: Visibilities.load(scope.modelData, this)
+			}
 
             Item {
                 anchors.fill: parent
@@ -114,15 +122,19 @@ Scope {
                 }
 
 				onPressed: event => {
-					var withinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
-					var withinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
+					var traywithinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
+					var traywithinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
+					var sidebarwithinX = mouseX <= bar.width - panels.sidebar.width
 
+					console.log(sidebarwithinX)
 
 					if ( panels.popouts.hasCurrent ) {
-						if ( withinX && withinY ) {
+						if ( traywithinX && traywithinY ) {
 						} else {
 							panels.popouts.hasCurrent = false;
 						}
+					} else if ( visibilities.sidebar && sidebarwithinX ) {
+						visibilities.sidebar = false;
 					}
 				}
 
@@ -130,6 +142,7 @@ Scope {
                     id: panels
                     screen: bar.modelData
                     bar: backgroundRect
+					visibilities: visibilities
                 }
 
                 Rectangle {
@@ -151,6 +164,7 @@ Scope {
                         anchors.fill: parent
                         popouts: panels.popouts
                         bar: bar
+						visibilities: visibilities
                     }
 
                     WindowTitle {

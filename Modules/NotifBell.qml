@@ -1,3 +1,4 @@
+import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import qs.Config
@@ -6,6 +7,8 @@ import qs.Components
 
 Item {
     id: root
+
+	required property PersistentProperties visibilities
 
     implicitWidth: 20
     anchors.top: parent.top
@@ -33,7 +36,8 @@ Item {
             anchors.fill: parent
             cursorShape: Qt.PointingHandCursor
             onClicked: {
-                Hyprland.dispatch("global zshell-nc:toggle-nc");
+                // Hyprland.dispatch("global zshell-nc:toggle-nc");
+				root.visibilities.sidebar = !root.visibilities.sidebar;
             }
         }
     }
