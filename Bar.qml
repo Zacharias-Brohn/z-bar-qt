@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import qs.Modules
 import qs.Modules.Bar
 import qs.Config
@@ -76,6 +77,15 @@ Variants {
                     intersection: Intersection.Subtract
                 }
             }
+
+			GlobalShortcut {
+				name: "toggle-nc"
+				appid: "zshell-nc"
+
+				onPressed: {
+					visibilities.sidebar = !visibilities.sidebar
+				}
+			}
 
 			PersistentProperties {
 				id: visibilities
