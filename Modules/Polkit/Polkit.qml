@@ -150,7 +150,8 @@ Scope {
 							selectByMouse: true
 							onAccepted: okButton.clicked()
 
-							placeholderTextColor: polkitAgent.flow?.failed ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurfaceVariant
+							color: DynamicColors.palette.m3onSurfaceVariant
+							placeholderTextColor: polkitAgent.flow?.failed ? DynamicColors.palette.m3onError : DynamicColors.tPalette.m3onSurfaceVariant
 
 							Layout.preferredWidth: contentColumn.implicitWidth
 							Layout.preferredHeight: 40
