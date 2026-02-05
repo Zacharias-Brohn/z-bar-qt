@@ -55,11 +55,11 @@ RowLayout {
 				// popouts.hasCurrent = false;
 			}
 		} else if ( id === "clock" && Config.barConfig.popouts.clock ) {
-			Calendar.displayYear = new Date().getFullYear();
-			Calendar.displayMonth = new Date().getMonth();
-			popouts.currentName = "calendar";
-			popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
-			popouts.hasCurrent = true;
+			// Calendar.displayYear = new Date().getFullYear();
+			// Calendar.displayMonth = new Date().getMonth();
+			// popouts.currentName = "calendar";
+			// popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
+			// popouts.hasCurrent = true;
 		} else if ( x > (root.width / 2 + 50) && x < (root.width / 2 - 50) && Config.barConfig.popouts.activeWindow ) {
 			popouts.currentName = "dash";
 			popouts.currentCenter = root.width / 2;
@@ -144,7 +144,10 @@ RowLayout {
 			DelegateChoice {
 				roleValue: "clock"
 				delegate: WrappedLoader {
-					sourceComponent: Clock {}
+					sourceComponent: Clock {
+						popouts: root.popouts
+						loader: root
+					}
 				}
 			}
 			DelegateChoice {

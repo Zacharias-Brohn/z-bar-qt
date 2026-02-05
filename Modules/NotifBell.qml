@@ -10,35 +10,39 @@ Item {
 
 	required property PersistentProperties visibilities
 
-    implicitWidth: 20
+    implicitWidth: 25
     anchors.top: parent.top
     anchors.bottom: parent.bottom
 
-    MaterialIcon {
-        id: notificationCenterIcon
+	CustomRect {
+		anchors.fill: parent
+		anchors.topMargin: 3
+		anchors.bottomMargin: 3
+		color: "transparent"
+		radius: 4
+		MaterialIcon {
+			id: notificationCenterIcon
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
+			anchors.centerIn: parent
 
-        property color iconColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "white"
+			property color iconColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "white"
 
-        text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
-        font.family: "Material Symbols Rounded"
-        font.pixelSize: 20
-        color: iconColor
+			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
+			font.family: "Material Symbols Rounded"
+			font.pixelSize: 20
+			color: iconColor
 
-        Behavior on color {
-            CAnim {}
-        }
+			Behavior on color {
+				CAnim {}
+			}
+		}
 
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                // Hyprland.dispatch("global zshell-nc:toggle-nc");
+		StateLayer {
+			cursorShape: Qt.PointingHandCursor
+			onClicked: {
+				// Hyprland.dispatch("global zshell-nc:toggle-nc");
 				root.visibilities.sidebar = !root.visibilities.sidebar;
-            }
-        }
-    }
+			}
+		}
+	}
 }

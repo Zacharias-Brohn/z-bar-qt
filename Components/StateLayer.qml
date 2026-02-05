@@ -74,6 +74,7 @@ MouseArea {
         id: hoverLayer
 
         anchors.fill: parent
+		border.pixelAligned: false
 
         color: Qt.alpha(root.color, root.disabled ? 0 : root.pressed ? 0.1 : root.containsMouse ? 0.08 : 0)
         radius: root.radius
@@ -84,6 +85,7 @@ MouseArea {
             radius: 1000
             color: root.color
             opacity: 0
+			border.pixelAligned: false
 
             transform: Translate {
                 x: -ripple.width / 2
