@@ -35,7 +35,6 @@ Item {
                     map.set(n.appName, null);
                 for (const n of NotifServer.list)
                     map.set(n.appName, null);
-				console.log(map.keys())
                 return [...map.keys()];
             }
             onValuesChanged: root.flagChanged()
@@ -52,8 +51,9 @@ Item {
             property int startY
 
             function closeAll(): void {
-                for (const n of NotifServer.notClosed.filter(n => n.appName === modelData))
+                for (const n of NotifServer.notClosed.filter(n => n.appName === modelData)) {
                     n.close();
+				}
             }
 
             y: {

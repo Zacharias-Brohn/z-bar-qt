@@ -17,71 +17,6 @@ Item {
     Layout.fillWidth: true
     implicitHeight: flickable.contentHeight
 
-    layer.enabled: true
-    layer.smooth: true
-    layer.effect: OpacityMask {
-        maskSource: gradientMask
-    }
-
-    Item {
-        id: gradientMask
-
-        anchors.fill: parent
-        layer.enabled: true
-        visible: false
-
-        Rectangle {
-            anchors.fill: parent
-
-            gradient: Gradient {
-                orientation: Gradient.Horizontal
-
-                GradientStop {
-                    position: 0
-                    color: Qt.rgba(0, 0, 0, 0)
-                }
-                GradientStop {
-                    position: 0.1
-                    color: Qt.rgba(0, 0, 0, 1)
-                }
-                GradientStop {
-                    position: 0.9
-                    color: Qt.rgba(0, 0, 0, 1)
-                }
-                GradientStop {
-                    position: 1
-                    color: Qt.rgba(0, 0, 0, 0)
-                }
-            }
-        }
-
-        Rectangle {
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-
-            implicitWidth: parent.width / 2
-            opacity: flickable.contentX > 0 ? 0 : 1
-
-            Behavior on opacity {
-                Anim {}
-            }
-        }
-
-        Rectangle {
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-
-            implicitWidth: parent.width / 2
-            opacity: flickable.contentX < flickable.contentWidth - parent.width ? 0 : 1
-
-            Behavior on opacity {
-                Anim {}
-            }
-        }
-    }
-
     CustomFlickable {
         id: flickable
 
@@ -113,8 +48,8 @@ Item {
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    implicitWidth: actionInner.implicitWidth + 10 * 2
-                    implicitHeight: actionInner.implicitHeight + 10 * 2
+                    implicitWidth: actionInner.implicitWidth + 5 * 2
+                    implicitHeight: actionInner.implicitHeight + 5 * 2
 
                     Layout.preferredWidth: implicitWidth + (actionStateLayer.pressed ? 18 : 0)
                     radius: actionStateLayer.pressed ? 6 / 2 : 6
@@ -123,7 +58,7 @@ Item {
                     Timer {
                         id: copyTimer
 
-                        interval: 3000
+                        interval: 1000
                         onTriggered: actionInner.item.text = "content_copy"
                     }
 

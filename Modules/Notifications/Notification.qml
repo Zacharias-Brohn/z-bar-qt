@@ -4,6 +4,7 @@ import qs.Components
 import qs.Config
 import qs.Modules
 import qs.Daemons
+import qs.Helpers
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Services.Notifications
@@ -20,7 +21,7 @@ CustomRect {
     property bool expanded: Config.notifs.openExpanded
 
     color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondaryContainer : DynamicColors.tPalette.m3surfaceContainer
-    radius: Appearance.rounding.normal
+    radius: 8
     implicitWidth: Config.notifs.sizes.width
     implicitHeight: inner.implicitHeight
 
@@ -113,6 +114,7 @@ CustomRect {
                 width: Config.notifs.sizes.image
                 height: Config.notifs.sizes.image
                 visible: root.hasImage || root.hasAppIcon
+				asynchronous: true
 
                 sourceComponent: ClippingRectangle {
                     radius: 1000
@@ -138,6 +140,7 @@ CustomRect {
                 anchors.verticalCenter: root.hasImage ? undefined : image.verticalCenter
                 anchors.right: root.hasImage ? image.right : undefined
                 anchors.bottom: root.hasImage ? image.bottom : undefined
+				asynchronous: true
 
                 sourceComponent: CustomRect {
                     radius: 1000
@@ -151,6 +154,7 @@ CustomRect {
                         active: root.hasAppIcon
 
                         anchors.centerIn: parent
+						asynchronous: true
 
                         width: Math.round(parent.width * 0.6)
                         height: Math.round(parent.width * 0.6)
@@ -167,6 +171,7 @@ CustomRect {
                         anchors.centerIn: parent
                         anchors.horizontalCenterOffset: -18 * 0.02
                         anchors.verticalCenterOffset: 18 * 0.02
+						asynchronous: true
 
                         sourceComponent: MaterialIcon {
                             text: Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)

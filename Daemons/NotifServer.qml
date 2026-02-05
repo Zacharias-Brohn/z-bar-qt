@@ -10,6 +10,7 @@ import ZShell
 import qs.Modules
 import qs.Helpers
 import qs.Paths
+import qs.Config
 
 Singleton {
     id: root
@@ -103,7 +104,8 @@ Singleton {
     }
 
     GlobalShortcut {
-        name: "clearNotifs"
+        name: "clearnotifs"
+		appid: "zshell-notif"
         description: "Clear all notifications"
         onPressed: {
             for (const notif of root.list.slice())

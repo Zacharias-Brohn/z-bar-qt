@@ -129,7 +129,7 @@ CustomRect {
 
                 Layout.fillWidth: true
                 textFormat: Text.MarkdownText
-                text: root.modelData.body.replace(/(.)\n(?!\n)/g, "$1\n\n") || qsTr("No body here! :/")
+                text: root.modelData.body.replace(/(.)\n(?!\n)/g, "$1\n\n") || qsTr("No body given")
                 color: root.modelData.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurface
                 wrapMode: Text.WordWrap
 

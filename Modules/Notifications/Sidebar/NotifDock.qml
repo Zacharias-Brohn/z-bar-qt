@@ -91,13 +91,6 @@ Item {
             sourceComponent: ColumnLayout {
                 spacing: 20
 
-                Image {
-                    asynchronous: true
-                    source: Qt.resolvedUrl(`${Quickshell.shellDir}/assets/dino.png`)
-                    fillMode: Image.PreserveAspectFit
-                    sourceSize.width: clipRect.width * 0.8
-                }
-
                 CustomText {
                     Layout.alignment: Qt.AlignHCenter
                     text: qsTr("No Notifications")
