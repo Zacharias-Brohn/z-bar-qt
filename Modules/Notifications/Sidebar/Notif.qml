@@ -89,6 +89,7 @@ CustomRect {
         anchors.leftMargin: 7
 
         sourceComponent: CustomText {
+			textFormat: Text.StyledText
             text: root.modelData.body.replace(/\n/g, " ")
             color: root.modelData.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline
             elide: Text.ElideRight
