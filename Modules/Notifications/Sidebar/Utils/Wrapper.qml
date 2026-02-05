@@ -38,7 +38,7 @@ Item {
         when: root.shouldBeActive
 
         PropertyChanges {
-            root.implicitHeight: content.implicitHeight + 18 * 2
+            root.implicitHeight: content.implicitHeight + 8 * 2
         }
     }
 
@@ -82,13 +82,13 @@ Item {
 
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.margins: 18
+        anchors.margins: 8
 
         visible: false
         active: true
 
         sourceComponent: Content {
-            implicitWidth: root.implicitWidth - 18 * 2
+            implicitWidth: root.implicitWidth - 8 * 2
             props: root.props
             visibilities: root.visibilities
             popouts: root.popouts
