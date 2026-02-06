@@ -23,7 +23,17 @@
       formatter = forAllSystems (pkgs: pkgs.nixfmt);
 
       packages = forAllSystems (pkgs: rec {
-        app2unit = pkgs.callPackage ./nix/app2unit.nix { inherit pkgs; };
+        zshell = pkgs.callPackage ./nix {
+          rev = self.rev or self.dirtyRev;
+          stdenv = pkgs.clangStdenv;
+          quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+            withX11 = false;
+            withI3 = false;
+          };
+          app2unit = pkgs.callPackage ./nix/app2unit.nix { inherit pkgs; };
+        };
+
+        default = zshell;
       });
 
       devShells = forAllSystems (pkgs: {
