@@ -41,7 +41,7 @@ In your flake.nix file, add the following in your inputs.
 inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-        url = "github:Zacharias-Brohn/z-bar-qt/nix_packaging";
+        url = "github:Zacharias-Brohn/z-bar-qt/";
         inputs.nixpkgs.follows = "nixpkgs";
     };
 };
@@ -54,7 +54,7 @@ Below a full example of what it could look like.
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     z-bar-qt = {
-        url = "github:Zacharias-Brohn/z-bar-qt/nix_packaging";
+        url = "github:Zacharias-Brohn/z-bar-qt/";
         inputs.nixpkgs.follows = "nixpgks";
     };
   };
