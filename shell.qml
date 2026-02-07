@@ -7,7 +7,7 @@ import qs.Modules.Lock as Lock
 import qs.Helpers
 import qs.Modules.Polkit
 
-Scope {
+ShellRoot {
     Bar {}
     Wallpaper {}
     Launcher {}
