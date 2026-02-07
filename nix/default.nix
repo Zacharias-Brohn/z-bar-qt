@@ -95,28 +95,29 @@ stdenv.mkDerivation {
     quickshell
     plugin
     qt6.qtbase
+    qt6.qtwayland
   ];
   propagatedBuildInputs = runtimeDeps;
 
   cmakeFlags = [
     (lib.cmakeFeature "ENABLE_MODULES" "shell")
+    (lib.cmakeFeature "INSTALL_QSCONFDIR" "${placeholder "out"}/share/ZShell")
   ]
   ++ cmakeVersionFlags;
 
   prePatch = ''
-    substituteInPlace assets/pam.d/fprint \
-      --replace-fail pam_fprintd.so /run/current-system/sw/lib/security/pam_fprintd.so
     substituteInPlace shell.qml \
       --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
   '';
 
   postInstall = ''
-    makeWrapper ${quickshell}/bin/qs $out/bin/zshell \
-    	--prefix PATH : "${lib.makeBinPath runtimeDeps}" \
-    	--set FONTCONFIG_FILE "${fontconfig}" \
-    	--add-flags "-p $out/share/ZShell"
+        makeWrapper ${quickshell}/bin/qs $out/bin/zshell \
+        	--prefix PATH : "${lib.makeBinPath runtimeDeps}" \
+        	--set FONTCONFIG_FILE "${fontconfig}" \
+        	--add-flags "-p $out/share/ZShell"
 
-    mkdir -p $out/lib
+    	echo "$out"
+        mkdir -p $out/lib
   '';
 
   passthru = {

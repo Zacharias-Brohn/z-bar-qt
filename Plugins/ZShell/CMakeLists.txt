@@ -20,7 +20,7 @@ function(qml_module arg_TARGET)
         QMLDIR module_qmldir
         TYPEINFO module_typeinfo
     )
-    set(module_dir "/usr/lib/qt6/qml/${module_target_path}")
+	set(module_dir "${INSTALL_QMLDIR}/${module_target_path}")
     install(TARGETS ${arg_TARGET} LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
     install(TARGETS "${module_plugin_target}" LIBRARY DESTINATION "${module_dir}" RUNTIME DESTINATION "${module_dir}")
     install(FILES "${module_qmldir}" DESTINATION "${module_dir}")
