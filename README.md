@@ -33,6 +33,70 @@ sudo ninja -C build install
 
 This installs the QML plugin to `/usr/lib/qt6/qml`.
 
+### NixOS
+
+In your flake.nix file, add the following in your inputs.
+
+```nix
+inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    z-bar-qt = {
+        url = "github:Zacharias-Brohn/z-bar-qt/";
+        inputs.nixpkgs.follows = "nixpkgs";
+    };
+};
+```
+
+Below a full example of what it could look like.
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    z-bar-qt = {
+        url = "github:Zacharias-Brohn/z-bar-qt/";
+        inputs.nixpkgs.follows = "nixpgks";
+    };
+  };
+
+  outputs =
+    inputs@{
+      nixpkgs,
+      self,
+      ...
+    }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in
+    {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit inputs;
+          inherit system;
+        };
+        modules = [
+          ./configuration.nix
+        ];
+      };
+    };
+}
+```
+
+Now you can add z-bar-qt as a nixpkgs in environment.systemPackages (or optionally in your homePackages).
+
+```nix
+{ pkgs, inputs, ... }:
+
+{
+    environment.systemPackages = with pkgs; [
+    inputs.z-bar-qt.packages.${system}.zshell
+    ];
+}
+```
+
+You can now run ```zshell``` to run the bar.
+
 ## Configuration
 
 Configuration is stored in `~/.config/z-bar/config.json`. Options include:
