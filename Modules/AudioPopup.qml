@@ -376,6 +376,13 @@ Item {
 						source: iconPath1 !== "" ? iconPath1 : iconPath2
 						Layout.alignment: Qt.AlignVCenter
 						implicitSize: 42
+
+						StateLayer {
+							radius: 1000
+							onClicked: {
+								appBox.modelData.audio.muted = !appBox.modelData.audio.muted;
+							}
+						}
 					}
 
 					ColumnLayout {

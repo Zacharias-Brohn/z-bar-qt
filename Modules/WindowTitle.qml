@@ -1,68 +1,85 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
-import QtQuick.Layouts
-import Quickshell.Hyprland
-import qs.Helpers
-import qs.Config
 import qs.Components
+import qs.Config
+import qs.Helpers
 
 Item {
     id: root
-    property string currentTitle: Hypr.activeName
-    Layout.fillHeight: true
-    Layout.preferredWidth: Math.max( titleText1.implicitWidth, titleText2.implicitWidth ) + 10
+
+    required property var bar
+    required property Brightness.Monitor monitor
+    property color colour: DynamicColors.palette.m3primary
+
+    readonly property int maxHeight: {
+        const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
+        const otherHeight = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimHeight ?? curr.height), 0);
+        // Length - 2 cause repeater counts as a child
+        return bar.height - otherHeight - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
+    }
+    property Title current: text1
+
     clip: true
+    implicitWidth: current.implicitWidth + current.anchors.leftMargin
+    implicitHeight: current.implicitHeight
 
-    property bool showFirst: true
-    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : "white"
-
-    // Component.onCompleted: {
-    //     Hyprland.rawEvent.connect(( event ) => {
-    //         if (event.name === "activewindow") {
-    //             InitialTitle.getInitialTitle( function( initialTitle ) {
-    //                 root.currentTitle = initialTitle
-    //             })
-    //         }
-    //     })
+    // MaterialIcon {
+    //     id: icon
+    //
+    //     anchors.verticalCenter: parent.verticalCenter
+    //
+    //     animate: true
+    //     text: Icons.getAppCategoryIcon(Hypr.activeToplevel?.lastIpcObject.class, "desktop_windows")
+    //     color: root.colour
     // }
 
-    onCurrentTitleChanged: {
-        if (showFirst) {
-            titleText2.text = currentTitle
-            showFirst = false
-        } else {
-            titleText1.text = currentTitle
-            showFirst = true
+    Title {
+        id: text1
+    }
+
+    Title {
+        id: text2
+    }
+
+    TextMetrics {
+        id: metrics
+
+        text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
+        font.pointSize: 12
+        font.family: "Rubik"
+
+        onTextChanged: {
+            const next = root.current === text1 ? text2 : text1;
+            next.text = elidedText;
+            root.current = next;
+        }
+        onElideWidthChanged: root.current.text = elidedText
+    }
+
+    Behavior on implicitWidth {
+        Anim {
+            duration: MaterialEasing.expressiveEffectsTime
+            easing.bezierCurve: MaterialEasing.expressiveEffects
         }
     }
 
-    CustomText {
-        id: titleText1
-        anchors.fill: parent
-        anchors.margins: 5
-        text: root.currentTitle
-        color: root.textColor
-        elide: Text.ElideRight
-        font.pixelSize: 16
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        opacity: root.showFirst ? 1 : 0
-        Behavior on opacity {
-            NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
-        }
-    }
+    component Title: CustomText {
+        id: text
 
-    CustomText {
-        id: titleText2
-        anchors.fill: parent
-        anchors.margins: 5
-        color: root.textColor
-        elide: Text.ElideRight
-        font.pixelSize: 16
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
-        opacity: root.showFirst ? 0 : 1
+		anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: 7
+
+        font.pointSize: metrics.font.pointSize
+        font.family: metrics.font.family
+        color: root.colour
+        opacity: root.current === this ? 1 : 0
+
+        width: implicitWidth
+        height: implicitHeight
+
         Behavior on opacity {
-            NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+            Anim {}
         }
     }
 }

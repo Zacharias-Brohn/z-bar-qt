@@ -12,32 +12,21 @@ Item {
 
 	required property var wrapper
     readonly property PersistentProperties state: PersistentProperties {
-        property int currentTab
+        property int currentTab: 0
         property date currentDate: new Date()
 
         reloadableId: "dashboardState"
     }
     readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
-    readonly property real nonAnimHeight: tabs.implicitHeight + tabs.anchors.topMargin + view.implicitHeight + viewWrapper.anchors.margins * 2
+    readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
 
     implicitWidth: nonAnimWidth
     implicitHeight: nonAnimHeight
 
-    Tabs {
-        id: tabs
-
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-
-        nonAnimWidth: root.nonAnimWidth - anchors.margins * 2
-        state: root.state
-    }
-
     ClippingRectangle {
         id: viewWrapper
 
-        anchors.top: tabs.bottom
+        anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom

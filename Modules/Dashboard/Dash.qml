@@ -30,7 +30,7 @@ GridLayout {
     Rect {
         Layout.row: 0
         Layout.columnSpan: 2
-        Layout.preferredWidth: Config.dashboard.sizes.weatherWidth
+        Layout.preferredWidth: 250
         Layout.fillHeight: true
 
         radius: 8
@@ -48,38 +48,6 @@ GridLayout {
         DateTime {
             id: dateTime
         }
-    }
-
-    Rect {
-        Layout.row: 1
-        Layout.column: 1
-        Layout.columnSpan: 3
-        Layout.fillWidth: true
-        Layout.preferredHeight: 100
-
-        radius: 8
-
-    }
-
-    Rect {
-        Layout.row: 1
-        Layout.column: 4
-        Layout.preferredWidth: 100
-        Layout.fillHeight: true
-
-        radius: 8
-
-    }
-
-    Rect {
-        Layout.row: 0
-        Layout.column: 5
-        Layout.rowSpan: 2
-        Layout.preferredWidth: 100
-        Layout.fillHeight: true
-
-        radius: 8
-
     }
 
     component Rect: CustomRect {

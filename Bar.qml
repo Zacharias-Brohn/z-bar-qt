@@ -150,7 +150,7 @@ Variants {
 
                 Panels {
                     id: panels
-                    screen: bar.modelData
+                    screen: scope.modelData
                     bar: backgroundRect
 					visibilities: visibilities
                 }
@@ -175,13 +175,7 @@ Variants {
                         popouts: panels.popouts
                         bar: bar
 						visibilities: visibilities
-                    }
-
-                    WindowTitle {
-                        anchors.centerIn: parent
-                        width: Math.min( 300, parent.width * 0.4 )
-                        height: parent.height
-                        z: 1
+						screen: scope.modelData
                     }
                 }
             }
