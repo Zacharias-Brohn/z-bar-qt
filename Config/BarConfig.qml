@@ -37,6 +37,10 @@ JsonObject {
 			enabled: true
 		},
 		{
+			id: "upower",
+			enabled: false
+		},
+		{
 			id: "clock",
 			enabled: true
 		},

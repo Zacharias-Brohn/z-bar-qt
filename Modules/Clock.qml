@@ -19,7 +19,7 @@ Item {
 		anchors.bottomMargin: 3
 		radius: 4
 		color: "transparent"
-		Text {
+		CustomText {
 			id: timeText
 
 			anchors.centerIn: parent

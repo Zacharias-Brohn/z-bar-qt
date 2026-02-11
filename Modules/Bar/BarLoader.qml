@@ -9,6 +9,7 @@ import qs.Config
 import qs.Helpers
 import qs.Daemons
 import qs.Modules.Polkit
+import qs.Modules.UPower
 
 RowLayout {
 	id: root
@@ -158,6 +159,12 @@ RowLayout {
 						bar: root
 						monitor: Brightness.getMonitorForScreen(root.screen)
 					}
+				}
+			}
+			DelegateChoice {
+				roleValue: "upower"
+				delegate: WrappedLoader {
+					sourceComponent: UPowerWidget {}
 				}
 			}
 		}
