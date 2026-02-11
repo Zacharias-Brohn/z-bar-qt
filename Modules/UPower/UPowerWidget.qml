@@ -22,5 +22,6 @@ Item {
 
 	CustomText {
 		text: findDevice().percentage
+		anchors.centerIn: parent
 	}
 }
