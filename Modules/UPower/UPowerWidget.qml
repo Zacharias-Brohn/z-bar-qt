@@ -39,7 +39,7 @@ Item {
 					level--;
 				return charging ? `battery_charging_${(level + 3) * 10}` : `battery_${level}_bar`;
 			}
-			color: !Helpers.UPower.onBattery || UPower.displayDevice.percentage > 0.2 ? root.colour : Colours.palette.m3error
+			color: !Helpers.UPower.onBattery || UPower.displayDevice.percentage > 0.2 ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3error
 			fill: 1
 		}
 
