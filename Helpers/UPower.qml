@@ -11,12 +11,13 @@ Singleton {
 	readonly property bool onBattery: UPower.onBattery
 	readonly property UPowerDevice displayDevice: UPower.displayDevice
 
-	property UPowerDevice batteryDevice
+	property UPowerDevice batteryDevice: findDevice()
 
-	function findDevice(): void {
+	function findDevice(): UPowerDevice {
 		for ( let i = 0; i < root.devices.length; i++ ) {
+			console.log(root.devices[i])
 			if ( root.devices[i].type === "Battery" ) {
-				root.batteryDevice = root.devices[i];
+				return root.devices[i];
 			}
 		}
 	}

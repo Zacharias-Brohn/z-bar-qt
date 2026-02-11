@@ -12,8 +12,6 @@ Item {
 	anchors.top: parent.top
 	anchors.bottom: parent.bottom
 
-	Component.onCompleted: UPower.findDevice()
-
 	CustomText {
 		text: UPower.batteryDevice.percentage + "%"
 		anchors.centerIn: parent
