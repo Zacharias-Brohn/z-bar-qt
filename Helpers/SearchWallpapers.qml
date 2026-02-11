@@ -29,7 +29,7 @@ Searcher {
 
     function stopPreview(): void {
         showPreview = false;
-        Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${root.actualCurrent}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`]);
+        Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${root.actualCurrent}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`, `--scheme=${Config.colors.schemeType}`]);
     }
 
     list: wallpapers.entries

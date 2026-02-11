@@ -267,7 +267,7 @@ Scope {
                         onCurrentItemChanged: {
                             if ( currentItem )
                                 SearchWallpapers.preview( currentItem.modelData.path );
-                                Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${currentItem.modelData.path}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`]);
+                                Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${currentItem.modelData.path}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`, `--scheme=${Config.colors.schemeType}`]);
                         }
 
                         cacheItemCount: 5

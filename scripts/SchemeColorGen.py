@@ -5,9 +5,60 @@ from PIL import Image
 from materialyoucolor.quantize import QuantizeCelebi
 from materialyoucolor.score.score import Score
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
-from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot
 from materialyoucolor.hct.hct import Hct
 
+
+parser = argparse.ArgumentParser(
+    description="Generate color scheme from wallpaper image"
+)
+
+parser.add_argument(
+    "--path",
+    required=True,
+    help="Path to the wallpaper image"
+)
+
+parser.add_argument(
+    "--output",
+    required=True,
+    help="Path to save the color scheme JSON file"
+)
+
+parser.add_argument(
+    "--thumbnail",
+    required=True,
+    help="Path to save the thumbnail image"
+)
+
+parser.add_argument(
+    "--scheme",
+    required=False,
+    type=str,
+    default="vibrant",
+)
+
+args = parser.parse_args()
+
+if args.scheme == 'fruit-salad':
+    from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
+elif args.scheme == 'expressive':
+    from materialyoucolor.scheme.scheme_expressive import SchemeExpressive as Scheme
+elif args.scheme == 'monochrome':
+    from materialyoucolor.scheme.scheme_monochrome import SchemeMonochrome as Scheme
+elif args.scheme == 'rainbow':
+    from materialyoucolor.scheme.scheme_rainbow import SchemeRainbow as Scheme
+elif args.scheme == 'tonal-spot':
+    from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot as Scheme
+elif args.scheme == 'neutral':
+    from materialyoucolor.scheme.scheme_neutral import SchemeNeutral as Scheme
+elif args.scheme == 'fidelity':
+    from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity as Scheme
+elif args.scheme == 'content':
+    from materialyoucolor.scheme.scheme_content import SchemeContent as Scheme
+elif args.scheme == 'vibrant':
+    from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant as Scheme
+else:
+    from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot as Scheme
 
 def generate_thumbnail(image_path, thumbnail_path, size=(128, 128)):
     thumbnail_file = Path(thumbnail_path)
@@ -31,7 +82,7 @@ def generate_color_scheme(thumbnail_path, output_path):
     result = QuantizeCelebi(pixel_array, 128)
     score = Score.score(result)[0]
 
-    scheme = SchemeTonalSpot(
+    scheme = Scheme(
         Hct.from_int(score),
         True,
         0.0
@@ -63,40 +114,8 @@ def int_to_hex(argb_int):
     return "#{:06X}".format(argb_int & 0xFFFFFF)
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Generate color scheme from wallpaper image"
-    )
-
-    parser.add_argument(
-        "--path",
-        required=True,
-        help="Path to the wallpaper image"
-    )
-
-    parser.add_argument(
-        "--output",
-        required=True,
-        help="Path to save the color scheme JSON file"
-    )
-
-    parser.add_argument(
-        "--thumbnail",
-        required=True,
-        help="Path to save the thumbnail image"
-    )
-
-    args = parser.parse_args()
-    
-    try:
-        generate_thumbnail(args.path, str(args.thumbnail))
-        generate_color_scheme(str(args.thumbnail), args.output)
-    except Exception as e:
-        print(f"Error: {e}")
-        return 1
-
-    return 0
-
-
-if __name__ == "__main__":
-    exit(main())
+try:
+    generate_thumbnail(args.path, str(args.thumbnail))
+    generate_color_scheme(str(args.thumbnail), args.output)
+except Exception as e:
+    print(f"Error: {e}")
