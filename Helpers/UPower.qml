@@ -16,7 +16,7 @@ Singleton {
 	function findDevice(): UPowerDevice {
 		for ( let i = 0; i < root.devices.length; i++ ) {
 			console.log(root.devices[i])
-			if ( root.devices[i].type === "Battery" ) {
+			if ( root.devices[i].isLaptopBattery ) {
 				return root.devices[i];
 			}
 		}
