@@ -12,16 +12,10 @@ Item {
 	anchors.top: parent.top
 	anchors.bottom: parent.bottom
 
-	function findDevice() {
-		for ( let i = 0; i < UPower.devices.count; i++ ) {
-			if ( UPower.devices[i].isLaptopBattery ) {
-				return UPower.devices[i];
-			}
-		}
-	}
+	Component.onCompleted: UPower.findDevice()
 
 	CustomText {
-		text: findDevice().percentage
+		text: UPower.batteryDevice.percentage + "%"
 		anchors.centerIn: parent
 	}
 }
