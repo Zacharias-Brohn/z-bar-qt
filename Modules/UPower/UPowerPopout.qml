@@ -32,6 +32,7 @@ Item {
         implicitHeight: Math.max(saver.implicitHeight, balance.implicitHeight, perf.implicitHeight) + 5 * 2 + saverLabel.contentHeight
 
         color: DynamicColors.tPalette.m3surfaceContainer
+		// color: "transparent"
         radius: 6
 
         CustomRect {
@@ -91,6 +92,7 @@ Item {
 			id: saverLabel
 			anchors.top: saver.bottom
 			anchors.horizontalCenter: saver.horizontalCenter
+			font.bold: true
 			text: saver.text
 		}
 
@@ -110,6 +112,7 @@ Item {
 			id: balanceLabel
 			anchors.top: balance.bottom
 			anchors.horizontalCenter: balance.horizontalCenter
+			font.bold: true
 			text: balance.text
 		}
 
@@ -130,6 +133,7 @@ Item {
 			id: perfLabel
 			anchors.top: perf.bottom
 			anchors.horizontalCenter: perf.horizontalCenter
+			font.bold: true
 			text: perf.text
 		}
     }
