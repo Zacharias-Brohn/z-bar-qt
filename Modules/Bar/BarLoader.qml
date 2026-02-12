@@ -10,6 +10,7 @@ import qs.Helpers
 import qs.Daemons
 import qs.Modules.Polkit
 import qs.Modules.UPower
+import qs.Modules.Network
 
 RowLayout {
 	id: root
@@ -65,6 +66,14 @@ RowLayout {
 		} else if ( id === "activeWindow" && Config.barConfig.popouts.activeWindow ) {
 			popouts.currentName = "dash";
 			popouts.currentCenter = root.width / 2;
+			popouts.hasCurrent = true;
+		} else if ( id === "network" && Config.barConfig.popouts.network ) {
+			popouts.currentName = "network";
+			popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
+			popouts.hasCurrent = true;
+		} else if ( id === "upower" && Config.barConfig.popouts.upower ) {
+			popouts.currentName = "upower";
+			popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
 			popouts.hasCurrent = true;
 		}
 	}
@@ -165,6 +174,12 @@ RowLayout {
 				roleValue: "upower"
 				delegate: WrappedLoader {
 					sourceComponent: UPowerWidget {}
+				}
+			}
+			DelegateChoice {
+				roleValue: "network"
+				delegate: WrappedLoader {
+					sourceComponent: NetworkWidget {}
 				}
 			}
 		}

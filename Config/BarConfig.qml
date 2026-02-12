@@ -41,6 +41,10 @@ JsonObject {
 			enabled: false
 		},
 		{
+			id: "network",
+			enabled: false
+		},
+		{
 			id: "clock",
 			enabled: true
 		},
@@ -56,5 +60,7 @@ JsonObject {
 		property bool activeWindow: true
 		property bool resources: true
 		property bool clock: true
+		property bool network: true
+		property bool upower: true
 	}
 }

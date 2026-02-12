@@ -8,6 +8,8 @@ import qs.Modules.Calendar
 import qs.Modules.WSOverview
 import qs.Modules.Polkit
 import qs.Modules.Dashboard
+import qs.Modules.Network
+import qs.Modules.UPower
 
 Item {
     id: root
@@ -94,6 +96,22 @@ Item {
 			name: "dash"
 
 			sourceComponent: Dashboard {
+				wrapper: root.wrapper
+			}
+		}
+
+		Popout {
+			name: "upower"
+
+			sourceComponent: UPowerPopout {
+				wrapper: root.wrapper
+			}
+		}
+
+		Popout {
+			name: "network"
+
+			sourceComponent: NetworkPopout {
 				wrapper: root.wrapper
 			}
 		}

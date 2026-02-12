@@ -10,9 +10,17 @@ import qs.Modules
 Item {
 	id: root
 
-	implicitWidth: layout.childrenRect.width
+	implicitWidth: layout.childrenRect.width + 10 * 2
 	anchors.top: parent.top
 	anchors.bottom: parent.bottom
+
+	CustomRect {
+		anchors.fill: parent
+		anchors.topMargin: 3
+		anchors.bottomMargin: 3
+		color: DynamicColors.tPalette.m3surfaceContainer
+		radius: 1000
+	}
 
 	RowLayout {
 		id: layout
@@ -24,10 +32,10 @@ Item {
 			text: {
 				if (!Helpers.UPower.displayDevice.isLaptopBattery) {
 					if (PowerProfiles.profile === PowerProfile.PowerSaver)
-						return "energy_savings_leaf";
+						return "nest_eco_leaf";
 					if (PowerProfiles.profile === PowerProfile.Performance)
-						return "rocket_launch";
-					return "balance";
+						return "bolt";
+					return "power_settings_new";
 				}
 
 				const perc = Helpers.UPower.displayDevice.percentage;
@@ -45,7 +53,7 @@ Item {
 
 		CustomText {
 			Layout.alignment: Qt.AlignVCenter
-			text: Helpers.UPower.displayDevice.isLaptopBattery ? qsTr("%1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : qsTr("NaN")
+			text: Helpers.UPower.displayDevice.isLaptopBattery ? qsTr("%1%").arg(Math.round(UPower.displayDevice.percentage * 100)) : (PowerProfiles.profile === PowerProfile.PowerSaver ? qsTr("Pwr Sav") : PowerProfiles.profile === PowerProfile.Performance ? qsTr("Perf") : qsTr("Bal"))
 		}
 	}
 }

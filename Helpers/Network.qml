@@ -6,6 +6,6 @@ import Quickshell.Networking
 Singleton {
 	id: root
 
-	property list<NetworkDevice> devices: Networking.devices
+	property list<NetworkDevice> devices: Networking.devices.values
 	property NetworkDevice activeDevice: devices.find(d => d.connected)
 }

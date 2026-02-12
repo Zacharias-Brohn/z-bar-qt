@@ -4,13 +4,17 @@ import Quickshell
 import Quickshell.Networking
 import QtQuick
 import QtQuick.Layouts
+import qs.Components
+import qs.Config
 import qs.Modules
-import qs.Helpers
+import qs.Helpers as Helpers
 
 Item {
 	id: root
 
 	required property var wrapper
+
+	Component.onCompleted: console.log(Networking.backend.toString())
 
 	ColumnLayout {
 		id: layout
@@ -18,7 +22,7 @@ Item {
 		spacing: 8
 
 		Repeater {
-			model: Network.devices
+			model: Helpers.Network.devices
 
 			CustomRadioButton {
 				id: network
@@ -26,8 +30,7 @@ Item {
 
 				required property NetworkDevice modelData
 
-				checked: Network.activeDevice?.name === modelData.name
-				onClicked: 
+				checked: Helpers.Network.activeDevice?.name === modelData.name
 				text: modelData.description
 			}
 		}
