@@ -5,6 +5,7 @@ import qs.Modules as Modules
 import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
 import qs.Modules.Notifications.Sidebar.Utils as Utils
+import qs.Modules.Dashboard as Dashboard
 import qs.Config
 
 Item {
@@ -18,6 +19,7 @@ Item {
 	readonly property alias sidebar: sidebar
 	readonly property alias notifications: notifications
 	readonly property alias utilities: utilities
+	readonly property alias dashboard: dashboard
 
     anchors.fill: parent
     // anchors.margins: 8
@@ -58,6 +60,15 @@ Item {
 
 		anchors.bottom: parent.bottom
 		anchors.right: parent.right
+	}
+
+	Dashboard.Wrapper {
+		id: dashboard
+
+		visibilities: root.visibilities
+
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
 	}
 
 	Sidebar.Wrapper {

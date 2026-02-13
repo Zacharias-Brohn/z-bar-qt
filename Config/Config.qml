@@ -29,6 +29,9 @@ Singleton {
 	property alias notifs: adapter.notifs
 	property alias sidebar: adapter.sidebar
 	property alias utilities: adapter.utilities
+	property alias general: adapter.general
+	property alias dashboard: adapter.dashboard
+	property alias appearance: adapter.appearance
 
     FileView {
         id: root
@@ -66,6 +69,9 @@ Singleton {
 			property NotifConfig notifs: NotifConfig {}
 			property SidebarConfig sidebar: SidebarConfig {}
 			property UtilConfig utilities: UtilConfig {}
+			property General general: General {}
+			property DashboardConfig dashboard: DashboardConfig {}
+			property AppearanceConf appearance: AppearanceConf {}
         }
     }
 }

@@ -93,14 +93,6 @@ Item {
 		}
 
 		Popout {
-			name: "dash"
-
-			sourceComponent: Dashboard {
-				wrapper: root.wrapper
-			}
-		}
-
-		Popout {
 			name: "upower"
 
 			sourceComponent: UPowerPopout {

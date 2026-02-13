@@ -57,18 +57,9 @@ Singleton {
 
     Component.onCompleted: reloadDynamicConfs()
 
-    function updateActiveWindow(): void {
-        root.desktopName = root.applicationDir + root.activeToplevel?.lastIpcObject.class + ".desktop";
-    }
-
-    Connections {
-        target: Hyprland
-
-        function onRawEvent( event: HyprlandEvent ): void {
-            if ( event.name === "activewindow" ) {
-            }
-        }
-    }
+    // function updateActiveWindow(): void {
+    //     root.desktopName = root.applicationDir + root.activeToplevel?.lastIpcObject.class + ".desktop";
+    // }
 
     Connections {
         target: Hyprland
@@ -84,20 +75,20 @@ Singleton {
             } else if (["workspace", "moveworkspace", "activespecial", "focusedmon"].includes(n)) {
                 Hyprland.refreshWorkspaces();
                 Hyprland.refreshMonitors();
-                Qt.callLater( root.updateActiveWindow );
+                // Qt.callLater( root.updateActiveWindow );
             } else if (["openwindow", "closewindow", "movewindow"].includes(n)) {
                 Hyprland.refreshToplevels();
                 Hyprland.refreshWorkspaces();
-                Qt.callLater( root.updateActiveWindow );
+                // Qt.callLater( root.updateActiveWindow );
             } else if (n.includes("mon")) {
                 Hyprland.refreshMonitors();
-                Qt.callLater( root.updateActiveWindow );
+                // Qt.callLater( root.updateActiveWindow );
             } else if (n.includes("workspace")) {
                 Hyprland.refreshWorkspaces();
-                Qt.callLater( root.updateActiveWindow );
+                // Qt.callLater( root.updateActiveWindow );
             } else if (n.includes("window") || n.includes("group") || ["pin", "fullscreen", "changefloatingmode", "minimize"].includes(n)) {
                 Hyprland.refreshToplevels();
-                Qt.callLater( root.updateActiveWindow );
+                // Qt.callLater( root.updateActiveWindow );
             }
         }
     }

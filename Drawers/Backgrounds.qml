@@ -4,6 +4,7 @@ import qs.Modules as Modules
 import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
 import qs.Modules.Notifications.Sidebar.Utils as Utils
+import qs.Modules.Dashboard as Dashboard
 
 Shape {
     id: root
@@ -29,6 +30,13 @@ Shape {
 		sidebar: sidebar
 
 		startX: root.width
+		startY: 0
+	}
+
+	Dashboard.Background {
+		wrapper: root.panels.dashboard
+
+		startX: ( root.width - wrapper.width ) / 2 - rounding
 		startY: 0
 	}
 

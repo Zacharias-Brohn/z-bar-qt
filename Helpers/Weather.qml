@@ -1,8 +1,9 @@
 pragma Singleton
 
-import qs.Config
 import Quickshell
 import QtQuick
+import ZShell
+import qs.Config
 
 Singleton {
     id: root

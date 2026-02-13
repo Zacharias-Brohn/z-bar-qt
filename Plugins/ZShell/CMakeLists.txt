@@ -1,5 +1,12 @@
-find_package(Qt6 REQUIRED COMPONENTS Core Qml Gui Quick Concurrent Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Qml Gui Quick Concurrent Sql Network DBus)
 find_package(PkgConfig REQUIRED)
+pkg_check_modules(Qalculate IMPORTED_TARGET libqalculate REQUIRED)
+pkg_check_modules(Pipewire IMPORTED_TARGET libpipewire-0.3 REQUIRED)
+pkg_check_modules(Aubio IMPORTED_TARGET aubio REQUIRED)
+pkg_check_modules(Cava IMPORTED_TARGET libcava QUIET)
+if(NOT Cava_FOUND)
+    pkg_check_modules(Cava IMPORTED_TARGET cava REQUIRED)
+endif()
 
 set(QT_QML_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/qml")
 qt_standard_project_setup(REQUIRES 6.9)
@@ -34,6 +41,7 @@ qml_module(ZShell
         writefile.hpp writefile.cpp
         appdb.hpp appdb.cpp
         imageanalyser.hpp imageanalyser.cpp
+		requests.hpp requests.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick
@@ -43,3 +51,4 @@ qml_module(ZShell
 
 add_subdirectory(Models)
 add_subdirectory(Internal)
+add_subdirectory(Services)

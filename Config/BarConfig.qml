@@ -21,6 +21,10 @@ JsonObject {
 			enabled: true
 		},
 		{
+			id: "dash",
+			enabled: true
+		},
+		{
 			id: "spacer",
 			enabled: true
 		},

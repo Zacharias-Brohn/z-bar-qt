@@ -10,13 +10,8 @@ import qs.Modules
 Item {
     id: root
 
-	required property var wrapper
-    readonly property PersistentProperties state: PersistentProperties {
-        property int currentTab: 0
-        property date currentDate: new Date()
-
-        reloadableId: "dashboardState"
-    }
+	required property PersistentProperties visibilities
+	required property PersistentProperties state
     readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
     readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
 
@@ -30,6 +25,7 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+		anchors.margins: Appearance.padding.large
 
         radius: 8
         color: "transparent"

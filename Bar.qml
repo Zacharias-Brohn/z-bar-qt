@@ -91,6 +91,7 @@ Variants {
 				id: visibilities
 
 				property bool sidebar
+				property bool dashboard
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
 			}

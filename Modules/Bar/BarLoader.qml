@@ -63,10 +63,6 @@ RowLayout {
 			// popouts.currentName = "calendar";
 			// popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
 			// popouts.hasCurrent = true;
-		} else if ( id === "activeWindow" && Config.barConfig.popouts.activeWindow ) {
-			popouts.currentName = "dash";
-			popouts.currentCenter = root.width / 2;
-			popouts.hasCurrent = true;
 		} else if ( id === "network" && Config.barConfig.popouts.network ) {
 			popouts.currentName = "network";
 			popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
@@ -180,6 +176,14 @@ RowLayout {
 				roleValue: "network"
 				delegate: WrappedLoader {
 					sourceComponent: NetworkWidget {}
+				}
+			}
+			DelegateChoice {
+				roleValue: "dash"
+				delegate: WrappedLoader {
+					sourceComponent: DashWidget {
+						visibilities: root.visibilities
+					}
 				}
 			}
 		}

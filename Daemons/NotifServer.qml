@@ -223,10 +223,10 @@ Singleton {
                         const hash = (h2 >>> 0).toString(16).padStart(8, 0) + (h1 >>> 0).toString(16).padStart(8, 0);
 
                         const cache = `${Paths.notifimagecache}/${hash}.png`;
-                        ZShellIo.saveItem(this, Qt.resolvedUrl(cache), () => {
-                            notif.image = cache;
-                            notif.dummyImageLoader.active = false;
-                        });
+						ZShellIo.saveItem(this, Qt.resolvedUrl(cache), () => {
+							notif.image = cache;
+							notif.dummyImageLoader.active = false;
+						});
                     }
 
                     anchors.fill: parent
