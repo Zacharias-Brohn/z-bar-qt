@@ -21,7 +21,7 @@ Item {
         animate: true
         text: Weather.icon
         color: DynamicColors.palette.m3secondary
-        font.pointSize: 24
+        font.pointSize: 54
     }
 
     Column {
@@ -29,6 +29,7 @@ Item {
 
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: icon.right
+		anchors.leftMargin: Appearance.spacing.large
 
         spacing: 8
 

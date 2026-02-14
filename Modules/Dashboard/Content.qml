@@ -75,6 +75,7 @@ Item {
                     index: 0
                     sourceComponent: Dash {
                         state: root.state
+						visibilities: root.visibilities
                     }
                 }
             }

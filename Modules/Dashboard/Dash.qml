@@ -1,4 +1,5 @@
 import Quickshell
+import QtQuick
 import QtQuick.Layouts
 import qs.Helpers
 import qs.Components
@@ -10,10 +11,51 @@ import qs.Modules.Dashboard.Dash
 GridLayout {
     id: root
 
+	required property PersistentProperties visibilities
     required property PersistentProperties state
+	readonly property bool dashboardVisible: visibilities.dashboard
 
     rowSpacing: Appearance.spacing.normal
     columnSpacing: Appearance.spacing.normal
+
+	opacity: 0
+	scale: 0.9
+
+	onDashboardVisibleChanged: {
+		if (dashboardVisible) {
+			openAnim.start();
+		} else {
+			closeAnim.start();
+		}
+	}
+
+	ParallelAnimation {
+		id: openAnim
+		Anim {
+			target: root
+			property: "opacity"
+			to: 1
+		}
+		Anim {
+			target: root
+			property: "scale"
+			to: 1
+		}
+	}
+
+	ParallelAnimation {
+		id: closeAnim
+		Anim {
+			target: root
+			property: "opacity"
+			to: 0
+		}
+		Anim {
+			target: root
+			property: "scale"
+			to: 0.9
+		}
+	}
 
     Rect {
         Layout.column: 2

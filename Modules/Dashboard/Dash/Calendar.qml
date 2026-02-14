@@ -141,7 +141,7 @@ CustomMouseArea {
                 horizontalAlignment: Text.AlignHCenter
                 text: model.shortName
                 font.weight: 500
-                color: (model.day === 0 || model.day === 6) ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurfaceVariant
+                color: (model.day === 0) ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurfaceVariant
             }
         }
 
@@ -158,7 +158,7 @@ CustomMouseArea {
                 anchors.fill: parent
 
                 spacing: 3
-                locale: Qt.locale()
+                locale: Qt.locale("en_SE")
 
                 delegate: Item {
                     id: dayItem
@@ -177,7 +177,7 @@ CustomMouseArea {
                         text: grid.locale.toString(dayItem.model.day)
                         color: {
                             const dayOfWeek = dayItem.model.date.getUTCDay();
-                            if (dayOfWeek === 0 || dayOfWeek === 6)
+                            if (dayOfWeek === 6)
                                 return DynamicColors.palette.m3secondary;
 
                             return DynamicColors.palette.m3onSurfaceVariant;

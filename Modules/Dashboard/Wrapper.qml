@@ -49,8 +49,8 @@ Item {
             Modules.Anim {
                 target: root
                 property: "implicitHeight"
-                duration: Appearance.anim.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                duration: MaterialEasing.expressiveEffectsTime
+                easing.bezierCurve: MaterialEasing.expressiveEffects
             }
         },
         Transition {
@@ -60,7 +60,7 @@ Item {
             Modules.Anim {
                 target: root
                 property: "implicitHeight"
-                easing.bezierCurve: Appearance.anim.curves.emphasized
+                easing.bezierCurve: MaterialEasing.expressiveEffects
             }
         }
     ]
