@@ -10,7 +10,7 @@ Item {
 
     required property PersistentProperties visibilities
     required property Item panels
-    readonly property int padding: 8
+    readonly property int padding: 6
 
     anchors.top: parent.top
     anchors.bottom: parent.bottom
@@ -48,7 +48,7 @@ Item {
         anchors.margins: root.padding
 
         color: "transparent"
-        radius: 8
+        radius: 4
 
         CustomListView {
             id: list
@@ -123,7 +123,7 @@ Item {
                     anchors.topMargin: wrapper.idx === 0 ? 0 : 8
 
                     color: "transparent"
-                    radius: notif.radius
+                    radius: 4
                     implicitWidth: notif.implicitWidth
                     implicitHeight: notif.implicitHeight
 

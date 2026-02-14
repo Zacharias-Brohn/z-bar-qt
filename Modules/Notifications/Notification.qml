@@ -21,7 +21,7 @@ CustomRect {
     property bool expanded: Config.notifs.openExpanded
 
     color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondaryContainer : DynamicColors.tPalette.m3surfaceContainer
-    radius: 8
+    radius: 6
     implicitWidth: Config.notifs.sizes.width
     implicitHeight: inner.implicitHeight
 
@@ -125,6 +125,7 @@ CustomRect {
                         anchors.fill: parent
                         source: Qt.resolvedUrl(root.modelData.image)
                         fillMode: Image.PreserveAspectCrop
+						mipmap: true
                         cache: false
                         asynchronous: true
                     }
