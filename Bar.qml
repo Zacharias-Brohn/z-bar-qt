@@ -54,7 +54,7 @@ Variants {
             mask: Region {
 				id: region
                 x: 0
-                y: !visibilities.bar ? 4 : 34
+                y: Config.autoHide && !visibilities.bar ? 4 : 34
 
 				property list<Region> nullRegions: []
 				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar || visibilities.dashboard
@@ -136,7 +136,7 @@ Variants {
                 }
 
                 onPositionChanged: event => {
-                    if ( !visibilities.bar ? mouseY < 4 : mouseY < backgroundRect.implicitHeight ) {
+                    if ( Config.autoHide && !visibilities.bar ? mouseY < 4 : mouseY < backgroundRect.implicitHeight ) {
 						visibilities.bar = true;
                         barLoader.checkPopout(mouseX);
                     }
