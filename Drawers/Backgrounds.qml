@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick
 import QtQuick.Shapes
 import qs.Modules as Modules
@@ -11,10 +12,11 @@ Shape {
 
     required property Panels panels
     required property Item bar
+	required property PersistentProperties visibilities
 
     anchors.fill: parent
     // anchors.margins: 8
-    anchors.topMargin: bar.implicitHeight
+    anchors.topMargin: !root.visibilities.bar ? 4 : bar.implicitHeight
     preferredRendererType: Shape.CurveRenderer
 
     Modules.Background {

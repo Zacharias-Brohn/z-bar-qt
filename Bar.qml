@@ -25,6 +25,7 @@ Variants {
             color: "transparent"
             property var root: Quickshell.shellDir
 
+			WlrLayershell.layer: WlrLayer.Overlay
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
@@ -33,6 +34,7 @@ Variants {
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
                 screen: bar.screen
                 WlrLayershell.layer: WlrLayer.Bottom
+				WlrLayershell.exclusionMode: Config.autoHide && !visibilities.bar ? ExclusionMode.Ignore : ExclusionMode.Auto
                 anchors {
                     left: true
                     right: true
@@ -50,8 +52,9 @@ Variants {
             }
 
             mask: Region {
+				id: region
                 x: 0
-                y: 34
+                y: !visibilities.bar ? 4 : 34
 
 				property list<Region> nullRegions: []
 				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar || visibilities.dashboard
@@ -92,6 +95,7 @@ Variants {
 
 				property bool sidebar
 				property bool dashboard
+				property bool bar
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
 			}
@@ -108,26 +112,32 @@ Variants {
 
                 Border {
                     bar: backgroundRect
+					visibilities: visibilities
                 }
 
                 Backgrounds {
+					visibilities: visibilities
                     panels: panels
                     bar: backgroundRect
                 }
             }
 
             MouseArea {
+				id: mouseArea
                 anchors.fill: parent
                 hoverEnabled: true
 
                 onContainsMouseChanged: {
                     if ( !containsMouse ) {
                         panels.popouts.hasCurrent = false;
+						if ( !visibilities.sidebar && !visibilities.dashboard )
+							visibilities.bar = Config.autoHide ? false : true;
                     }
                 }
 
                 onPositionChanged: event => {
-                    if ( mouseY < backgroundRect.implicitHeight ) {
+                    if ( !visibilities.bar ? mouseY < 4 : mouseY < backgroundRect.implicitHeight ) {
+						visibilities.bar = true;
                         barLoader.checkPopout(mouseX);
                     }
                 }
@@ -161,16 +171,21 @@ Variants {
                 Rectangle {
                     id: backgroundRect
                     property Wrapper popouts: panels.popouts
+					anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    anchors.top: parent.top
                     implicitHeight: 34
+					anchors.topMargin: Config.autoHide && !visibilities.bar ? -30 : 0
                     color: "transparent"
                     radius: 0
 
                     Behavior on color {
                         CAnim {}
                     }
+
+					Behavior on anchors.topMargin {
+						Anim {}
+					}
 
                     BarLoader {
                         id: barLoader

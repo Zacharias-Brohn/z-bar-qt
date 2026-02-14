@@ -16,8 +16,8 @@ Item {
 
 	CustomRect {
 		anchors.fill: parent
-		anchors.topMargin: 3
-		anchors.bottomMargin: 3
+		anchors.topMargin: 4
+		anchors.bottomMargin: 4
 		color: DynamicColors.tPalette.m3surfaceContainer
 		radius: 1000
 	}

@@ -32,6 +32,7 @@ Singleton {
 	property alias general: adapter.general
 	property alias dashboard: adapter.dashboard
 	property alias appearance: adapter.appearance
+	property alias autoHide: adapter.autoHide
 
     FileView {
         id: root
@@ -72,6 +73,7 @@ Singleton {
 			property General general: General {}
 			property DashboardConfig dashboard: DashboardConfig {}
 			property AppearanceConf appearance: AppearanceConf {}
+			property bool autoHide: false
         }
     }
 }

@@ -23,10 +23,11 @@ RowLayout {
 	required property ShellScreen screen
 
 	function checkPopout(x: real): void {
-		const ch = childAt(x, height / 2) as WrappedLoader;
+		const ch = childAt(x, 2) as WrappedLoader;
 
-		if (!ch && !popouts.currentName.includes("traymenu")) {
-			popouts.hasCurrent = false;
+		if (!ch) {
+			if ( !popouts.currentName.includes("traymenu") )
+				popouts.hasCurrent = false;
 			return;
 		}
 
