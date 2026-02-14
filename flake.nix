@@ -18,7 +18,12 @@
   in {
     formatter = forAllSystems (pkgs: pkgs.nixfmt);
 
-    packages = forAllSystems (pkgs: rec {
+    packages = forAllSystems (pkgs: let
+      pythonEnv = pkgs.python3.withPackages (ps: [
+        ps.pillow
+        ps.materialyoucolor
+      ]);
+    in rec {
       zshell = pkgs.callPackage ./nix {
         rev = self.rev or self.dirtyRev;
         stdenv = pkgs.clangStdenv;
@@ -27,6 +32,8 @@
           withI3 = false;
         };
         app2unit = pkgs.callPackage ./nix/app2unit.nix {inherit pkgs;};
+
+        inherit pythonEnv;
       };
 
       default = zshell;
@@ -45,10 +52,6 @@
             material-symbols
             rubik
             nerd-fonts.caskaydia-cove
-            (pkgs.python3.withPackages (python-pkgs: [
-              python-pkgs.pillow
-              python-pkgs.materialyoucolor
-            ]))
           ];
         };
     });

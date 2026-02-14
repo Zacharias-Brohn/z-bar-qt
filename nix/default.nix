@@ -21,11 +21,12 @@
   cmake,
   ninja,
   pkg-config,
-}:
-let
+  pythonEnv,
+}: let
   version = "1.0.0";
 
   runtimeDeps = [
+    pythonEnv
     app2unit
     networkmanager
     swappy
@@ -65,6 +66,7 @@ let
       pkg-config
     ];
     buildInputs = [
+      pythonEnv
       qt6.qtbase
       qt6.qtdeclarative
       libqalculate
@@ -73,61 +75,63 @@ let
     ];
 
     dontWrapQtApps = true;
-    cmakeFlags = [
-      (lib.cmakeFeature "ENABLE_MODULES" "plugin")
-      (lib.cmakeFeature "INSTALL_QMLDIR" qt6.qtbase.qtQmlPrefix)
-    ]
-    ++ cmakeVersionFlags;
+    cmakeFlags =
+      [
+        (lib.cmakeFeature "ENABLE_MODULES" "plugin")
+        (lib.cmakeFeature "INSTALL_QMLDIR" qt6.qtbase.qtQmlPrefix)
+      ]
+      ++ cmakeVersionFlags;
   };
 in
-stdenv.mkDerivation {
-  inherit version cmakeBuildType;
-  pname = "zshell";
-  src = ./..;
+  stdenv.mkDerivation {
+    inherit version cmakeBuildType;
+    pname = "zshell";
+    src = ./..;
 
-  nativeBuildInputs = [
-    cmake
-    ninja
-    makeWrapper
-    qt6.wrapQtAppsHook
-  ];
-  buildInputs = [
-    quickshell
-    plugin
-    qt6.qtbase
-    qt6.qtwayland
-  ];
-  propagatedBuildInputs = runtimeDeps;
+    nativeBuildInputs = [
+      cmake
+      ninja
+      makeWrapper
+      qt6.wrapQtAppsHook
+    ];
+    buildInputs = [
+      quickshell
+      plugin
+      qt6.qtbase
+      qt6.qtwayland
+    ];
+    propagatedBuildInputs = runtimeDeps;
 
-  cmakeFlags = [
-    (lib.cmakeFeature "ENABLE_MODULES" "shell")
-    (lib.cmakeFeature "INSTALL_QSCONFDIR" "${placeholder "out"}/share/ZShell")
-  ]
-  ++ cmakeVersionFlags;
+    cmakeFlags =
+      [
+        (lib.cmakeFeature "ENABLE_MODULES" "shell")
+        (lib.cmakeFeature "INSTALL_QSCONFDIR" "${placeholder "out"}/share/ZShell")
+      ]
+      ++ cmakeVersionFlags;
 
-  prePatch = ''
-    substituteInPlace shell.qml \
-      --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
-  '';
+    prePatch = ''
+      substituteInPlace shell.qml \
+        --replace-fail 'ShellRoot {' 'ShellRoot {  settings.watchFiles: false'
+    '';
 
-  postInstall = ''
-        makeWrapper ${quickshell}/bin/qs $out/bin/zshell \
-        	--prefix PATH : "${lib.makeBinPath runtimeDeps}" \
-        	--set FONTCONFIG_FILE "${fontconfig}" \
-        	--add-flags "-p $out/share/ZShell"
+    postInstall = ''
+         makeWrapper ${quickshell}/bin/qs $out/bin/zshell \
+         	--prefix PATH : "${lib.makeBinPath runtimeDeps}" \
+         	--set FONTCONFIG_FILE "${fontconfig}" \
+         	--add-flags "-p $out/share/ZShell"
 
-    	echo "$out"
-        mkdir -p $out/lib
-  '';
+      echo "$out"
+         mkdir -p $out/lib
+    '';
 
-  passthru = {
-    inherit plugin;
-  };
+    passthru = {
+      inherit plugin;
+    };
 
-  meta = {
-    description = "A very segsy desktop shell";
-    homepage = "https://github.com/Zacharias-Brohn/z-bar-qt";
-    license = lib.licenses.gpl3Only;
-    mainProgram = "zshell";
-  };
-}
+    meta = {
+      description = "A very segsy desktop shell";
+      homepage = "https://github.com/Zacharias-Brohn/z-bar-qt";
+      license = lib.licenses.gpl3Only;
+      mainProgram = "zshell";
+    };
+  }
