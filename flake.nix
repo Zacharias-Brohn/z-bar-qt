@@ -9,49 +9,48 @@
     };
   };
 
-  outputs =
-    {
-      self,
-      nixpkgs,
-      ...
-    }@inputs:
-    let
-      forAllSystems =
-        fn: nixpkgs.lib.genAttrs nixpkgs.lib.platforms.linux (system: fn nixpkgs.legacyPackages.${system});
-    in
-    {
-      formatter = forAllSystems (pkgs: pkgs.nixfmt);
+  outputs = {
+    self,
+    nixpkgs,
+    ...
+  } @ inputs: let
+    forAllSystems = fn: nixpkgs.lib.genAttrs nixpkgs.lib.platforms.linux (system: fn nixpkgs.legacyPackages.${system});
+  in {
+    formatter = forAllSystems (pkgs: pkgs.nixfmt);
 
-      packages = forAllSystems (pkgs: rec {
-        zshell = pkgs.callPackage ./nix {
-          rev = self.rev or self.dirtyRev;
-          stdenv = pkgs.clangStdenv;
-          quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-            withX11 = false;
-            withI3 = false;
-          };
-          app2unit = pkgs.callPackage ./nix/app2unit.nix { inherit pkgs; };
+    packages = forAllSystems (pkgs: rec {
+      zshell = pkgs.callPackage ./nix {
+        rev = self.rev or self.dirtyRev;
+        stdenv = pkgs.clangStdenv;
+        quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+          withX11 = false;
+          withI3 = false;
         };
+        app2unit = pkgs.callPackage ./nix/app2unit.nix {inherit pkgs;};
+      };
 
-        default = zshell;
-      });
+      default = zshell;
+    });
 
-      devShells = forAllSystems (pkgs: {
-        default =
-          let
-            shell = self.packages.${pkgs.stdenv.hostPlatform.system}.zshell;
-          in
-          pkgs.mkShell.override { stdenv = shell.stdenv; } {
-            inputsFrom = [
-              shell
-              shell.Plugins
-            ];
-            packages = with pkgs; [
-              material-symbols
-              rubik
-              nerd-fonts.caskaydia-cove
-            ];
-          };
-      });
-    };
+    devShells = forAllSystems (pkgs: {
+      default = let
+        shell = self.packages.${pkgs.stdenv.hostPlatform.system}.zshell;
+      in
+        pkgs.mkShell.override {stdenv = shell.stdenv;} {
+          inputsFrom = [
+            shell
+            shell.Plugins
+          ];
+          packages = with pkgs; [
+            material-symbols
+            rubik
+            nerd-fonts.caskaydia-cove
+            (pkgs.python3.withPackages (python-pkgs: [
+              python-pkgs.pillow
+              python-pkgs.materialyoucolor
+            ]))
+          ];
+        };
+    });
+  };
 }
