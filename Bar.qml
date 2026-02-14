@@ -136,7 +136,7 @@ Variants {
 					var traywithinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
 					var traywithinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
 					var sidebarwithinX = mouseX >= bar.width - panels.sidebar.width
-					var dashboardWithinX = mouseX <= panels.dashboard.width + panels.dashboard.x
+					var dashboardWithinX = mouseX <= panels.dashboard.width + panels.dashboard.x && mouseX >= panels.dashboard.x
 					var dashboardWithinY = mouseY <= backgroundRect.implicitHeight + panels.dashboard.implicitHeight
 
 					if ( panels.popouts.hasCurrent ) {
