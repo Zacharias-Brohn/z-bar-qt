@@ -11,7 +11,7 @@ Row {
 	anchors.bottom: parent.bottom
 
     padding: Appearance.padding.large
-    spacing: Appearance.spacing.normal
+    spacing: Appearance.spacing.large
 
     Ref {
         service: SystemUsage
@@ -27,6 +27,18 @@ Row {
         icon: "memory_alt"
         value: SystemUsage.memPerc
         color: DynamicColors.palette.m3secondary
+    }
+
+    Resource {
+        icon: "gamepad"
+        value: SystemUsage.gpuPerc
+        color: DynamicColors.palette.m3primaryFixed
+    }
+
+    Resource {
+        icon: "host"
+        value: SystemUsage.gpuMemUsed
+        color: DynamicColors.palette.m3secondaryFixed
     }
 
     Resource {

@@ -15,8 +15,10 @@ GridLayout {
     required property PersistentProperties state
 	readonly property bool dashboardVisible: visibilities.dashboard
 
-    rowSpacing: Appearance.spacing.normal
-    columnSpacing: Appearance.spacing.normal
+	property int radius: 6
+
+    rowSpacing: Appearance.spacing.smaller
+    columnSpacing: Appearance.spacing.smaller
 
 	opacity: 0
 	scale: 0.9
@@ -63,7 +65,7 @@ GridLayout {
         Layout.preferredWidth: user.implicitWidth
         Layout.preferredHeight: user.implicitHeight
 
-        radius: 6
+        radius: root.radius
 
         User {
             id: user
@@ -78,31 +80,31 @@ GridLayout {
         Layout.preferredWidth: Config.dashboard.sizes.weatherWidth
         Layout.fillHeight: true
 
-        radius: 6
+        radius: root.radius
 
         Weather {}
     }
 
+    // Rect {
+    //     Layout.row: 1
+    //     Layout.preferredWidth: dateTime.implicitWidth
+    //     Layout.fillHeight: true
+    //
+    //     radius: root.radius
+    //
+    //     DateTime {
+    //         id: dateTime
+    //     }
+    // }
+
     Rect {
         Layout.row: 1
-        Layout.preferredWidth: dateTime.implicitWidth
-        Layout.fillHeight: true
-
-        radius: 6
-
-        DateTime {
-            id: dateTime
-        }
-    }
-
-    Rect {
-        Layout.row: 1
-        Layout.column: 1
+        Layout.column: 0
         Layout.columnSpan: 3
         Layout.fillWidth: true
         Layout.preferredHeight: calendar.implicitHeight
 
-        radius: 6
+        radius: root.radius
 
         Calendar {
             id: calendar
@@ -113,11 +115,12 @@ GridLayout {
 
     Rect {
         Layout.row: 1
-        Layout.column: 4
+        Layout.column: 3
+		Layout.columnSpan: 2
         Layout.preferredWidth: resources.implicitWidth
         Layout.fillHeight: true
 
-        radius: 6
+        radius: root.radius
 
         Resources {
             id: resources
@@ -131,7 +134,7 @@ GridLayout {
         Layout.preferredWidth: media.implicitWidth
         Layout.fillHeight: true
 
-        radius: 6
+        radius: root.radius
 
         Media {
             id: media

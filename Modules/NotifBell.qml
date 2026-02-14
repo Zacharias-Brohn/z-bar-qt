@@ -9,6 +9,7 @@ Item {
     id: root
 
 	required property PersistentProperties visibilities
+	required property Wrapper popouts
 
     implicitWidth: 25
     anchors.top: parent.top
@@ -40,8 +41,11 @@ Item {
 		StateLayer {
 			cursorShape: Qt.PointingHandCursor
 			onClicked: {
-				// Hyprland.dispatch("global zshell-nc:toggle-nc");
 				root.visibilities.sidebar = !root.visibilities.sidebar;
+				if ( root.visibilities.dashboard || root.popouts.hasCurrent ) {
+					root.popouts.hasCurrent = false;
+					root.visibilities.dashboard = false;
+				}
 			}
 		}
 	}

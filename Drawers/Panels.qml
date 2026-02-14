@@ -67,7 +67,7 @@ Item {
 
 		visibilities: root.visibilities
 
-		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.right: parent.right
 		anchors.top: parent.top
 	}
 

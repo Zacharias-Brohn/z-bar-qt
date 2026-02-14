@@ -25,12 +25,12 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-		anchors.margins: Appearance.padding.large
+		anchors.margins: Appearance.padding.smaller
 
-        radius: 8
+        radius: 6
         color: "transparent"
 
-        Flickable {
+        Item {
             id: view
 
             readonly property int currentIndex: root.state.currentTab
@@ -38,35 +38,8 @@ Item {
 
             anchors.fill: parent
 
-            flickableDirection: Flickable.HorizontalFlick
-
             implicitWidth: currentItem.implicitWidth
             implicitHeight: currentItem.implicitHeight
-
-            contentX: currentItem.x
-            contentWidth: row.implicitWidth
-            contentHeight: row.implicitHeight
-
-            onContentXChanged: {
-                if (!moving)
-                    return;
-
-                const x = contentX - currentItem.x;
-                if (x > currentItem.implicitWidth / 2)
-                    root.state.currentTab = Math.min(root.state.currentTab + 1, tabs.count - 1);
-                else if (x < -currentItem.implicitWidth / 2)
-                    root.state.currentTab = Math.max(root.state.currentTab - 1, 0);
-            }
-
-            onDragEnded: {
-                const x = contentX - currentItem.x;
-                if (x > currentItem.implicitWidth / 10)
-                    root.state.currentTab = Math.min(root.state.currentTab + 1, tabs.count - 1);
-                else if (x < -currentItem.implicitWidth / 10)
-                    root.state.currentTab = Math.max(root.state.currentTab - 1, 0);
-                else
-                    contentX = Qt.binding(() => currentItem.x);
-            }
 
             RowLayout {
                 id: row
@@ -78,10 +51,6 @@ Item {
 						visibilities: root.visibilities
                     }
                 }
-            }
-
-            Behavior on contentX {
-                Anim {}
             }
         }
     }

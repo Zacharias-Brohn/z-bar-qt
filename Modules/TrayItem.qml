@@ -28,12 +28,12 @@ Item {
 			if ( mouse.button === Qt.LeftButton ) {
 				root.item.activate();
 			} else if ( mouse.button === Qt.RightButton ) {
-				if ( visibilities.sidebar ) {
-					return;
-				} else {
-					root.popouts.currentName = `traymenu${ root.ind }`;
-					root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.loader, root.implicitWidth / 2, 0 ).x );
-					root.popouts.hasCurrent = true;
+				root.popouts.currentName = `traymenu${ root.ind }`;
+				root.popouts.currentCenter = Qt.binding( () => root.mapToItem( root.loader, root.implicitWidth / 2, 0 ).x );
+				root.popouts.hasCurrent = true;
+				if ( visibilities.sidebar || visibilities.dashboard ) {
+					visibilities.sidebar = false;
+					visibilities.dashboard = false;
 				}
 			}
 		}

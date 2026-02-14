@@ -14,6 +14,8 @@ Singleton {
     property string autoGpuType: "NONE"
     property real gpuPerc
     property real gpuTemp
+	property real gpuMemUsed
+	property real gpuMemTotal: 0
     property real memUsed
     property real memTotal
     readonly property real memPerc: memTotal > 0 ? memUsed / memTotal : 0
@@ -151,9 +153,21 @@ Singleton {
     }
 
     Process {
+        id: oneshotMem
+        command: ["nvidia-smi", "--query-gpu=memory.total", "--format=csv,noheader,nounits"]
+        running: root.gpuType === "NVIDIA" && root.gpuMemTotal === 0
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.gpuMemTotal = Number(this.text.trim())
+                oneshotMem.running = false
+            }
+        }
+    }
+
+    Process {
         id: gpuUsage
 
-        command: root.gpuType === "GENERIC" ? ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent"] : root.gpuType === "NVIDIA" ? ["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu", "--format=csv,noheader,nounits"] : ["echo"]
+        command: root.gpuType === "GENERIC" ? ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent"] : root.gpuType === "NVIDIA" ? ["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu,memory.used", "--format=csv,noheader,nounits"] : ["echo"]
         stdout: StdioCollector {
             onStreamFinished: {
                 if (root.gpuType === "GENERIC") {
@@ -161,9 +175,10 @@ Singleton {
                     const sum = percs.reduce((acc, d) => acc + parseInt(d, 10), 0);
                     root.gpuPerc = sum / percs.length / 100;
                 } else if (root.gpuType === "NVIDIA") {
-                    const [usage, temp] = text.trim().split(",");
+                    const [usage, temp, mem] = text.trim().split(",");
                     root.gpuPerc = parseInt(usage, 10) / 100;
                     root.gpuTemp = parseInt(temp, 10);
+					root.gpuMemUsed = parseInt(mem, 10) / root.gpuMemTotal;
                 } else {
                     root.gpuPerc = 0;
                     root.gpuTemp = 0;

@@ -36,7 +36,7 @@ Shape {
 	Dashboard.Background {
 		wrapper: root.panels.dashboard
 
-		startX: ( root.width - wrapper.width ) / 2 - rounding
+		startX: root.width - root.panels.dashboard.width - rounding
 		startY: 0
 	}
 

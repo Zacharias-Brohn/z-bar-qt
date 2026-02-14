@@ -30,7 +30,7 @@ RowLayout {
 			return;
 		}
 
-		if ( visibilities.sidebar )
+		if ( visibilities.sidebar || visibilities.dashboard )
 			return;
 
 		const id = ch.id;
@@ -145,6 +145,7 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: NotifBell {
 						visibilities: root.visibilities
+						popouts: root.popouts
 					}
 				}
 			}
@@ -153,6 +154,7 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: Clock {
 						popouts: root.popouts
+						visibilities: root.visibilities
 						loader: root
 					}
 				}
@@ -178,14 +180,14 @@ RowLayout {
 					sourceComponent: NetworkWidget {}
 				}
 			}
-			DelegateChoice {
-				roleValue: "dash"
-				delegate: WrappedLoader {
-					sourceComponent: DashWidget {
-						visibilities: root.visibilities
-					}
-				}
-			}
+			// DelegateChoice {
+			// 	roleValue: "dash"
+			// 	delegate: WrappedLoader {
+			// 		sourceComponent: DashWidget {
+			// 			visibilities: root.visibilities
+			// 		}
+			// 	}
+			// }
 		}
 	}
 

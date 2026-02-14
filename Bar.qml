@@ -54,7 +54,7 @@ Variants {
                 y: 34
 
 				property list<Region> nullRegions: []
-				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar
+				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar || visibilities.dashboard
 
                 width: hcurrent ? 0 : bar.width
                 height: hcurrent ? 0 : bar.screen.height - backgroundRect.implicitHeight
@@ -135,17 +135,19 @@ Variants {
 				onPressed: event => {
 					var traywithinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
 					var traywithinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
-					var sidebarwithinX = mouseX <= bar.width - panels.sidebar.width
-
-					console.log(sidebarwithinX)
+					var sidebarwithinX = mouseX >= bar.width - panels.sidebar.width
+					var dashboardWithinX = mouseX <= panels.dashboard.width + panels.dashboard.x
+					var dashboardWithinY = mouseY <= backgroundRect.implicitHeight + panels.dashboard.implicitHeight
 
 					if ( panels.popouts.hasCurrent ) {
 						if ( traywithinX && traywithinY ) {
 						} else {
 							panels.popouts.hasCurrent = false;
 						}
-					} else if ( visibilities.sidebar && sidebarwithinX ) {
+					} else if ( visibilities.sidebar && !sidebarwithinX ) {
 						visibilities.sidebar = false;
+					} else if ( visibilities.dashboard && ( !dashboardWithinX || !dashboardWithinY )) {
+						visibilities.dashboard = false;
 					}
 				}
 
