@@ -10,7 +10,6 @@
   wl-clipboard,
   libqalculate,
   bash,
-  hyprland,
   material-symbols,
   rubik,
   nerd-fonts,
@@ -32,7 +31,6 @@ let
     wl-clipboard
     libqalculate
     bash
-    hyprland
   ];
 
   fontconfig = makeFontsConf {
