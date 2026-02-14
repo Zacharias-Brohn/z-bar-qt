@@ -119,3 +119,5 @@ try:
     generate_color_scheme(str(args.thumbnail), args.output)
 except Exception as e:
     print(f"Error: {e}")
+    with open(args.output + ".txt", "w") as f:
+        f.write(f"Error: {e}")
