@@ -6,9 +6,9 @@ qml_module(ZShell-services
         beattracker.hpp beattracker.cpp
         audiocollector.hpp audiocollector.cpp
         audioprovider.hpp audioprovider.cpp
-        cavaprovider.hpp cavaprovider.cpp
+        # cavaprovider.hpp cavaprovider.cpp
     LIBRARIES
         PkgConfig::Pipewire
         PkgConfig::Aubio
-        PkgConfig::Cava
+        # PkgConfig::Cava
 )
