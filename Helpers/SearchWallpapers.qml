@@ -19,7 +19,7 @@ Searcher {
     function setWallpaper(path: string): void {
         actualCurrent = path;
         WallpaperPath.currentWallpaperPath = path;
-		Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/LockScreenBg.py"), `--input_image=${root.actualCurrent}`, `--output_path=${Paths.state}/lockscreen_bg.png`]);
+		Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/LockScreenBg.py")} --input_image=${root.actualCurrent} --output_path=${Paths.state}/lockscreen_bg.png`]);
     }
 
     function preview(path: string): void {
@@ -29,7 +29,7 @@ Searcher {
 
     function stopPreview(): void {
         showPreview = false;
-        Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/SchemeColorGen.py"), `--path=${root.actualCurrent}`, `--thumbnail=${Paths.cache}/imagecache/thumbnail.jpg`, `--output=${Paths.state}/scheme.json`, `--scheme=${Config.colors.schemeType}`]);
+        Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/SchemeColorGen.py")} --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
     }
 
     list: wallpapers.entries

@@ -64,7 +64,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "volume_up"
-                color: root.textColor
+                color: Pipewire.defaultAudioSink?.audio.muted ? DynamicColors.palette.m3error : root.textColor
             }
 
             Rectangle {
@@ -84,8 +84,7 @@ Item {
 
                     implicitWidth: parent.width * ( Pipewire.defaultAudioSink?.audio.volume ?? 0 )
                     radius: parent.radius
-                    color: root.barColor
-
+					color: Pipewire.defaultAudioSink?.audio.muted ? DynamicColors.palette.m3error : root.barColor
                     Behavior on color {
                         CAnim {}
                     }
@@ -96,7 +95,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: Pipewire.defaultAudioSource?.audio.muted ? "mic_off" : "mic"
-                color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3onError : "#ff4444") : root.textColor
+                color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3error : "#ff4444") : root.textColor
             }
 
             Rectangle {
