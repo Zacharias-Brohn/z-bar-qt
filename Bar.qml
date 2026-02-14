@@ -34,7 +34,7 @@ Variants {
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
                 screen: bar.screen
                 WlrLayershell.layer: WlrLayer.Bottom
-				WlrLayershell.exclusionMode: Config.autoHide && !visibilities.bar ? ExclusionMode.Ignore : ExclusionMode.Auto
+				WlrLayershell.exclusionMode: Config.autoHide ? ExclusionMode.Ignore : ExclusionMode.Auto
                 anchors {
                     left: true
                     right: true
