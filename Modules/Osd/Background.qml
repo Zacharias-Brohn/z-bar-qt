@@ -23,29 +23,29 @@ ShapePath {
         radiusY: root.rounding
     }
     PathLine {
-        relativeX: -(root.wrapper.width - root.roundingX * 2)
+        relativeX: -(root.wrapper.width - root.roundingX * 3)
         relativeY: 0
     }
     PathArc {
-        relativeX: -root.roundingX
-        relativeY: root.rounding
-        radiusX: Math.min(root.rounding, root.wrapper.width)
-        radiusY: root.rounding
+        relativeX: -root.roundingX * 2
+        relativeY: root.rounding * 2
+        radiusX: Math.min(root.rounding * 2, root.wrapper.width)
+        radiusY: root.rounding * 2
         direction: PathArc.Counterclockwise
     }
     PathLine {
         relativeX: 0
-        relativeY: root.wrapper.height - root.rounding * 2
+        relativeY: root.wrapper.height - root.rounding * 4
     }
     PathArc {
-        relativeX: root.roundingX
-        relativeY: root.rounding
-        radiusX: Math.min(root.rounding, root.wrapper.width)
-        radiusY: root.rounding
+        relativeX: root.roundingX * 2
+        relativeY: root.rounding * 2
+        radiusX: Math.min(root.rounding * 2, root.wrapper.width)
+        radiusY: root.rounding * 2
         direction: PathArc.Counterclockwise
     }
     PathLine {
-        relativeX: root.wrapper.width - root.roundingX * 2
+        relativeX: root.wrapper.width - root.roundingX * 3
         relativeY: 0
     }
     PathArc {
