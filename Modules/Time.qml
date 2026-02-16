@@ -5,17 +5,22 @@ import QtQuick
 
 Singleton {
 	id: root
-	readonly property string time: {
-		Qt.formatDateTime(clock.date, "ddd d MMM - hh:mm:ss")
-	}
+    property alias enabled: clock.enabled
+    readonly property date date: clock.date
+    readonly property int hours: clock.hours
+    readonly property int minutes: clock.minutes
+    readonly property int seconds: clock.seconds
 
-	readonly property string shortTime: {
-		Qt.formatDateTime(clock.date, "hh:mm")
-	}
+    readonly property string timeStr: format("hh:mm:ss")
+	readonly property string dateStr: format("ddd d MMM - hh:mm:ss")
+    readonly property list<string> timeComponents: timeStr.split(":")
+    readonly property string hourStr: timeComponents[0] ?? ""
+    readonly property string minuteStr: timeComponents[1] ?? ""
+    readonly property string secondStr: timeComponents[2] ?? ""
 
-	readonly property string longTime: {
-		Qt.formatDateTime(clock.date, "hh:mm:ss")
-	}
+    function format(fmt: string): string {
+        return Qt.formatDateTime(clock.date, fmt);
+    }
 
 	SystemClock {
 		id: clock

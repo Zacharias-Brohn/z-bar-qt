@@ -14,18 +14,6 @@ Scope {
 	property alias lock: lock
 	property int seenOnce: 0
 
-	Timer {
-		interval: 500
-		running: true
-		repeat: false
-		onTriggered: {
-			if ( Config.lock.fixLockScreen ) {
-				Quickshell.execDetached(["hyprctl", "keyword", "misc:session_lock_xray", "true"]);
-				console.log("Fixed lock screen X-ray issue.");
-			}
-		}
-	}
-
 	WlSessionLock {
 		id: lock
 
@@ -36,7 +24,6 @@ Scope {
 			id: lockSurface
 			lock: lock
 			pam: pam
-			scope: root
 		}
 	}
 

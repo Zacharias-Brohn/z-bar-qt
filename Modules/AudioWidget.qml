@@ -115,7 +115,7 @@ Item {
 
                     implicitWidth: parent.width * ( Pipewire.defaultAudioSource?.audio.volume ?? 0 )
                     radius: parent.radius
-                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3onError : "#ff4444") : root.barColor
+                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? (Config.useDynamicColors ? DynamicColors.palette.m3error : "#ff4444") : root.barColor
 
                     Behavior on color {
                         CAnim {}

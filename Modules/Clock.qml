@@ -26,7 +26,7 @@ Item {
 
 			anchors.centerIn: parent
 
-			text: Time.time
+			text: Time.dateStr
 			color: Config.useDynamicColors ? DynamicColors.palette.m3tertiary : "white"
 
 			Behavior on color {

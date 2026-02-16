@@ -10,379 +10,220 @@ import qs.Config
 import qs.Helpers
 import qs.Effects
 import qs.Components
-import qs.Modules
+import qs.Modules as Modules
 
 WlSessionLockSurface {
-	id: root
+    id: root
 
-	required property WlSessionLock lock
-	required property Pam pam
-	required property Scope scope
+    required property WlSessionLock lock
+    required property Pam pam
 
-	property string buffer
+    readonly property alias unlocking: unlockAnim.running
 
-	color: "transparent"
+    color: "transparent"
 
-	Connections {
-		target: root.pam
+    Connections {
+        target: root.lock
 
-		function onBufferChanged(): void {
-			if (root.pam.buffer.length > root.buffer.length) {
-				charList.bindImWidth();
-			} else if (root.pam.buffer.length === 0) {
-				charList.implicitWidth = charList.implicitWidth;
-			}
+        function onUnlock(): void {
+            unlockAnim.start();
+        }
+    }
 
-			root.buffer = root.pam.buffer;
-		}
-	}
+    SequentialAnimation {
+        id: unlockAnim
 
-	Timer {
-		interval: 5
-		running: true
-		repeat: false
-		onTriggered: {
-			if ( Config.lock.fixLockScreen && root.scope.seenOnce === 0 ) {
-				Quickshell.execDetached(["hyprctl", "keyword", "misc:session_lock_xray", "false;"]);
-				root.scope.seenOnce += 1;
-			}
-		}
-	}
+        ParallelAnimation {
+            Modules.Anim {
+                target: lockContent
+                properties: "implicitWidth,implicitHeight"
+                to: lockContent.size
+                duration: Appearance.anim.durations.expressiveDefaultSpatial
+                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+            }
+            Modules.Anim {
+                target: lockBg
+                property: "radius"
+                to: lockContent.radius
+            }
+            Modules.Anim {
+                target: content
+                property: "scale"
+                to: 0
+                duration: Appearance.anim.durations.expressiveDefaultSpatial
+                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+            }
+            Modules.Anim {
+                target: content
+                property: "opacity"
+                to: 0
+                duration: Appearance.anim.durations.small
+            }
+            Modules.Anim {
+                target: lockIcon
+                property: "opacity"
+                to: 1
+                duration: Appearance.anim.durations.large
+            }
+            Modules.Anim {
+                target: background
+                property: "opacity"
+                to: 0
+                duration: Appearance.anim.durations.large
+            }
+            SequentialAnimation {
+                PauseAnimation {
+                    duration: Appearance.anim.durations.small
+                }
+                Modules.Anim {
+                    target: lockContent
+                    property: "opacity"
+                    to: 0
+                }
+            }
+        }
+        PropertyAction {
+            target: root.lock
+            property: "locked"
+            value: false
+        }
+    }
 
-	TextInput {
-		id: hiddenInput
-		focus: true
-		visible: false
+    ParallelAnimation {
+        id: initAnim
 
-		Keys.onPressed: function(event: KeyEvent): void {
-			root.pam.handleKey(event);
-			event.accepted = true;
-		}
+        running: true
 
-		onTextChanged: text = ""
-	}
-
-	ScreencopyView {
-		id: background
-
-		live: false
-
-		anchors.fill: parent
-		captureSource: root.screen
-		opacity: 1
-		visible: !Config.lock.useWallpaper
-
-		layer.enabled: true
-		layer.effect: MultiEffect {
-			autoPaddingEnabled: false
-			blurEnabled: true
-			blur: 0.8
-			blurMax: 64
-			blurMultiplier: 1
-			brightness: 0
-		}
-	}
+        Modules.Anim {
+            target: background
+            property: "opacity"
+            to: 1
+            duration: Appearance.anim.durations.large
+        }
+        SequentialAnimation {
+            ParallelAnimation {
+                Modules.Anim {
+                    target: lockContent
+                    property: "scale"
+                    to: 1
+                    duration: Appearance.anim.durations.expressiveFastSpatial
+                    easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+                }
+                Modules.Anim {
+                    target: lockContent
+                    property: "rotation"
+                    to: 360
+                    duration: Appearance.anim.durations.expressiveFastSpatial
+                    easing.bezierCurve: Appearance.anim.curves.standardAccel
+                }
+            }
+            ParallelAnimation {
+                Modules.Anim {
+                    target: lockIcon
+                    property: "rotation"
+                    to: 360
+                    easing.bezierCurve: Appearance.anim.curves.standardDecel
+                }
+                Modules.Anim {
+                    target: lockIcon
+                    property: "opacity"
+                    to: 0
+                }
+                Modules.Anim {
+                    target: content
+                    property: "opacity"
+                    to: 1
+                }
+                Modules.Anim {
+                    target: content
+                    property: "scale"
+                    to: 1
+                    duration: Appearance.anim.durations.expressiveDefaultSpatial
+                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                }
+                Modules.Anim {
+                    target: lockBg
+                    property: "radius"
+                    to: Appearance.rounding.large * 1.5
+                }
+                Modules.Anim {
+                    target: lockContent
+                    property: "implicitWidth"
+                    to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio
+                    duration: Appearance.anim.durations.expressiveDefaultSpatial
+                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                }
+                Modules.Anim {
+                    target: lockContent
+                    property: "implicitHeight"
+                    to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult
+                    duration: Appearance.anim.durations.expressiveDefaultSpatial
+                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+                }
+            }
+        }
+    }
 
 	CachingImage {
-		id: backgroundImage
+		id: background
 		anchors.fill: parent
 		asynchronous: false
 		path: WallpaperPath.currentWallpaperPath
-		visible: Config.lock.useWallpaper
 
 		Component.onCompleted: {
 			console.log(source);
 		}
 	}
 
-	Rectangle {
-		id: overlay
-		anchors.fill: parent
-		color: "transparent"
+    Item {
+        id: lockContent
 
-		visible: background.hasContent
+        readonly property int size: lockIcon.implicitHeight + Appearance.padding.large * 4
+        readonly property int radius: size / 4 * Appearance.rounding.scale
 
-		Rectangle {
-			id: contentBox
-			anchors.bottom: !Config.lock.useWallpaper ? "" : parent.bottom
-			anchors.centerIn: !Config.lock.useWallpaper ? parent : ""
-			anchors.horizontalCenter: !Config.lock.useWallpaper ? "" : parent.horizontalCenter
+        anchors.centerIn: parent
+        implicitWidth: size
+        implicitHeight: size
 
-			color: DynamicColors.tPalette.m3surfaceContainer
-			radius: 28
+        rotation: 180
+        scale: 0
 
-			implicitWidth: Math.floor(childrenRect.width + 48)
-			implicitHeight: Math.floor(childrenRect.height + 64)
+        CustomRect {
+            id: lockBg
 
-			layer.enabled: true
-			layer.effect: MultiEffect {
-				source: contentBox
-				blurEnabled: false
-				blurMax: 12
-				shadowBlur: 1
-				shadowColor: DynamicColors.palette.m3shadow
-				shadowOpacity: 1
-				shadowEnabled: true
-				autoPaddingEnabled: true
-			}
+            anchors.fill: parent
+            color: DynamicColors.palette.m3surface
+            radius: parent.radius
+            opacity: DynamicColors.transparency.enabled ? DynamicColors.transparency.base : 1
 
-			ColumnLayout {
-				id: mainLayout
-				anchors.centerIn: parent
-				width: childrenRect.width
-				spacing: 0
+            layer.enabled: true
+            layer.effect: MultiEffect {
+                shadowEnabled: true
+                blurMax: 15
+                shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 0.7)
+            }
+        }
 
-				RowLayout {
-					Layout.alignment: Qt.AlignHCenter
-					Layout.bottomMargin: 16
-					spacing: 16
+        MaterialIcon {
+            id: lockIcon
 
-					UserImage {
-						Layout.alignment: Qt.AlignHCenter | Qt.AlignLeft
-						Layout.bottomMargin: 16
-						Layout.preferredWidth: 128
-						Layout.preferredHeight: 128
-					}
+            anchors.centerIn: parent
+            text: "lock"
+            font.pointSize: Appearance.font.size.extraLarge * 4
+            font.bold: true
+            rotation: 180
+        }
 
-					LockTime {
-						Layout.alignment: Qt.AlignHCenter
-						Layout.bottomMargin: 8
-					}
-				}
+        Content {
+            id: content
 
-				Rectangle {
-					id: inputContainer
-					Layout.alignment: Qt.AlignHCenter
-					Layout.bottomMargin: 16
+            anchors.centerIn: parent
+            width: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio - Appearance.padding.large * 2
+            height: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult - Appearance.padding.large * 2
 
-					Layout.preferredWidth: 320
-					Layout.preferredHeight: 48
-
-					color: DynamicColors.tPalette.m3surfaceContainerHigh
-					radius: 1000
-
-					border.width: 1
-					border.color: {
-						if (root.pam.state === "error" || root.pam.state === "fail") {
-							return DynamicColors.palette.m3error;
-						}
-						return DynamicColors.palette.m3outline;
-					}
-
-					clip: true
-
-					Behavior on border.color {
-						ColorAnimation { duration: 150 }
-					}
-
-					transform: Translate {
-						id: wobbleTransform
-						x: 0
-					}
-
-					SequentialAnimation {
-						id: wobbleAnimation
-
-						ColorAnimation {
-							target: inputContainer
-							property: "color"
-							to: DynamicColors.tPalette.m3onError
-							duration: MaterialEasing.expressiveEffectsTime
-						}
-						ParallelAnimation {
-							NumberAnimation {
-								target: wobbleTransform
-								property: "x"
-								to: -8
-								duration: MaterialEasing.expressiveFastSpatialTime / 4
-								easing.bezierCurve: MaterialEasing.expressiveFastSpatial
-							}
-						}
-						NumberAnimation {
-							target: wobbleTransform
-							property: "x"
-							to: 8
-							duration: MaterialEasing.expressiveFastSpatialTime / 4
-							easing.bezierCurve: MaterialEasing.expressiveFastSpatial
-						}
-						NumberAnimation {
-							target: wobbleTransform
-							property: "x"
-							to: -8
-							duration: MaterialEasing.expressiveFastSpatialTime / 4
-							easing.bezierCurve: MaterialEasing.expressiveFastSpatial
-						}
-						NumberAnimation {
-							target: wobbleTransform
-							property: "x"
-							to: 0
-							duration: MaterialEasing.expressiveFastSpatialTime / 4
-							easing.bezierCurve: MaterialEasing.expressiveFastSpatial
-						}
-						ColorAnimation {
-							target: inputContainer
-							property: "color"
-							to: DynamicColors.tPalette.m3surfaceContainerHigh
-							duration: MaterialEasing.expressiveEffectsTime
-						}
-					}
-
-					Connections {
-						target: root.pam
-
-						function onStateChanged(): void {
-							if (root.pam.state === "error" || root.pam.state === "fail") {
-								wobbleAnimation.start();
-							}
-						}
-					}
-
-					CustomText {
-						id: messageDisplay
-
-						anchors.centerIn: inputContainer
-
-						text: {
-							if ( root.pam.buffer.length > 0 || root.pam.passwd.active ) {
-								return "";
-							}
-							if (root.pam.lockMessage) {
-								return root.pam.lockMessage;
-							}
-							if (root.pam.state === "error") {
-								return "Authentication error";
-							}
-							if (root.pam.state === "fail") {
-								return "Invalid password";
-							}
-							if (root.pam.state === "max") {
-								return "Maximum attempts reached";
-							}
-							return "Enter your password";
-						}
-						visible: true
-						font.pointSize: 14
-						font.weight: Font.Medium
-
-						animate: true
-
-						Behavior on text {
-							SequentialAnimation {
-								OAnim {
-									target: messageDisplay
-									property: "opacity"
-									to: 0
-								}
-								PropertyAction {}
-								OAnim {
-									target: messageDisplay
-									property: "opacity"
-									to: 1
-								}
-							}
-						}
-
-						component OAnim: NumberAnimation {
-							target: messageDisplay
-							property: "opacity"
-							duration: 100
-						}
-
-						color: root.pam.state === "max" ? DynamicColors.palette.m3error : DynamicColors.palette.m3onSurfaceVariant
-						wrapMode: Text.WordWrap
-						horizontalAlignment: Text.AlignHCenter
-					}
-
-					ListView {
-						id: charList
-
-						readonly property int fullWidth: count * (implicitHeight + spacing)
-
-						function bindImWidth(): void {
-							imWidthBehavior.enabled = false;
-							implicitWidth = Qt.binding(() => fullWidth);
-							imWidthBehavior.enabled = true;
-						}
-
-						anchors.centerIn: parent
-						anchors.horizontalCenterOffset: implicitWidth > inputContainer.width - 20 ? -(implicitWidth - inputContainer.width + 20) / 2 : 0
-
-						implicitWidth: fullWidth
-						implicitHeight: 16
-
-						orientation: Qt.Horizontal
-						spacing: 8
-						interactive: false
-
-						model: ScriptModel {
-							values: root.pam.buffer.split("")
-						}
-
-						delegate: CustomRect {
-							id: ch
-
-							implicitWidth: implicitHeight
-							implicitHeight: charList.implicitHeight
-
-							color: DynamicColors.palette.m3onSurface
-							radius: 1000
-
-							opacity: 0
-							scale: 0
-							Component.onCompleted: {
-								opacity = 1;
-								scale = 1;
-							}
-							ListView.onRemove: removeAnim.start()
-
-							SequentialAnimation {
-								id: removeAnim
-
-								PropertyAction {
-									target: ch
-									property: "ListView.delayRemove"
-									value: true
-								}
-								ParallelAnimation {
-									Anim {
-										target: ch
-										property: "opacity"
-										to: 0
-									}
-									Anim {
-										target: ch
-										property: "scale"
-										to: 0.5
-									}
-								}
-								PropertyAction {
-									target: ch
-									property: "ListView.delayRemove"
-									value: false
-								}
-							}
-
-							Behavior on opacity {
-								Anim {}
-							}
-
-							Behavior on scale {
-								Anim {
-									duration: MaterialEasing.expressiveFastSpatialTime
-									easing.bezierCurve: MaterialEasing.expressiveFastSpatial
-								}
-							}
-						}
-
-						Behavior on implicitWidth {
-							id: imWidthBehavior
-
-							Anim {}
-						}
-					}
-				}
-			}
-		}
-		Component.onCompleted: hiddenInput.forceActiveFocus()
-	}
+            lock: root
+            opacity: 0
+            scale: 0
+        }
+    }
 }

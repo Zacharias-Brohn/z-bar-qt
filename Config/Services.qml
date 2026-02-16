@@ -3,7 +3,7 @@ import QtQuick
 
 JsonObject {
     property string weatherLocation: ""
-    property bool useFahrenheit: [Locale.ImperialUSSystem, Locale.ImperialSystem].includes(Qt.locale().measurementSystem)
+    property bool useFahrenheit: false
     property bool useTwelveHourClock: Qt.locale().timeFormat(Locale.ShortFormat).toLowerCase().includes("a")
     property string gpuType: ""
     property real audioIncrement: 0.1
