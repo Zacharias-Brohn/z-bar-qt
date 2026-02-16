@@ -6,6 +6,7 @@ import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
 import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
+import qs.Modules.Osd as Osd
 import qs.Config
 
 Item {
@@ -20,10 +21,23 @@ Item {
 	readonly property alias notifications: notifications
 	readonly property alias utilities: utilities
 	readonly property alias dashboard: dashboard
+	readonly property alias osd: osd
 
     anchors.fill: parent
     // anchors.margins: 8
     anchors.topMargin: bar.implicitHeight
+
+	Osd.Wrapper {
+		id: osd
+
+		clip: session.width > 0 || sidebar.width > 0
+		screen: root.screen
+		visibilities: root.visibilities
+
+		anchors.verticalCenter: parent.verticalCenter
+		anchors.right: parent.right
+		anchors.rightMargin: sidebar.width
+	}
 
     Modules.Wrapper {
         id: popouts

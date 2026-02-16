@@ -33,6 +33,8 @@ Singleton {
 	property alias dashboard: adapter.dashboard
 	property alias appearance: adapter.appearance
 	property alias autoHide: adapter.autoHide
+	property alias macchiato: adapter.macchiato
+	property alias osd: adapter.osd
 
     FileView {
         id: root
@@ -74,6 +76,8 @@ Singleton {
 			property DashboardConfig dashboard: DashboardConfig {}
 			property AppearanceConf appearance: AppearanceConf {}
 			property bool autoHide: false
+			property bool macchiato: false
+			property Osd osd: Osd {}
         }
     }
 }

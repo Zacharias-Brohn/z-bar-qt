@@ -6,6 +6,7 @@ import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
 import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
+import qs.Modules.Osd as Osd
 
 Shape {
     id: root
@@ -16,8 +17,17 @@ Shape {
 
     anchors.fill: parent
     // anchors.margins: 8
-    anchors.topMargin: !root.visibilities.bar ? 4 : bar.implicitHeight
+    anchors.topMargin: bar.implicitHeight
     preferredRendererType: Shape.CurveRenderer
+
+	Component.onCompleted: console.log(root.bar.implicitHeight, root.bar.anchors.topMargin)
+
+	Osd.Background {
+		wrapper: root.panels.osd
+
+		startX: root.width - root.panels.sidebar.width
+		startY: ( root.height - wrapper.height ) / 2 - rounding
+	}
 
     Modules.Background {
         wrapper: root.panels.popouts

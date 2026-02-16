@@ -25,7 +25,6 @@ Variants {
             color: "transparent"
             property var root: Quickshell.shellDir
 
-			WlrLayershell.layer: WlrLayer.Overlay
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
@@ -96,6 +95,7 @@ Variants {
 				property bool sidebar
 				property bool dashboard
 				property bool bar
+				property bool osd
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
 			}
@@ -122,44 +122,48 @@ Variants {
                 }
             }
 
-            MouseArea {
+            Interactions {
 				id: mouseArea
+				screen: scope.modelData
+				popouts: panels.popouts
+				visibilities: visibilities
+				panels: panels
+				bar: barLoader
                 anchors.fill: parent
-                hoverEnabled: true
 
-                onContainsMouseChanged: {
-                    if ( !containsMouse ) {
-                        panels.popouts.hasCurrent = false;
-						if ( !visibilities.sidebar && !visibilities.dashboard )
-							visibilities.bar = Config.autoHide ? false : true;
-                    }
-                }
-
-                onPositionChanged: event => {
-                    if ( Config.autoHide && !visibilities.bar ? mouseY < 4 : mouseY < backgroundRect.implicitHeight ) {
-						visibilities.bar = true;
-                        barLoader.checkPopout(mouseX);
-                    }
-                }
-
-				onPressed: event => {
-					var traywithinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
-					var traywithinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
-					var sidebarwithinX = mouseX >= bar.width - panels.sidebar.width
-					var dashboardWithinX = mouseX <= panels.dashboard.width + panels.dashboard.x && mouseX >= panels.dashboard.x
-					var dashboardWithinY = mouseY <= backgroundRect.implicitHeight + panels.dashboard.implicitHeight
-
-					if ( panels.popouts.hasCurrent ) {
-						if ( traywithinX && traywithinY ) {
-						} else {
-							panels.popouts.hasCurrent = false;
-						}
-					} else if ( visibilities.sidebar && !sidebarwithinX ) {
-						visibilities.sidebar = false;
-					} else if ( visibilities.dashboard && ( !dashboardWithinX || !dashboardWithinY )) {
-						visibilities.dashboard = false;
-					}
-				}
+				//             onContainsMouseChanged: {
+				//                 if ( !containsMouse ) {
+				//                     panels.popouts.hasCurrent = false;
+				// 		if ( !visibilities.sidebar && !visibilities.dashboard )
+				// 			visibilities.bar = Config.autoHide ? false : true;
+				//                 }
+				//             }
+				//
+				//             onPositionChanged: event => {
+				//                 if ( Config.autoHide && !visibilities.bar ? mouseY < 4 : mouseY < backgroundRect.implicitHeight ) {
+				// 		visibilities.bar = true;
+				//                     barLoader.checkPopout(mouseX);
+				//                 }
+				//             }
+				//
+				// onPressed: event => {
+				// 	var traywithinX = mouseX >= panels.popouts.x + 8 && mouseX < panels.popouts.x + panels.popouts.implicitWidth;
+				// 	var traywithinY = mouseY >= panels.popouts.y + exclusionZone.implicitHeight && mouseY < panels.popouts.y + exclusionZone.implicitHeight + panels.popouts.implicitHeight;
+				// 	var sidebarwithinX = mouseX >= bar.width - panels.sidebar.width
+				// 	var dashboardWithinX = mouseX <= panels.dashboard.width + panels.dashboard.x && mouseX >= panels.dashboard.x
+				// 	var dashboardWithinY = mouseY <= backgroundRect.implicitHeight + panels.dashboard.implicitHeight
+				//
+				// 	if ( panels.popouts.hasCurrent ) {
+				// 		if ( traywithinX && traywithinY ) {
+				// 		} else {
+				// 			panels.popouts.hasCurrent = false;
+				// 		}
+				// 	} else if ( visibilities.sidebar && !sidebarwithinX ) {
+				// 		visibilities.sidebar = false;
+				// 	} else if ( visibilities.dashboard && ( !dashboardWithinX || !dashboardWithinY )) {
+				// 		visibilities.dashboard = false;
+				// 	}
+				// }
 
                 Panels {
                     id: panels
@@ -178,6 +182,7 @@ Variants {
 					anchors.topMargin: Config.autoHide && !visibilities.bar ? -30 : 0
                     color: "transparent"
                     radius: 0
+
 
                     Behavior on color {
                         CAnim {}
