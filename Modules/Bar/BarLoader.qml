@@ -4,11 +4,10 @@ import Quickshell
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
+import qs.Components
 import qs.Modules
 import qs.Config
 import qs.Helpers
-import qs.Daemons
-import qs.Modules.Polkit
 import qs.Modules.UPower
 import qs.Modules.Network
 
@@ -75,9 +74,8 @@ RowLayout {
 		}
 	}
 
-	GlobalShortcut {
+	CustomShortcut {
 		name: "toggle-overview"
-		appid: "zshell"
 
 		onPressed: {
 			Hyprland.refreshWorkspaces();

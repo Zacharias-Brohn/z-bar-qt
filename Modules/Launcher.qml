@@ -3,6 +3,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Controls
+import qs.Components
 import qs.Config
 import qs.Helpers
 import qs.Effects
@@ -34,8 +35,7 @@ Scope {
             }
         }
 
-        GlobalShortcut {
-            appid: "z-cast"
+        CustomShortcut {
             name: "toggle-launcher"
             onPressed: {
                 if ( !launcherWindow.visible ) {

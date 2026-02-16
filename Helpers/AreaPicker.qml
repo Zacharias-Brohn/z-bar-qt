@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import Quickshell.Io
 import Quickshell.Hyprland
 import ZShell
+import qs.Components
 
 Scope {
     LazyLoader {
@@ -47,9 +48,8 @@ Scope {
         }
     }
 
-    GlobalShortcut {
+    CustomShortcut {
         name: "screenshot"
-        appid: "ZShell"
         onPressed: {
             root.freeze = false;
             root.closing = false;
@@ -57,9 +57,8 @@ Scope {
         }
     }
 
-    GlobalShortcut {
+    CustomShortcut {
         name: "screenshotFreeze"
-        appid: "ZShell"
         onPressed: {
             root.freeze = true;
             root.closing = false;

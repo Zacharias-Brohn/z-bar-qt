@@ -71,18 +71,11 @@ CustomMouseArea {
                 root.panels.osd.hovered = false;
             }
 
-            if (!dashboardShortcutActive)
-                visibilities.dashboard = false;
-
-            // if (!utilitiesShortcutActive)
-            //     visibilities.utilities = false;
-
             if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
                 popouts.hasCurrent = false;
-                // bar.closeTray();
             }
 
-            if (Config.autoHide)
+            if (Config.autoHide && !root.visibilities.sidebar && !root.visibilities.dashboard)
                 root.visibilities.bar = false;
         }
     }
@@ -200,7 +193,6 @@ CustomMouseArea {
         // }
 
         // Show popouts on hover
-		console.log(y)
         if (y < bar.implicitHeight) {
             bar.checkPopout(x);
         }

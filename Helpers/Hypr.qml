@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
+import qs.Components
 
 Singleton {
     id: root
@@ -52,7 +53,7 @@ Singleton {
     }
 
     function reloadDynamicConfs(): void {
-        extras.batchMessage(["keyword bindlni ,Caps_Lock,global,caelestia:refreshDevices", "keyword bindlni ,Num_Lock,global,caelestia:refreshDevices"]);
+        extras.batchMessage(["keyword bindlni ,Caps_Lock,global,zshell:refreshDevices", "keyword bindlni ,Num_Lock,global,zshell:refreshDevices"]);
     }
 
     Component.onCompleted: reloadDynamicConfs()
@@ -114,7 +115,7 @@ Singleton {
     FileView {
         id: kbLayoutFile
 
-        path: Quickshell.env("CAELESTIA_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
+        path: Quickshell.env("ZSHELL_XKB_RULES_PATH") || "/usr/share/X11/xkb/rules/base.lst"
         onLoaded: {
             const layoutMatch = text().match(/! layout\n([\s\S]*?)\n\n/);
             if (layoutMatch) {
@@ -152,9 +153,8 @@ Singleton {
         }
     }
 
-    GlobalShortcut {
+    CustomShortcut {
         name: "refreshDevices"
-        appid: "ZShell"
         onPressed: extras.refreshDevices()
         onReleased: extras.refreshDevices()
     }

@@ -2,9 +2,6 @@ import qs.Components
 import qs.Config
 import qs.Modules
 import qs.Daemons
-import Quickshell
-import Quickshell.Bluetooth
-import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
@@ -40,9 +37,8 @@ CustomRect {
         }
     }
 
-	GlobalShortcut {
+	CustomShortcut {
 		name: "toggle-dnd"
-		appid: "zshell-nc"
 
 		onPressed: {
 			toggle.clicked();

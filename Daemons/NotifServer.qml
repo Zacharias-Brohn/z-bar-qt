@@ -7,6 +7,7 @@ import Quickshell.Services.Notifications
 import Quickshell.Hyprland
 import QtQuick
 import ZShell
+import qs.Components
 import qs.Modules
 import qs.Helpers
 import qs.Paths
@@ -103,9 +104,8 @@ Singleton {
         }
     }
 
-    GlobalShortcut {
+    CustomShortcut {
         name: "clearnotifs"
-		appid: "zshell-notif"
         description: "Clear all notifications"
         onPressed: {
             for (const notif of root.list.slice())

@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Effects
+import qs.Components
 import qs.Config
 
 Scope {
@@ -45,10 +46,9 @@ Scope {
 		lock: lock
 	}
 
-	GlobalShortcut {
+	CustomShortcut {
 		name: "lock"
 		description: "Lock the current session"
-		appid: "zshell-lock"
 		onPressed: {
 			lock.locked = true;
 		}
