@@ -9,7 +9,7 @@ ShapePath {
     id: root
 
     required property Wrapper wrapper
-    readonly property real rounding: Config.barConfig.rounding
+    readonly property real rounding: Config.barConfig.rounding + 5
     readonly property bool flatten: wrapper.height < rounding * 2
     readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 

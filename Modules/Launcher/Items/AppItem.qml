@@ -19,7 +19,7 @@ Item {
     anchors.right: parent?.right
 
     StateLayer {
-        radius: Appearance.rounding.normal
+        radius: 8
 
         function onClicked(): void {
             Apps.launch(root.modelData);
@@ -37,7 +37,7 @@ Item {
             id: icon
 
             source: Quickshell.iconPath(root.modelData?.icon, "image-missing")
-            implicitSize: parent.height * 0.8
+            implicitSize: parent.height
 
             anchors.verticalCenter: parent.verticalCenter
         }
