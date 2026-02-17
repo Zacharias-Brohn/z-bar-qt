@@ -7,6 +7,7 @@ import qs.Modules.Notifications.Sidebar as Sidebar
 import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
+import qs.Modules.Launcher as Launcher
 
 Shape {
     id: root
@@ -43,6 +44,13 @@ Shape {
 
 		startX: root.width
 		startY: 0
+	}
+
+	Launcher.Background {
+		wrapper: root.panels.launcher
+
+		startX: ( root.width - wrapper.width ) / 2 - rounding
+		startY: root.height
 	}
 
 	Dashboard.Background {

@@ -8,6 +8,7 @@ import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
+import qs.Modules.Launcher as Launcher
 import qs.Config
 
 Item {
@@ -24,6 +25,7 @@ Item {
 	readonly property alias dashboard: dashboard
 	readonly property alias osd: osd
 	readonly property alias toasts: toasts
+	readonly property alias launcher: launcher
 
     anchors.fill: parent
     // anchors.margins: 8
@@ -73,6 +75,17 @@ Item {
 
 		anchors.top: parent.top
 		anchors.right: parent.right
+	}
+
+	Launcher.Wrapper {
+		id: launcher
+
+		screen: root.screen
+		visibilities: root.visibilities
+		panels: root
+
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.bottom: parent.bottom
 	}
 
 	Utils.Wrapper {

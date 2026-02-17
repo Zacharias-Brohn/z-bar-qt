@@ -2,6 +2,7 @@ import Quickshell.Io
 
 JsonObject {
 	property bool autoHide: false
+	property int rounding: 8
 	property Popouts popouts: Popouts {}
 
 	property list<var> entries: [

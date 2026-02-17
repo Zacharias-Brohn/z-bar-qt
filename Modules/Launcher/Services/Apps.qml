@@ -2,26 +2,31 @@ pragma Singleton
 
 import ZShell
 import Quickshell
-import Quickshell.Io
+import qs.Config
+import qs.Helpers
+import qs.Paths
 
 Searcher {
     id: root
 
-    readonly property string home: Quickshell.env("HOME")
-
     function launch(entry: DesktopEntry): void {
         appDb.incrementFrequency(entry.id);
 
-        console.log( "Search command:", entry.command );
-
-        Quickshell.execDetached({
-            command: ["app2unit", "--", ...entry.command],
-            workingDirectory: entry.workingDirectory || Quickshell.env("HOME")
-        });
+        if (entry.runInTerminal)
+            Quickshell.execDetached({
+                command: ["app2unit", "--", ...Config.general.apps.terminal, `${Quickshell.shellDir}/assets/wrap_term_launch.sh`, ...entry.command],
+                workingDirectory: entry.workingDirectory
+            });
+        else
+            Quickshell.execDetached({
+                command: ["app2unit", "--", ...entry.command],
+                workingDirectory: entry.workingDirectory
+            });
     }
 
     function search(search: string): list<var> {
-        const prefix = ">";
+        const prefix = Config.launcher.specialPrefix;
+
         if (search.startsWith(`${prefix}i `)) {
             keys = ["id", "name"];
             weights = [0.9, 0.1];
@@ -62,12 +67,12 @@ Searcher {
     }
 
     list: appDb.apps
-    useFuzzy: true
+    useFuzzy: Config.launcher.useFuzzy.apps
 
     AppDb {
         id: appDb
 
-        path: `${root.home}/.local/share/z-cast-qt/apps.sqlite`
+        path: `${Paths.state}/apps.sqlite`
         entries: DesktopEntries.applications.values
     }
 }

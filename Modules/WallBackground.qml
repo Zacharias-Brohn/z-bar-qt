@@ -7,7 +7,7 @@ import qs.Config
 Item {
     id: root
 
-    property string source: SearchWallpapers.current
+    property string source: Wallpapers.current
     property Image current: one
 
     anchors.fill: parent
@@ -50,7 +50,7 @@ Item {
         anchors.fill: parent
 
         opacity: 0
-        scale: SearchWallpapers.showPreview ? 1 : 0.8
+        scale: Wallpapers.showPreview ? 1 : 0.8
         asynchronous: true
         onStatusChanged: {
             if (status === Image.Ready) {

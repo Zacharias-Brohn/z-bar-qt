@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import qs.Components
 import qs.Modules
 import qs.Modules.Bar
@@ -25,7 +26,7 @@ Variants {
 
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-
+			WlrLayershell.keyboardFocus: visibilities.launcher ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             PanelWindow {
                 id: exclusionZone
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
@@ -78,6 +79,19 @@ Variants {
                 }
             }
 
+			HyprlandFocusGrab {
+				id: focusGrab
+
+				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.osd
+				windows: [bar]
+				onCleared: {
+					visibilities.launcher = false;
+					visibilities.sidebar = false;
+					visibilities.dashboard = false;
+					visibilities.osd = false;
+				}
+			}
+
 			CustomShortcut {
 				name: "toggle-nc"
 
@@ -93,6 +107,7 @@ Variants {
 				property bool dashboard
 				property bool bar
 				property bool osd
+				property bool launcher
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
 			}

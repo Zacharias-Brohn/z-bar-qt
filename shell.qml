@@ -10,19 +10,15 @@ import qs.Modules.Polkit
 ShellRoot {
     Bar {}
     Wallpaper {}
-    Launcher {}
     AreaPicker {}
 	Lock.Lock {
 		id: lock
 	}
 
+	Shortcuts {}
 	Lock.IdleInhibitor {
 		lock: lock
 	}
-
-	// NotificationCenter {
-	//
-	// }
 
 	Polkit {}
 }

@@ -101,6 +101,7 @@ Singleton {
 	function serializeBar(): var {
 		return {
 			autoHide: barConfig.autoHide,
+			rounding: barConfig.rounding,
 			popouts: {
 				tray: barConfig.popouts.tray,
 				audio: barConfig.popouts.audio,
@@ -132,6 +133,12 @@ Singleton {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
 			wallust: general.wallust,
+			apps: {
+				terminal: general.apps.terminal,
+				audio: general.apps.audio,
+				playback: general.apps.playback,
+				explorer: general.apps.explorer,
+			},
 			idle: {
 				timouts: general.idle.timeouts
 			}
@@ -245,7 +252,22 @@ Singleton {
 		return {
 			maxAppsShown: launcher.maxAppsShown,
 			maxWallpapers: launcher.maxWallpapers,
-			wallpaperPrefix: launcher.wallpaperPrefix
+			actionPrefix: launcher.actionPrefix,
+			specialPrefix: launcher.specialPrefix,
+            useFuzzy: {
+                apps: launcher.useFuzzy.apps,
+                actions: launcher.useFuzzy.actions,
+                schemes: launcher.useFuzzy.schemes,
+                variants: launcher.useFuzzy.variants,
+                wallpapers: launcher.useFuzzy.wallpapers
+            },
+			sizes: {
+				itemWidth: launcher.sizes.itemWidth,
+				itemHeight: launcher.sizes.itemHeight,
+				wallpaperWidth: launcher.sizes.wallpaperWidth,
+				wallpaperHeight: launcher.sizes.wallpaperHeight
+			},
+			actions: launcher.actions
 		}
 	}
 
