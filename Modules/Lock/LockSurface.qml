@@ -139,16 +139,10 @@ WlSessionLockSurface {
         }
     }
 
-	CachingImage {
+	Image {
 		id: background
 		anchors.fill: parent
-		asynchronous: true
-		path: WallpaperPath.currentWallpaperPath
-		opacity: 1
-
-		Component.onCompleted: {
-			console.log(path);
-		}
+		source: WallpaperPath.lockscreenBg
 	}
 
     Item {

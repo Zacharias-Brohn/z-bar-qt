@@ -38,17 +38,6 @@ Singleton {
 	}
 
 	Timer {
-		running: true
-		interval: 5000
-		repeat: false
-
-		onTriggered: {
-
-			root.save();
-		}
-	}
-
-	Timer {
 		id: saveTimer
 
 		interval: 500
@@ -120,6 +109,7 @@ Singleton {
             recolorLogo: lock.recolorLogo,
             enableFprint: lock.enableFprint,
             maxFprintTries: lock.maxFprintTries,
+			blurAmount: lock.blurAmount,
             sizes: {
                 heightMult: lock.sizes.heightMult,
                 ratio: lock.sizes.ratio,

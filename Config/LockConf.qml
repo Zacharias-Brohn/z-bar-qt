@@ -5,6 +5,7 @@ JsonObject {
     property bool enableFprint: true
     property int maxFprintTries: 3
     property Sizes sizes: Sizes {}
+	property int blurAmount: 40
 
     component Sizes: JsonObject {
         property real heightMult: 0.7

@@ -51,22 +51,6 @@ ColumnLayout {
             font.family: Appearance.font.family.clock
             font.bold: true
         }
-
-        Loader {
-            Layout.leftMargin: Appearance.spacing.small
-            Layout.alignment: Qt.AlignVCenter
-
-            active: Config.services.useTwelveHourClock
-            visible: active
-
-            sourceComponent: CustomText {
-                text: Time.amPmStr
-                color: DynamicColors.palette.m3primary
-                font.pointSize: Math.floor(Appearance.font.size.extraLarge * 2 * root.centerScale)
-                font.family: Appearance.font.family.clock
-                font.bold: true
-            }
-        }
     }
 
     CustomText {
