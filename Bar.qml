@@ -82,7 +82,7 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.osd
+				active: visibilities.launcher
 				windows: [bar]
 				onCleared: {
 					visibilities.launcher = false;

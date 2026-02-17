@@ -13,7 +13,7 @@ main() {
 	done
 
 	if [[ "$LOCK" = "true" ]]; then
-		hyprctl dispatch global zshell-lock:lock
+		hyprctl dispatch global zshell:lock
 	else
 		qs -n -d -p "$QML_ROOT/shell.qml"
 	fi

@@ -65,12 +65,6 @@ WlSessionLockSurface {
                 to: 1
                 duration: Appearance.anim.durations.large
             }
-            Modules.Anim {
-                target: background
-                property: "opacity"
-                to: 0
-                duration: Appearance.anim.durations.large
-            }
             SequentialAnimation {
                 PauseAnimation {
                     duration: Appearance.anim.durations.small
@@ -94,12 +88,6 @@ WlSessionLockSurface {
 
         running: true
 
-        Modules.Anim {
-            target: background
-            property: "opacity"
-            to: 1
-            duration: Appearance.anim.durations.large
-        }
         SequentialAnimation {
             ParallelAnimation {
                 Modules.Anim {
@@ -154,11 +142,12 @@ WlSessionLockSurface {
 	CachingImage {
 		id: background
 		anchors.fill: parent
-		asynchronous: false
+		asynchronous: true
 		path: WallpaperPath.currentWallpaperPath
+		opacity: 1
 
 		Component.onCompleted: {
-			console.log(source);
+			console.log(path);
 		}
 	}
 
