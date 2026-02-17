@@ -31,7 +31,7 @@ Variants {
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
                 screen: bar.screen
                 WlrLayershell.layer: WlrLayer.Bottom
-				WlrLayershell.exclusionMode: Config.autoHide ? ExclusionMode.Ignore : ExclusionMode.Auto
+				WlrLayershell.exclusionMode: Config.barConfig.autoHide ? ExclusionMode.Ignore : ExclusionMode.Auto
                 anchors {
                     left: true
                     right: true
@@ -51,7 +51,7 @@ Variants {
             mask: Region {
 				id: region
                 x: 0
-                y: Config.autoHide && !visibilities.bar ? 4 : 34
+                y: Config.barConfig.autoHide && !visibilities.bar ? 4 : 34
 
 				property list<Region> nullRegions: []
 				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar || visibilities.dashboard
@@ -99,7 +99,7 @@ Variants {
 
             Item {
                 anchors.fill: parent
-                opacity: Config.transparency.enabled ? DynamicColors.transparency.base : 1
+                opacity: Appearance.transparency.enabled ? DynamicColors.transparency.base : 1
                 layer.enabled: true
                 layer.effect: MultiEffect {
                     shadowEnabled: true
@@ -142,7 +142,7 @@ Variants {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     implicitHeight: 34
-					anchors.topMargin: Config.autoHide && !visibilities.bar ? -30 : 0
+					anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? -30 : 0
                     color: "transparent"
                     radius: 0
 

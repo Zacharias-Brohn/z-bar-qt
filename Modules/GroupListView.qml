@@ -30,7 +30,7 @@ Repeater {
         property bool shouldShow: false
         property bool isExpanded: false
         property bool collapseAnimRunning: false
-        property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
+        property color textColor: DynamicColors.palette.m3onSurface
 
         function closeAll(): void {
             for ( const n of NotifServer.notClosed.filter( n => n.appName === modelData ))
@@ -120,8 +120,8 @@ Repeater {
             Rectangle {
                 id: collapseRect
 
-                property color notifyBgColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : "#E53935"
-                property color notifyColor: Config.useDynamicColors ? DynamicColors.palette.m3onPrimary : "#FFCDD2"
+                property color notifyBgColor: DynamicColors.palette.m3primary
+                property color notifyColor: DynamicColors.palette.m3onPrimary
 
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
                 Layout.fillHeight: true

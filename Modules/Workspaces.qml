@@ -43,7 +43,7 @@ Item {
             }
         }
 
-        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
+        color: DynamicColors.tPalette.m3surfaceContainer
         radius: height / 2
 
         Behavior on color {
@@ -67,7 +67,7 @@ Item {
                     CustomText {
                         text: workspaceIndicator.modelData.name
                         font.pointSize: 12
-                        color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3onSurfaceVariant : "#606060" )
+                        color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
                         visible: true
                     }
 
@@ -79,7 +79,7 @@ Item {
                         border.width: 1
 
                         color: "transparent"
-                        border.color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : ( Config.useDynamicColors ? DynamicColors.palette.m3onSurfaceVariant : "#606060" )
+                        border.color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
 
 
                         scale: 1.0
@@ -91,7 +91,7 @@ Item {
                             implicitHeight: 8
 
                             radius: implicitHeight / 2
-                            color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? ( Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary ) : "transparent"
+                            color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : "transparent"
                         }
 
                         Behavior on border.color {

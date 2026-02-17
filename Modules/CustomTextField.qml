@@ -85,7 +85,7 @@ TextField {
                 launcherWindow.visible = false;
             } else if ( wallpaperPickerLoader.active ) {
                 SearchWallpapers.setWallpaper(wallpaperPickerLoader.item.currentItem.modelData.path)
-                if ( Config.wallust ) {
+                if ( Config.general.wallust ) {
                     Wallust.generateColors(WallpaperPath.currentWallpaperPath);
                 }
                 closeAnim.start();

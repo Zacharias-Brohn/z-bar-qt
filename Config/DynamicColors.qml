@@ -88,9 +88,9 @@ Singleton {
     }
 
     component Transparency: QtObject {
-        readonly property bool enabled: Config.transparency.enabled
-        readonly property real base: Config.transparency.base - (root.light ? 0.1 : 0)
-        readonly property real layers: Config.transparency.layers
+        readonly property bool enabled: Appearance.transparency.enabled
+        readonly property real base: Appearance.transparency.base - (root.light ? 0.1 : 0)
+        readonly property real layers: Appearance.transparency.layers
     }
 
     component M3TPalette: QtObject {

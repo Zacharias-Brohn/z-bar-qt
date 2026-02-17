@@ -65,17 +65,15 @@ Scope {
         Rectangle {
             id: backgroundRect
 
-            property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
+            property color backgroundColor: DynamicColors.tPalette.m3surface
 
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: Config.useDynamicColors ? 0 : -1
+            anchors.bottomMargin: 0
             implicitHeight: mainLayout.childrenRect.height + 20
             implicitWidth: appListRect.implicitWidth
             x: Math.round(( parent.width - width ) / 2 )
             color: backgroundColor
             opacity: 1
-            border.width: Config.useDynamicColors ? 0 : 1
-            border.color: Config.useDynamicColors ? "transparent" : Config.baseBorderColor
 
             ParallelAnimation {
                 id: openAnim
@@ -176,11 +174,9 @@ Scope {
             implicitWidth: appListContainer.implicitWidth + 20
             implicitHeight: appListContainer.implicitHeight + 20
             anchors.bottom: backgroundRect.top
-            anchors.bottomMargin: Config.useDynamicColors ? 0 : -1
             color: backgroundRect.color
             topRightRadius: 8
             topLeftRadius: 8
-            border.color: Config.useDynamicColors ? "transparent" : backgroundRect.border.color
             clip: true
 
             Behavior on implicitHeight {
@@ -252,7 +248,7 @@ Scope {
 
 
                             const maxItemsOnScreen = Math.floor( maxWidth / itemWidth );
-                            const visible = Math.min( maxItemsOnScreen, Config.maxWallpapers, wallpaperModel.values.length );
+                            const visible = Math.min( maxItemsOnScreen, Config.launcher.maxWallpapers, wallpaperModel.values.length );
 
                             if ( visible === 2 )
                                 return 1;
@@ -313,7 +309,7 @@ Scope {
                     sourceComponent: ListView {
                         id: appListView
 
-                        property color highlightColor: Config.useDynamicColors ? DynamicColors.tPalette.m3onSurface : "#FFFFFF"
+                        property color highlightColor: DynamicColors.tPalette.m3onSurface
 
                         anchors.fill: parent
                         model: ScriptModel {
@@ -325,7 +321,7 @@ Scope {
                         }
 
                         verticalLayoutDirection: ListView.BottomToTop
-                        implicitHeight: Math.min( count, Config.appCount ) * 48
+                        implicitHeight: Math.min( count, Config.launcher.maxAppsShown ) * 48
 
                         preferredHighlightBegin: 0
                         preferredHighlightEnd: appListView.height
@@ -335,7 +331,7 @@ Scope {
                         highlight: Rectangle {
                             radius: 4
                             color: appListView.highlightColor
-                            opacity: Config.useDynamicColors ? 0.20 : 0.08
+                            opacity: 0.20
 
                             y: appListView.currentItem?.y
                             implicitWidth: appListView.width

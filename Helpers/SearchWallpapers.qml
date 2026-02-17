@@ -43,7 +43,7 @@ Searcher {
         id: wallpapers
 
         recursive: true
-        path: Config.wallpaperPath
+        path: Config.general.wallpaperPath
         filter: FileSystemModel.Images
     }
 }

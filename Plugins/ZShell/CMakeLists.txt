@@ -42,6 +42,7 @@ qml_module(ZShell
         appdb.hpp appdb.cpp
         imageanalyser.hpp imageanalyser.cpp
 		requests.hpp requests.cpp
+		toaster.hpp toaster.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick

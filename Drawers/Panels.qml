@@ -7,6 +7,7 @@ import qs.Modules.Notifications.Sidebar as Sidebar
 import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
+import qs.Components.Toast as Toasts
 import qs.Config
 
 Item {
@@ -22,6 +23,7 @@ Item {
 	readonly property alias utilities: utilities
 	readonly property alias dashboard: dashboard
 	readonly property alias osd: osd
+	readonly property alias toasts: toasts
 
     anchors.fill: parent
     // anchors.margins: 8
@@ -30,7 +32,7 @@ Item {
 	Osd.Wrapper {
 		id: osd
 
-		clip: session.width > 0 || sidebar.width > 0
+		clip: sidebar.width > 0
 		screen: root.screen
 		visibilities: root.visibilities
 
@@ -54,6 +56,14 @@ Item {
             return Math.floor( Math.max( off, 0 ));
         }
     }
+
+	Toasts.Toasts {
+		id: toasts
+
+		anchors.bottom: sidebar.visible ? parent.bottom : utilities.top
+		anchors.right: sidebar.left
+		anchors.margins: Appearance.padding.normal
+	}
 
 	Notifications.Wrapper {
 		id: notifications

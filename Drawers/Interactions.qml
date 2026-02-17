@@ -75,7 +75,7 @@ CustomMouseArea {
                 popouts.hasCurrent = false;
             }
 
-            if (Config.autoHide && !root.visibilities.sidebar && !root.visibilities.dashboard)
+            if (Config.barConfig.autoHide && !root.visibilities.sidebar && !root.visibilities.dashboard)
                 root.visibilities.bar = false;
         }
     }
@@ -90,7 +90,7 @@ CustomMouseArea {
         const dragY = y - dragStart.y;
 
         // Show bar in non-exclusive mode on hover
-        if (!visibilities.bar && Config.autoHide && y < bar.implicitHeight + bar.anchors.topMargin)
+        if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight + bar.anchors.topMargin)
             visibilities.bar = true;
 
         if (panels.sidebar.width === 0) {

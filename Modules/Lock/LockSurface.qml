@@ -109,21 +109,8 @@ WlSessionLockSurface {
                     duration: Appearance.anim.durations.expressiveFastSpatial
                     easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
                 }
-                Modules.Anim {
-                    target: lockContent
-                    property: "rotation"
-                    to: 360
-                    duration: Appearance.anim.durations.expressiveFastSpatial
-                    easing.bezierCurve: Appearance.anim.curves.standardAccel
-                }
             }
             ParallelAnimation {
-                Modules.Anim {
-                    target: lockIcon
-                    property: "rotation"
-                    to: 360
-                    easing.bezierCurve: Appearance.anim.curves.standardDecel
-                }
                 Modules.Anim {
                     target: lockIcon
                     property: "opacity"
@@ -185,7 +172,6 @@ WlSessionLockSurface {
         implicitWidth: size
         implicitHeight: size
 
-        rotation: 180
         scale: 0
 
         CustomRect {
@@ -193,7 +179,7 @@ WlSessionLockSurface {
 
             anchors.fill: parent
             color: DynamicColors.palette.m3surface
-            radius: parent.radius
+			radius: lockContent.radius
             opacity: DynamicColors.transparency.enabled ? DynamicColors.transparency.base : 1
 
             layer.enabled: true
@@ -211,7 +197,6 @@ WlSessionLockSurface {
             text: "lock"
             font.pointSize: Appearance.font.size.extraLarge * 4
             font.bold: true
-            rotation: 180
         }
 
         Content {

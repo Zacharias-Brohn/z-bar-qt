@@ -11,9 +11,9 @@ Item {
     required property int warningThreshold
     required property string details
     required property string iconString
-    property color barColor: Config.useDynamicColors ? DynamicColors.palette.m3primary : Config.accentColor.accents.primary
-    property color warningBarColor: Config.useDynamicColors ? DynamicColors.palette.m3error : Config.accentColor.accents.warning
-    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "#ffffff"
+    property color barColor: DynamicColors.palette.m3primary
+    property color warningBarColor: DynamicColors.palette.m3error
+    property color textColor: DynamicColors.palette.m3onSurface
 
     Layout.preferredWidth: 158
     Layout.preferredHeight: columnLayout.implicitHeight

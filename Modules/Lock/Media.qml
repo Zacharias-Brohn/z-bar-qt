@@ -156,7 +156,7 @@ Item {
         implicitHeight: controlIcon.implicitHeight + Appearance.padding.normal * 2
 
         color: active ? DynamicColors.palette[`m3${colour.toLowerCase()}`] : DynamicColors.palette[`m3${colour.toLowerCase()}Container`]
-        radius: active || controlState.pressed ? Appearance.rounding.normal : Math.min(implicitWidth, implicitHeight) / 2 * Math.min(1, Appearance.rounding.scale)
+        radius: active || controlState.pressed ? Appearance.rounding.small : Appearance.rounding.normal
 
         Elevation {
             anchors.fill: parent

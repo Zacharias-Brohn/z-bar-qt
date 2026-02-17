@@ -35,7 +35,7 @@ JsonObject {
     }
 
     component FontFamily: JsonObject {
-        property string sans: "Rubik"
+        property string sans: "Segoe UI Variable Text"
         property string mono: "CaskaydiaCove NF"
         property string material: "Material Symbols Rounded"
         property string clock: "Rubik"

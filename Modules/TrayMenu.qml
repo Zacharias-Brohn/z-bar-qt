@@ -26,11 +26,11 @@ PanelWindow {
     property int biggestWidth: 0
     property int menuItemCount: menuOpener.children.values.length
 
-    property color backgroundColor: Config.useDynamicColors ? DynamicColors.tPalette.m3surface : Config.baseBgColor
-    property color highlightColor: Config.useDynamicColors ? DynamicColors.tPalette.m3primaryContainer : "#15FFFFFF"
-    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3onSurface : "white"
-    property color disabledHighlightColor: Config.useDynamicColors ? DynamicColors.layer(DynamicColors.palette.m3primaryContainer, 0) : "#08FFFFFF"
-    property color disabledTextColor: Config.useDynamicColors ? DynamicColors.layer(DynamicColors.palette.m3onSurface, 0) : "#80FFFFFF"
+    property color backgroundColor: DynamicColors.tPalette.m3surface
+    property color highlightColor: DynamicColors.tPalette.m3primaryContainer
+    property color textColor: DynamicColors.palette.m3onSurface
+    property color disabledHighlightColor: DynamicColors.layer(DynamicColors.palette.m3primaryContainer, 0)
+    property color disabledTextColor: DynamicColors.layer(DynamicColors.palette.m3onSurface, 0)
 
     QsMenuOpener {
         id: menuOpener
@@ -193,8 +193,6 @@ PanelWindow {
         implicitHeight: listLayout.contentHeight + ( root.menuStack.length > 0 ? root.entryHeight + 10 : 10 )
         color: root.backgroundColor
         radius: 8
-        border.width: Config.useDynamicColors ? 0 : 1
-        border.color: "#40FFFFFF"
         clip: true
 
         Behavior on implicitWidth {

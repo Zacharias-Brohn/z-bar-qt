@@ -26,7 +26,7 @@ Scope {
 	}
 
 	Variants {
-		model: Config.idle.timeouts
+		model: Config.general.idle.timeouts
 
 		IdleMonitor {
 			required property var modelData

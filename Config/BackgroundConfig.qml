@@ -1,5 +1,4 @@
 import Quickshell.Io
-import qs.Modules
 import qs.Config
 
 JsonObject {

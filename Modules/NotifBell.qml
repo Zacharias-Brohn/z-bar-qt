@@ -26,7 +26,7 @@ Item {
 
 			anchors.centerIn: parent
 
-			property color iconColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "white"
+			property color iconColor: DynamicColors.palette.m3tertiaryFixed
 
 			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
 			font.family: "Material Symbols Rounded"

@@ -9,7 +9,7 @@ Item {
     implicitWidth: textMetrics.width + contentRow.spacing + 30
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
+    property color textColor: DynamicColors.palette.m3tertiaryFixed
 
     Rectangle {
         anchors.left: parent.left
@@ -17,7 +17,7 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         implicitHeight: 22
         radius: height / 2
-        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
+        color: DynamicColors.tPalette.m3surfaceContainer
         Behavior on color {
             CAnim {}
         }

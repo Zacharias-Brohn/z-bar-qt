@@ -17,7 +17,7 @@ Item {
 
     CustomRect {
         anchors.fill: parent
-        color: Config.autoHide && !root.visibilities.bar ? "transparent" : DynamicColors.palette.m3surface
+        color: Config.barConfig.autoHide && !root.visibilities.bar ? "transparent" : DynamicColors.palette.m3surface
 
         layer.enabled: true
 
@@ -38,7 +38,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            anchors.topMargin: Config.autoHide && !root.visibilities.bar ? 4 : root.bar.implicitHeight
+            anchors.topMargin: Config.barConfig.autoHide && !root.visibilities.bar ? 4 : root.bar.implicitHeight
             topLeftRadius: 8
             topRightRadius: 8
 			Behavior on anchors.topMargin {

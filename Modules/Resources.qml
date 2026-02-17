@@ -13,7 +13,7 @@ Item {
     id: root
     implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
     implicitHeight: 34
-    property color textColor: Config.useDynamicColors ? DynamicColors.palette.m3tertiaryFixed : "#ffffff"
+    property color textColor: DynamicColors.palette.m3tertiaryFixed
     clip: true
 
     Rectangle {
@@ -24,7 +24,7 @@ Item {
             verticalCenter: parent.verticalCenter
         }
         implicitHeight: 22
-        color: Config.useDynamicColors ? DynamicColors.tPalette.m3surfaceContainer : "#40000000"
+        color: DynamicColors.tPalette.m3surfaceContainer
         radius: height / 2
         Behavior on color {
             CAnim {}

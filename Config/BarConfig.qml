@@ -1,6 +1,7 @@
 import Quickshell.Io
 
 JsonObject {
+	property bool autoHide: false
 	property Popouts popouts: Popouts {}
 
 	property list<var> entries: [
