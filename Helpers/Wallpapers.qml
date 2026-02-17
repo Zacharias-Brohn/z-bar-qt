@@ -19,11 +19,13 @@ Searcher {
     function setWallpaper(path: string): void {
         actualCurrent = path;
         WallpaperPath.currentWallpaperPath = path;
+		Wallust.generateColors(WallpaperPath.currentWallpaperPath);
 		Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/LockScreenBg.py")} --input_image=${root.actualCurrent} --output_path=${Paths.state}/lockscreen_bg.png --blur_amount=${Config.lock.blurAmount}`]);
     }
 
     function preview(path: string): void {
         previewPath = path;
+        Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/SchemeColorGen.py")} --path=${previewPath} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
         showPreview = true;
     }
 
