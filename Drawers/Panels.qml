@@ -29,7 +29,7 @@ Item {
 
     anchors.fill: parent
     // anchors.margins: 8
-    anchors.topMargin: visibilities.bar ? bar.implicitHeight : 0
+    anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 	Behavior on anchors.topMargin {
 		Modules.Anim {}
 	}
