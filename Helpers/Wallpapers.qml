@@ -20,7 +20,7 @@ Searcher {
         actualCurrent = path;
         WallpaperPath.currentWallpaperPath = path;
 		Wallust.generateColors(WallpaperPath.currentWallpaperPath);
-		Quickshell.execDetached(["sh", "-c", `zshell-cli wallpaper lockscreen --input_image=${root.actualCurrent} --output_path=${Paths.state}/lockscreen_bg.png --blur_amount=${Config.lock.blurAmount}`]);
+		Quickshell.execDetached(["sh", "-c", `zshell-cli wallpaper lockscreen --input-image=${root.actualCurrent} --output-path=${Paths.state}/lockscreen_bg.png --blur_amount=${Config.lock.blurAmount}`]);
     }
 
     function preview(path: string): void {
