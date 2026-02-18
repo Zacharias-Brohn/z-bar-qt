@@ -41,6 +41,14 @@ Searcher {
             forward: false
         })
 
+	IpcHandler {
+		target: "wallpaper"
+
+		function set(path: string): void {
+			root.setWallpaper(path);
+		}
+	}
+
     FileSystemModel {
         id: wallpapers
 
