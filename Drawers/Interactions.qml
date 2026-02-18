@@ -223,6 +223,10 @@ CustomMouseArea {
             }
         }
 
+		function onSidebarChanged() {
+			// root.visibilities.bar = root.visibilities.sidebar
+		}
+
         function onDashboardChanged() {
             if (root.visibilities.dashboard) {
                 // Dashboard became visible, immediately check if this should be shortcut mode
@@ -230,9 +234,11 @@ CustomMouseArea {
                 if (!inDashboardArea) {
                     root.dashboardShortcutActive = true;
                 }
+				// root.visibilities.bar = true;
             } else {
                 // Dashboard hidden, clear shortcut flag
                 root.dashboardShortcutActive = false;
+				// root.visibilities.bar = false;
             }
         }
 

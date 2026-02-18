@@ -5,6 +5,7 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import qs.Daemons
 import qs.Components
 import qs.Modules
 import qs.Modules.Bar
@@ -26,7 +27,7 @@ Variants {
 
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.osd || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             PanelWindow {
                 id: exclusionZone
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
@@ -82,21 +83,13 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher
+				active: visibilities.launcher || visibilities.sidebar
 				windows: [bar]
 				onCleared: {
 					visibilities.launcher = false;
 					visibilities.sidebar = false;
 					visibilities.dashboard = false;
 					visibilities.osd = false;
-				}
-			}
-
-			CustomShortcut {
-				name: "toggle-nc"
-
-				onPressed: {
-					visibilities.sidebar = !visibilities.sidebar
 				}
 			}
 
@@ -108,8 +101,16 @@ Variants {
 				property bool bar
 				property bool osd
 				property bool launcher
+				property bool notif: NotifServer.popups.length > 0
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
+			}
+
+			Binding {
+				target: visibilities
+				property: "bar"
+				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif
+				when: Config.barConfig.autoHide
 			}
 
             Item {
@@ -150,7 +151,7 @@ Variants {
 					visibilities: visibilities
                 }
 
-                Rectangle {
+                CustomRect {
                     id: backgroundRect
                     property Wrapper popouts: panels.popouts
 					anchors.top: parent.top

@@ -22,4 +22,22 @@ Scope {
             root.launcherInterrupted = false;
         }
     }
+
+	CustomShortcut {
+		name: "toggle-nc"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive()
+			visibilities.sidebar = !visibilities.sidebar
+		}
+	}
+
+	CustomShortcut {
+		name: "show-osd"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive()
+			visibilities.osd = !visibilities.osd
+		}
+	}
 }

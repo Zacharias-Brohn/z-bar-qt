@@ -29,7 +29,10 @@ Item {
 
     anchors.fill: parent
     // anchors.margins: 8
-    anchors.topMargin: bar.implicitHeight
+    anchors.topMargin: visibilities.bar ? bar.implicitHeight : 0
+	Behavior on anchors.topMargin {
+		Modules.Anim {}
+	}
 
 	Osd.Wrapper {
 		id: osd

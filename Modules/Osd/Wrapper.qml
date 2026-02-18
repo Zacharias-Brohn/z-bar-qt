@@ -105,14 +105,6 @@ Item {
         }
     }
 
-	CustomShortcut {
-		name: "show-osd"
-
-		onPressed: {
-			root.show();
-		}
-	}
-
     Timer {
         id: timer
 
