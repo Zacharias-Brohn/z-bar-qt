@@ -25,13 +25,13 @@ Searcher {
 
     function preview(path: string): void {
         previewPath = path;
-        Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/SchemeColorGen.py")} --path=${previewPath} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+        Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --path=${previewPath} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
         showPreview = true;
     }
 
     function stopPreview(): void {
         showPreview = false;
-        Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/SchemeColorGen.py")} --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+        Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
     }
 
     list: wallpapers.entries

@@ -6,7 +6,7 @@ arch=('any')
 url='https://github.com/Zacharias-Brohn/z-bar-qt'
 license=('GPL-3.0-only')
 depends=('python' 'python-pillow' 'python-materialyoucolor' 'libnotify' 'swappy' 'dart-sass'
-	'app2unit' 'wl-clipboard' 'dconf' 'cliphist')
+	'app2unit' 'wl-clipboard' 'dconf' 'cliphist' 'python-typer')
 makedepends=('python-build' 'python-installer' 'python-hatch' 'python-hatch-vcs')
 source=("$pkgname::git+$url.git#branch=cli-tool")
 sha256sums=('SKIP')
