@@ -5,3 +5,7 @@
 build/
 compile_commands.json
 testpython
+src/
+pkg/
+*.tar.*
+zshell/
