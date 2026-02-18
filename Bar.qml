@@ -28,6 +28,16 @@ Variants {
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
 			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.osd || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			
+			contentItem.focus: true
+
+            contentItem.Keys.onEscapePressed: {
+				if ( Config.barConfig.autoHide )
+					visibilities.bar = false;
+				visibilities.sidebar = false;
+				visibilities.dashboard = false;
+			}
+
             PanelWindow {
                 id: exclusionZone
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
