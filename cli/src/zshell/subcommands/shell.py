@@ -13,7 +13,7 @@ def kill():
 
 @app.command()
 def start(no_daemon: bool = False):
-    subprocess.run(args + ([] if no_daemon else ["-d"]), check=True)
+    subprocess.run(args + ["-n"] + ([] if no_daemon else ["-d"]), check=True)
 
 
 @app.command()
