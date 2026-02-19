@@ -27,14 +27,14 @@ Searcher {
     function preview(path: string): void {
         previewPath = path;
 		if ( Config.general.schemeGeneration )
-			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path=${previewPath} --thumbnail-path=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${previewPath} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
         showPreview = true;
     }
 
     function stopPreview(): void {
         showPreview = false;
 		if ( Config.general.schemeGeneration )
-			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path=${root.actualCurrent} --thumbnail-path=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${root.actualCurrent} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
     }
 
     list: wallpapers.entries

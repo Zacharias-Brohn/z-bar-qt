@@ -122,8 +122,11 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
-			wallust: general.wallust,
-			schemeGeneration: general.schemeGeneration,
+			color: {
+				wallust: general.color.wallust,
+				mode: general.color.mode,
+				schemeGeneration: general.color.schemeGeneration,
+			},
 			apps: {
 				terminal: general.apps.terminal,
 				audio: general.apps.audio,

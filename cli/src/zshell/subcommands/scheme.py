@@ -92,11 +92,6 @@ def generate(
 
         is_dark = mode.lower() == "dark"
 
-        if is_dark:
-            seed = Hct.from_hct(seed.hue, seed.chroma, min(seed.tone, 20))
-        else:
-            seed = Hct.from_hct(seed.hue, seed.chroma, max(seed.tone, 70))
-
         scheme = Scheme(
             seed,
             is_dark,

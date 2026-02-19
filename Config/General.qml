@@ -4,10 +4,15 @@ import Quickshell
 JsonObject {
 	property string logo: ""
 	property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
-	property bool wallust: false
-	property bool schemeGeneration: true
+	property Color color: Color {}
 	property Apps apps: Apps {}
     property Idle idle: Idle {}
+
+	component Color: JsonObject {
+		property bool wallust: false
+		property bool schemeGeneration: true
+		property string mode: "dark"
+	}
 
     component Apps: JsonObject {
         property list<string> terminal: ["kitty"]
