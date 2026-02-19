@@ -47,12 +47,14 @@ Singleton {
 
 		Quickshell.execDetached(["sh", "-c", `sed -i 's/color_scheme_path=\\(.*\\)Light.colors/color_scheme_path=\\1Dark.colors/' ${Paths.home}/.config/qt6ct/qt6ct.conf`])
 
+		Quickshell.execDetached(["sed", "-i", "'s/\\(vim.cmd.colorscheme \\).*/\\1\"tokyodark\"/'", "~/.config/nvim/lua/config/load-colorscheme.lua"])
+
 		if( Config.general.color.wallust )
 			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
 	}
 
 	function applyLightMode() {
-		if ( Config.general.color.schemeGeneration ) {
+		if ( Config.general.color.neovimColors ) {
 			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${WallpaperPath.currentWallpaperPath}`, "--thumbnail-path", `${Paths.cache}/imagecache/thumbnail.jpg`, "--output", `${Paths.state}/scheme.json`, "--scheme", `${Config.colors.schemeType}`, "--mode", "light"]);
 		} else {
 			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--preset", `${DynamicColors.scheme}:${DynamicColors.flavour}`, "--output", `${Paths.state}/scheme.json`, "--mode", "light"]);
@@ -63,6 +65,9 @@ Singleton {
 		Quickshell.execDetached(["gsettings", "set", "org.gnome.desktop.interface", "color-scheme", "'prefer-light'"])
 
 		Quickshell.execDetached(["sh", "-c", `sed -i 's/color_scheme_path=\\(.*\\)Dark.colors/color_scheme_path=\\1Light.colors/' ${Paths.home}/.config/qt6ct/qt6ct.conf`])
+
+		if ( Config.general.color.neovimColors )
+			Quickshell.execDetached(["sed", "-i", "'s/\\(vim.cmd.colorscheme \\).*/\\1\"onelight\"/'", "~/.config/nvim/lua/config/load-colorscheme.lua"])
 
 		if( Config.general.color.wallust )
 			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
