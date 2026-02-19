@@ -19,21 +19,21 @@ Searcher {
     function setWallpaper(path: string): void {
         actualCurrent = path;
         WallpaperPath.currentWallpaperPath = path;
-		if ( Config.general.wallust )
+		if ( Config.general.color.wallust )
 			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
 		Quickshell.execDetached(["sh", "-c", `zshell-cli wallpaper lockscreen --input-image=${root.actualCurrent} --output-path=${Paths.state}/lockscreen_bg.png --blur-amount=${Config.lock.blurAmount}`]);
     }
 
     function preview(path: string): void {
         previewPath = path;
-		if ( Config.general.schemeGeneration )
+		if ( Config.general.color.schemeGeneration )
 			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${previewPath} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
         showPreview = true;
     }
 
     function stopPreview(): void {
         showPreview = false;
-		if ( Config.general.schemeGeneration )
+		if ( Config.general.color.schemeGeneration )
 			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${root.actualCurrent} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
     }
 
