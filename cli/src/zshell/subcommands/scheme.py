@@ -2,7 +2,6 @@ from typing import Annotated, Optional
 import typer
 import json
 
-from importlib import resources
 from pathlib import Path
 from PIL import Image
 from materialyoucolor.quantize import QuantizeCelebi
@@ -66,7 +65,7 @@ def generate(
                 f"Invalid hex color '{s}' (expected 6 hex digits, optionally prefixed with '#').")
         return f"#{s.upper()}"
 
-    def parse_preset_file(file_path) -> dict:
+    def parse_preset_file(file_path: Path) -> dict:
         """
         Parse a preset scheme file with lines like:
           primary_paletteKeyColor 6a73ac
@@ -169,12 +168,19 @@ def generate(
     try:
         if preset:
             # try local presets directory: presets/<preset>/<flavour>.txt or presets/<preset>-<flavour>.txt
-            base = resources.files("zshell.assets.schemes")
-            preset_path = base / preset / flavour / f"{mode}.txt"
+            base1 = Path("zshell") / "assets" / "schemes" / \
+                preset / flavour / f"{mode}.txt"
+            if base1.exists():
+                preset_path = base1
+            else:
+                raise FileNotFoundError(
+                    f"Preset file not found. Looked for: {base1.resolve()}. "
+                    "You can also pass --preset-file <path> directly."
+                )
 
             mapping = parse_preset_file(preset_path)
             generate_color_scheme_from_preset(
-                mapping, output, preset, flavour)
+                mapping, output, preset or preset_path.stem, flavour)
             typer.echo(f"Wrote preset-based scheme to {output}")
             raise typer.Exit()
 
