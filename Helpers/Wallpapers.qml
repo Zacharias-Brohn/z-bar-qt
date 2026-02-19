@@ -19,19 +19,22 @@ Searcher {
     function setWallpaper(path: string): void {
         actualCurrent = path;
         WallpaperPath.currentWallpaperPath = path;
-		Wallust.generateColors(WallpaperPath.currentWallpaperPath);
-		Quickshell.execDetached(["sh", "-c", `zshell-cli wallpaper lockscreen --input-image=${root.actualCurrent} --output-path=${Paths.state}/lockscreen_bg.png --blur_amount=${Config.lock.blurAmount}`]);
+		if ( Config.general.wallust )
+			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
+		Quickshell.execDetached(["sh", "-c", `zshell-cli wallpaper lockscreen --input-image=${root.actualCurrent} --output-path=${Paths.state}/lockscreen_bg.png --blur-amount=${Config.lock.blurAmount}`]);
     }
 
     function preview(path: string): void {
         previewPath = path;
-        Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --path=${previewPath} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+		if ( Config.general.schemeGeneration )
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --path=${previewPath} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
         showPreview = true;
     }
 
     function stopPreview(): void {
         showPreview = false;
-        Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+		if ( Config.general.schemeGeneration )
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
     }
 
     list: wallpapers.entries

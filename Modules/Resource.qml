@@ -15,8 +15,9 @@ Item {
     implicitWidth: resourceRowLayout.x < 0 ? 0 : resourceRowLayout.implicitWidth
     implicitHeight: 22
     property bool warning: percentage * 100 >= warningThreshold
-    property color usageColor: warning ? DynamicColors.palette.m3error : DynamicColors.palette.m3primary
-    property color borderColor: warning ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onPrimary
+	required property color mainColor
+    property color usageColor: warning ? DynamicColors.palette.m3error : mainColor
+    property color borderColor: warning ? DynamicColors.palette.m3onError : mainColor
 
     Behavior on percentage {
         NumberAnimation {

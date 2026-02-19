@@ -13,7 +13,6 @@ Item {
     id: root
     implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
     implicitHeight: 34
-    property color textColor: DynamicColors.palette.m3tertiaryFixed
     clip: true
 
     Rectangle {
@@ -41,46 +40,50 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "memory_alt"
-                color: root.textColor
+                color: DynamicColors.palette.m3primary
             }
 
             Resource {
                 percentage: ResourceUsage.memoryUsedPercentage
                 warningThreshold: 95
+                mainColor: DynamicColors.palette.m3primary
             }
 
             MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "memory"
-                color: root.textColor
+                color: DynamicColors.palette.m3secondary
             }
 
             Resource {
                 percentage: ResourceUsage.cpuUsage
                 warningThreshold: 80
+                mainColor: DynamicColors.palette.m3secondary
             }
 
             MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "gamepad"
-                color: root.textColor
+                color: DynamicColors.palette.m3tertiary
             }
 
             Resource {
                 percentage: ResourceUsage.gpuUsage
+                mainColor: DynamicColors.palette.m3tertiary
             }
 
             MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "developer_board"
-                color: root.textColor
+                color: DynamicColors.palette.m3primary
             }
 
             Resource {
                 percentage: ResourceUsage.gpuMemUsage
+                mainColor: DynamicColors.palette.m3primary
             }
         }
     }

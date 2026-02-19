@@ -123,6 +123,7 @@ Singleton {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
 			wallust: general.wallust,
+			schemeGeneration: general.schemeGeneration,
 			apps: {
 				terminal: general.apps.terminal,
 				audio: general.apps.audio,

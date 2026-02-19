@@ -27,7 +27,7 @@ Item {
 			anchors.centerIn: parent
 
 			text: Time.dateStr
-			color: DynamicColors.palette.m3tertiary
+			color: DynamicColors.palette.m3onSurface
 
 			Behavior on color {
 				CAnim {}
