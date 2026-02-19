@@ -9,7 +9,7 @@ Item {
     implicitWidth: textMetrics.width + contentRow.spacing + 30
     anchors.top: parent.top
     anchors.bottom: parent.bottom
-    property color textColor: DynamicColors.palette.m3secondary
+    property color textColor: DynamicColors.palette.m3onSurface
 
     Rectangle {
         anchors.left: parent.left
