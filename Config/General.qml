@@ -12,6 +12,8 @@ JsonObject {
 		property bool wallust: false
 		property bool schemeGeneration: true
 		property string mode: "dark"
+		property int scheduleDarkStart: 0
+		property int scheduleDarkEnd: 0
 	}
 
     component Apps: JsonObject {

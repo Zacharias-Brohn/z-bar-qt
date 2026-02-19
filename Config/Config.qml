@@ -5,6 +5,7 @@ import Quickshell.Io
 import ZShell
 import QtQuick
 import qs.Modules as Modules
+import qs.Helpers
 import qs.Paths
 
 Singleton {
@@ -126,6 +127,8 @@ Singleton {
 				wallust: general.color.wallust,
 				mode: general.color.mode,
 				schemeGeneration: general.color.schemeGeneration,
+				scheduleDarkStart: general.color.scheduleDarkStart,
+				scheduleDarkEnd: general.color.scheduleDarkEnd
 			},
 			apps: {
 				terminal: general.apps.terminal,
@@ -332,6 +335,7 @@ Singleton {
 		}
 
 		onLoaded: {
+			ModeScheduler.checkStartup();
 			try {
 				JSON.parse(text());
 				const elapsed = timer.elapsedMs();
