@@ -24,7 +24,7 @@ only-include = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/zshell"]
+packages = ["zshell"]
 include = ["src/zshell/assets/**/*"]
 
 [tool.ruff]
