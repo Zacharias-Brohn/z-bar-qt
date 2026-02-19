@@ -128,7 +128,7 @@ Singleton {
 				mode: general.color.mode,
 				schemeGeneration: general.color.schemeGeneration,
 				scheduleDarkStart: general.color.scheduleDarkStart,
-				scheduleDarkEnd: general.color.scheduleDarkEnd
+				scheduleDarkEnd: general.color.scheduleDarkEnd,
 				neovimColors: general.color.neovimColors
 			},
 			apps: {
