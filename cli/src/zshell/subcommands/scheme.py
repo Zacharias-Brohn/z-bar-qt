@@ -168,7 +168,7 @@ def generate(
     try:
         if preset:
             # try local presets directory: presets/<preset>/<flavour>.txt or presets/<preset>-<flavour>.txt
-            base1 = Path("zshell") / "assets" / "schemes" / \
+            base1 = Path(__file__).parent.parent / "assets" / "schemes" / \
                 preset / flavour / f"{mode}.txt"
             if base1.exists():
                 preset_path = base1

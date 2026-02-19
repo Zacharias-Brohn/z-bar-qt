@@ -13,7 +13,7 @@ Item {
     anchors.bottom: parent.bottom
 
     property bool expanded: false
-    property color textColor: DynamicColors.palette.m3primary
+    property color textColor: DynamicColors.palette.m3onSurface
     property color barColor: DynamicColors.palette.m3primary
 
     Behavior on implicitWidth {

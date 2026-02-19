@@ -40,7 +40,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "memory_alt"
-                color: DynamicColors.palette.m3primary
+                color: DynamicColors.palette.m3onSurface
             }
 
             Resource {
@@ -53,7 +53,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "memory"
-                color: DynamicColors.palette.m3secondary
+                color: DynamicColors.palette.m3onSurface
             }
 
             Resource {
@@ -66,7 +66,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "gamepad"
-                color: DynamicColors.palette.m3tertiary
+                color: DynamicColors.palette.m3onSurface
             }
 
             Resource {
@@ -78,7 +78,7 @@ Item {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
                 text: "developer_board"
-                color: DynamicColors.palette.m3primary
+                color: DynamicColors.palette.m3onSurface
             }
 
             Resource {
