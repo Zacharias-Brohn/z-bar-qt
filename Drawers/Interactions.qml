@@ -53,15 +53,15 @@ CustomMouseArea {
     anchors.fill: parent
     hoverEnabled: true
 
-    onPressed: event => {
-		if ( root.popouts.hasCurrent && !inTopPanel( root.popouts, event.x, event.y )) {
-			root.popouts.hasCurrent = false;
-		} else if (root.visibilities.sidebar && !inRightPanel( panels.sidebar, event.x, event.y )) {
-			root.visibilities.sidebar = false;
-		} else if (root.visibilities.dashboard && !inTopPanel( panels.dashboard, event.x, event.y )) {
-			root.visibilities.dashboard = false;
-		}
-	}
+	//    onPressed: event => {
+	// 	if ( root.popouts.hasCurrent && !inTopPanel( root.popouts, event.x, event.y )) {
+	// 		root.popouts.hasCurrent = false;
+	// 	} else if (root.visibilities.sidebar && !inRightPanel( panels.sidebar, event.x, event.y )) {
+	// 		root.visibilities.sidebar = false;
+	// 	} else if (root.visibilities.dashboard && !inTopPanel( panels.dashboard, event.x, event.y )) {
+	// 		root.visibilities.dashboard = false;
+	// 	}
+	// }
 
     onContainsMouseChanged: {
         if (!containsMouse) {
@@ -71,7 +71,7 @@ CustomMouseArea {
                 root.panels.osd.hovered = false;
             }
 
-            if (!popouts.currentName.startsWith("traymenu") || (popouts.current?.depth ?? 0) <= 1) {
+            if (!popouts.currentName.startsWith("traymenu")) {
                 popouts.hasCurrent = false;
             }
 
@@ -224,7 +224,10 @@ CustomMouseArea {
         }
 
 		function onSidebarChanged() {
-			// root.visibilities.bar = root.visibilities.sidebar
+			if ( root.visibilities.sidebar ) {
+				root.visibilities.dashboard = false;
+				root.popouts.hasCurrent = false;
+			}
 		}
 
         function onDashboardChanged() {
@@ -234,7 +237,10 @@ CustomMouseArea {
                 if (!inDashboardArea) {
                     root.dashboardShortcutActive = true;
                 }
-				// root.visibilities.bar = true;
+
+				root.visibilities.sidebar = false;
+				root.popouts.hasCurrent = false;
+
             } else {
                 // Dashboard hidden, clear shortcut flag
                 root.dashboardShortcutActive = false;

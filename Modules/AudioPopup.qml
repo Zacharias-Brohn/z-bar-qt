@@ -38,7 +38,7 @@ Item {
 				Layout.fillWidth: true
 				Layout.preferredHeight: tabBar.tabHeight
 
-				color: stack.currentIndex === 0 ? DynamicColors.tPalette.m3primaryContainer : "transparent"
+				color: stack.currentIndex === 0 ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
 
 				StateLayer {
 
@@ -49,6 +49,7 @@ Item {
 					CustomText {
 						text: qsTr("Volumes")
 						anchors.centerIn: parent
+						color: stack.currentIndex === 0 ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3primary
 					}
 				}
 			}
@@ -58,7 +59,7 @@ Item {
 				Layout.fillWidth: true
 				Layout.preferredHeight: tabBar.tabHeight
 
-				color: stack.currentIndex === 1 ? DynamicColors.tPalette.m3primaryContainer : "transparent"
+				color: stack.currentIndex === 1 ? DynamicColors.palette.m3primary : DynamicColors.tPalette.m3surfaceContainer
 
 				StateLayer {
 
@@ -69,6 +70,7 @@ Item {
 					CustomText {
 						text: qsTr("Devices")
 						anchors.centerIn: parent
+						color: stack.currentIndex === 1 ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3primary
 					}
 				}
 			}
@@ -133,11 +135,11 @@ Item {
 				Layout.preferredWidth: 40
 				Layout.preferredHeight: 40
 				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.tPalette.m3primaryContainer
+				color: DynamicColors.palette.m3primary
 				radius: 1000
 				MaterialIcon {
 					anchors.centerIn: parent
-					color: DynamicColors.palette.m3onPrimaryContainer
+					color: DynamicColors.palette.m3onPrimary
 					text: "volume_up"
 					font.pointSize: 22
 				}
@@ -167,7 +169,9 @@ Item {
 					Layout.bottomMargin: 5
 
 					CustomSlider {
-						anchors.fill: parent
+						anchors.left: parent.left
+						anchors.right: parent.right
+						implicitHeight: 10
 						value: Audio.volume
 						onMoved: Audio.setVolume(value)
 
@@ -185,12 +189,12 @@ Item {
 				Layout.preferredWidth: 40
 				Layout.preferredHeight: 40
 				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.tPalette.m3primaryContainer
+				color: DynamicColors.palette.m3primary
 				radius: 1000
 				MaterialIcon {
 					anchors.centerIn: parent
 					anchors.alignWhenCentered: false
-					color: DynamicColors.palette.m3onPrimaryContainer
+					color: DynamicColors.palette.m3onPrimary
 					text: "mic"
 					font.pointSize: 22
 				}
@@ -221,7 +225,9 @@ Item {
 					implicitHeight: 10
 
 					CustomSlider {
-						anchors.fill: parent
+						anchors.left: parent.left
+						anchors.right: parent.right
+						implicitHeight: 10
 						value: Audio.sourceVolume
 						onMoved: Audio.setSourceVolume(value)
 
@@ -421,10 +427,11 @@ Item {
 							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
 							Layout.bottomMargin: 5
 							implicitHeight: 10
-							CustomAudioSlider {
-								anchors.fill: parent
+							CustomSlider {
+								anchors.left: parent.left
+								anchors.right: parent.right
+								implicitHeight: 10
 								value: appBox.modelData.audio.volume
-								peak: peak.peak
 								onMoved: {
 									Audio.setAppAudioVolume(appBox.modelData, value)
 									console.log(icon.iconPath1, icon.iconPath2)

@@ -101,7 +101,15 @@ Item {
 
                     icon: `brightness_${(Math.round(value * 6) + 1)}`
                     value: root.brightness
-                    onMoved: root.monitor?.setBrightness(value)
+                    onMoved: {
+						if ( Config.osd.allMonBrightness ) {
+							root.monitor?.setBrightness(value)
+						} else {
+							for (const mon of Brightness.monitors) {
+								mon.setBrightness(value)
+							}
+						}
+					}
                 }
             }
         }

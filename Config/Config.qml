@@ -239,6 +239,7 @@ Singleton {
             hideDelay: osd.hideDelay,
             enableBrightness: osd.enableBrightness,
             enableMicrophone: osd.enableMicrophone,
+			allMonBrightness: osd.allMonBrightness,
             sizes: {
                 sliderWidth: osd.sizes.sliderWidth,
                 sliderHeight: osd.sizes.sliderHeight

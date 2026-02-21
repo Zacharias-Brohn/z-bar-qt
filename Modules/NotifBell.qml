@@ -42,10 +42,6 @@ Item {
 			cursorShape: Qt.PointingHandCursor
 			onClicked: {
 				root.visibilities.sidebar = !root.visibilities.sidebar;
-				if ( root.visibilities.dashboard || root.popouts.hasCurrent ) {
-					root.popouts.hasCurrent = false;
-					root.visibilities.dashboard = false;
-				}
 			}
 		}
 	}
