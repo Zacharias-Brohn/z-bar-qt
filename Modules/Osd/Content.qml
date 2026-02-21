@@ -47,6 +47,7 @@ Item {
                 icon: Icons.getVolumeIcon(value, root.muted)
                 value: root.volume
 				to: Config.services.maxVolume
+				color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3secondary
                 onMoved: Audio.setVolume(value)
             }
         }
