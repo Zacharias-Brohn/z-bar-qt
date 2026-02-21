@@ -7,10 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(ENABLE_MODULES "plugin" CACHE STRING "Modules to build/install")
+set(ENABLE_MODULES "plugin;shell" CACHE STRING "Modules to build/install")
 
 set(INSTALL_LIBDIR "usr/lib/ZShell" CACHE STRING "Library install dir")
 set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
+set(INSTALL_QSCONFDIR "etc/xdg/quickshell/zshell" CACHE STRING "Quickshell config install dir")
 
 add_compile_options(
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion

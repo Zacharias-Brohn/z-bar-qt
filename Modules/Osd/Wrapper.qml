@@ -6,7 +6,7 @@ import qs.Components
 import qs.Helpers
 import qs.Config
 import qs.Modules as Modules
-import qs.Modules.Dashboard.Dash
+import qs.Daemons
 
 Item {
     id: root
@@ -104,14 +104,6 @@ Item {
             root.brightness = root.monitor?.brightness ?? 0;
         }
     }
-
-	CustomShortcut {
-		name: "show-osd"
-
-		onPressed: {
-			root.show();
-		}
-	}
 
     Timer {
         id: timer

@@ -69,7 +69,7 @@ Item {
             Layout.alignment: Qt.AlignLeft
             text: root.details
             font.pointSize: 10
-            color: "#cccccc"
+            color: root.textColor
         }
     }
 }

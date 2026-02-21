@@ -246,7 +246,7 @@ MouseArea {
         color: "transparent"
         radius: root.realRounding > 0 ? root.realRounding + root.realBorderWidth : 0
         border.width: root.realBorderWidth
-        border.color: Config.accentColor.accents.primary
+        border.color: DynamicColors.palette.m3primary
 
         x: selectionRect.x - root.realBorderWidth
         y: selectionRect.y - root.realBorderWidth

@@ -29,7 +29,10 @@ Item {
 
     anchors.fill: parent
     // anchors.margins: 8
-    anchors.topMargin: bar.implicitHeight
+    anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
+	Behavior on anchors.topMargin {
+		Modules.Anim {}
+	}
 
 	Osd.Wrapper {
 		id: osd

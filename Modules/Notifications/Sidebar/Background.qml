@@ -18,8 +18,10 @@ ShapePath {
     readonly property real utilsWidthDiff: panels.utilities.width - wrapper.width
     readonly property real utilsRoundingX: utilsWidthDiff < rounding * 2 ? utilsWidthDiff / 2 : rounding
 
+	readonly property bool flatten: wrapper.width < rounding * 2
+
     strokeWidth: -1
-    fillColor: DynamicColors.palette.m3surface
+	fillColor: flatten ? "transparent" : DynamicColors.palette.m3surface
 
     PathLine {
         relativeX: -root.wrapper.width - root.notifsRoundingX

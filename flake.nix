@@ -18,37 +18,49 @@
   in {
     formatter = forAllSystems (pkgs: pkgs.nixfmt);
 
-    packages = forAllSystems (pkgs: let
-      pythonEnv = pkgs.python3.withPackages (ps: [
-        ps.pillow
-        ps.materialyoucolor
-      ]);
-    in rec {
-      zshell = pkgs.callPackage ./nix {
-        rev = self.rev or self.dirtyRev;
-        stdenv = pkgs.clangStdenv;
-        quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-          withX11 = false;
-          withI3 = false;
+    packages = forAllSystems (
+      pkgs: let
+        pythonEnv = pkgs.python3.withPackages (ps: [
+          ps.pillow
+          ps.materialyoucolor
+        ]);
+      in rec {
+        zshell-cli = pkgs.callPackage ./nix/zshell-cli.nix {};
+
+        zshell = pkgs.callPackage ./nix {
+          rev = self.rev or self.dirtyRev;
+          stdenv = pkgs.clangStdenv;
+
+          quickshell = inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
+            withX11 = false;
+            withI3 = false;
+          };
+
+          app2unit = pkgs.callPackage ./nix/app2unit.nix {};
+
+          inherit pythonEnv zshell-cli;
         };
-        app2unit = pkgs.callPackage ./nix/app2unit.nix {inherit pkgs;};
 
-        inherit pythonEnv;
-      };
-
-      default = zshell;
-    });
+        default = zshell;
+      }
+    );
 
     devShells = forAllSystems (pkgs: {
       default = let
-        shell = self.packages.${pkgs.stdenv.hostPlatform.system}.zshell;
+        system = pkgs.stdenv.hostPlatform.system;
+        shellPkg = self.packages.${system}.zshell;
+        cliPkg = self.packages.${system}.zshell-cli;
       in
-        pkgs.mkShell.override {stdenv = shell.stdenv;} {
+        pkgs.mkShell.override {stdenv = shellPkg.stdenv;} {
           inputsFrom = [
-            shell
-            shell.Plugins
+            shellPkg
+            shellPkg.plugin
           ];
+
           packages = with pkgs; [
+            shellPkg
+            cliPkg
+
             material-symbols
             rubik
             nerd-fonts.caskaydia-cove

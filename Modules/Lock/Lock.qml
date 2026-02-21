@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Quickshell.Io
 import QtQuick
 import QtQuick.Effects
 import qs.Components
@@ -31,6 +32,14 @@ Scope {
 		id: pam
 
 		lock: lock
+	}
+
+	IpcHandler {
+		target: "lock"
+
+		function lock() {
+			return lock.locked = true;
+		}
 	}
 
 	CustomShortcut {

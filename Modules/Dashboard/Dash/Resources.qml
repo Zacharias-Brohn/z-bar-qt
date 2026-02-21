@@ -32,19 +32,19 @@ Row {
     Resource {
         icon: "gamepad"
         value: SystemUsage.gpuPerc
-        color: DynamicColors.palette.m3primaryFixed
+        color: DynamicColors.palette.m3tertiary
     }
 
     Resource {
         icon: "host"
         value: SystemUsage.gpuMemUsed
-        color: DynamicColors.palette.m3secondaryFixed
+        color: DynamicColors.palette.m3primary
     }
 
     Resource {
         icon: "hard_disk"
         value: SystemUsage.storagePerc
-        color: DynamicColors.palette.m3tertiary
+        color: DynamicColors.palette.m3secondary
     }
 
     component Resource: Item {

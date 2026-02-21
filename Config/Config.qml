@@ -5,6 +5,7 @@ import Quickshell.Io
 import ZShell
 import QtQuick
 import qs.Modules as Modules
+import qs.Helpers
 import qs.Paths
 
 Singleton {
@@ -122,7 +123,14 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
-			wallust: general.wallust,
+			color: {
+				wallust: general.color.wallust,
+				mode: general.color.mode,
+				schemeGeneration: general.color.schemeGeneration,
+				scheduleDarkStart: general.color.scheduleDarkStart,
+				scheduleDarkEnd: general.color.scheduleDarkEnd,
+				neovimColors: general.color.neovimColors
+			},
 			apps: {
 				terminal: general.apps.terminal,
 				audio: general.apps.audio,
@@ -231,6 +239,7 @@ Singleton {
             hideDelay: osd.hideDelay,
             enableBrightness: osd.enableBrightness,
             enableMicrophone: osd.enableMicrophone,
+			allMonBrightness: osd.allMonBrightness,
             sizes: {
                 sliderWidth: osd.sizes.sliderWidth,
                 sliderHeight: osd.sizes.sliderHeight
@@ -328,6 +337,7 @@ Singleton {
 		}
 
 		onLoaded: {
+			ModeScheduler.checkStartup();
 			try {
 				JSON.parse(text());
 				const elapsed = timer.elapsedMs();

@@ -4,15 +4,24 @@ import Quickshell
 JsonObject {
 	property string logo: ""
 	property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
-	property bool wallust: false
+	property Color color: Color {}
 	property Apps apps: Apps {}
     property Idle idle: Idle {}
 
+	component Color: JsonObject {
+		property bool wallust: false
+		property bool schemeGeneration: true
+		property string mode: "dark"
+		property int scheduleDarkStart: 0
+		property int scheduleDarkEnd: 0
+		property bool neovimColors: false
+	}
+
     component Apps: JsonObject {
-        property list<string> terminal: ["foot"]
+        property list<string> terminal: ["kitty"]
         property list<string> audio: ["pavucontrol"]
         property list<string> playback: ["mpv"]
-        property list<string> explorer: ["thunar"]
+        property list<string> explorer: ["dolphin"]
     }
 
 	component Idle: JsonObject {

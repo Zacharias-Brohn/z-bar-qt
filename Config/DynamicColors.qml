@@ -61,7 +61,7 @@ Singleton {
 
         if (!isPreview) {
             root.scheme = scheme.name;
-            flavour = scheme.flavour;
+            flavour = scheme.flavor;
             currentLight = scheme.mode === "light";
         } else {
             previewLight = scheme.mode === "light";

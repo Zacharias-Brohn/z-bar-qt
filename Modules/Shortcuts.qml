@@ -10,6 +10,7 @@ Scope {
 	property bool launcherInterrupted
 	readonly property bool hasFullscreen: Hypr.focusedWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2) ?? false
 
+
     CustomShortcut {
         name: "toggle-launcher"
         description: "Toggle launcher"
@@ -22,4 +23,22 @@ Scope {
             root.launcherInterrupted = false;
         }
     }
+
+	CustomShortcut {
+		name: "toggle-nc"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive()
+			visibilities.sidebar = !visibilities.sidebar
+		}
+	}
+
+	CustomShortcut {
+		name: "show-osd"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive()
+			visibilities.osd = !visibilities.osd
+		}
+	}
 }

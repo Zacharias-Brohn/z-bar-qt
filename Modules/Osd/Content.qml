@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Helpers
 import qs.Config
-import qs.Modules.Dashboard.Dash
+import qs.Daemons
 import qs.Modules as Modules
 
 Item {
@@ -47,6 +47,7 @@ Item {
                 icon: Icons.getVolumeIcon(value, root.muted)
                 value: root.volume
 				to: Config.services.maxVolume
+				color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3secondary
                 onMoved: Audio.setVolume(value)
             }
         }
@@ -101,7 +102,15 @@ Item {
 
                     icon: `brightness_${(Math.round(value * 6) + 1)}`
                     value: root.brightness
-                    onMoved: root.monitor?.setBrightness(value)
+                    onMoved: {
+						if ( Config.osd.allMonBrightness ) {
+							root.monitor?.setBrightness(value)
+						} else {
+							for (const mon of Brightness.monitors) {
+								mon.setBrightness(value)
+							}
+						}
+					}
                 }
             }
         }
