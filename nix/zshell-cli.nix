@@ -5,7 +5,7 @@
 python3.pkgs.buildPythonApplication {
   pname = "zshell-cli";
   version = "0.1.0";
-  src = ./cli/.;
+  src = ../cli;
   pyproject = true;
 
   build-system = with python3.pkgs; [
@@ -16,6 +16,7 @@ python3.pkgs.buildPythonApplication {
   dependencies = with python3.pkgs; [
     materialyoucolor
     pillow
+    typer
   ];
 
   pythonImportsCheck = ["zshell"];

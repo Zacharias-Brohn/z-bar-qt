@@ -22,6 +22,7 @@
   ninja,
   pkg-config,
   pythonEnv,
+  zshell-cli,
 }: let
   version = "1.0.0";
 
@@ -100,7 +101,7 @@ in
       qt6.qtbase
       qt6.qtwayland
     ];
-    propagatedBuildInputs = runtimeDeps;
+    propagatedBuildInputs = runtimeDeps ++ [zshell-cli];
 
     cmakeFlags =
       [
