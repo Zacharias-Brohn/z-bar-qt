@@ -1,5 +1,6 @@
 {
   python3,
+  installShellFiles,
 }:
 python3.pkgs.buildPythonApplication {
   pname = "zshell-cli";
@@ -17,9 +18,9 @@ python3.pkgs.buildPythonApplication {
     pillow
   ];
 
-  pythonImportsCheck = [ "zshell" ];
+  pythonImportsCheck = ["zshell"];
 
-  nativeBuildInputs = [ installShellFiles ];
+  nativeBuildInputs = [installShellFiles];
 
   SETUPTOOLS_SCM_PRETEND_VERSION = 1;
 }
