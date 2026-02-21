@@ -6,7 +6,7 @@ import qs.Components
 import qs.Helpers
 import qs.Config
 import qs.Modules as Modules
-import qs.Modules.Dashboard.Dash
+import qs.Daemons
 
 Item {
     id: root

@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Helpers
 import qs.Config
-import qs.Modules.Dashboard.Dash
+import qs.Daemons
 import qs.Modules as Modules
 
 Item {

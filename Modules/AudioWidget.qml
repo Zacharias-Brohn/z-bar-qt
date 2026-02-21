@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Services.Pipewire
+import qs.Daemons
 import qs.Modules
 import qs.Config
 import qs.Components
@@ -21,14 +22,6 @@ Item {
             duration: 300
             easing.type: Easing.OutCubic
         }
-    }
-
-	PwObjectTracker {
-		objects: [ Pipewire.defaultAudioSink ]
-	}
-
-    PwObjectTracker {
-        objects: [ Pipewire.defaultAudioSource ]
     }
 
     Rectangle {
@@ -63,8 +56,8 @@ Item {
             MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
-                text: "volume_up"
-                color: Pipewire.defaultAudioSink?.audio.muted ? DynamicColors.palette.m3error : root.textColor
+                text: Audio.muted ? "volume_off" : "volume_up"
+                color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
             }
 
             Rectangle {
@@ -82,9 +75,9 @@ Item {
                         bottom: parent.bottom
                     }
 
-                    implicitWidth: parent.width * ( Pipewire.defaultAudioSink?.audio.volume ?? 0 )
+                    implicitWidth: parent.width * ( Audio.volume ?? 0 )
                     radius: parent.radius
-					color: Pipewire.defaultAudioSink?.audio.muted ? DynamicColors.palette.m3error : root.barColor
+					color: Audio.muted ? DynamicColors.palette.m3error : root.barColor
                     Behavior on color {
                         CAnim {}
                     }
@@ -94,8 +87,8 @@ Item {
             MaterialIcon {
                 Layout.alignment: Qt.AlignVCenter
                 font.pixelSize: 18
-                text: Pipewire.defaultAudioSource?.audio.muted ? "mic_off" : "mic"
-                color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? DynamicColors.palette.m3error : root.textColor
+                text: Audio.sourceMuted ? "mic_off" : "mic"
+                color: ( Audio.sourceMuted ?? false ) ? DynamicColors.palette.m3error : root.textColor
             }
 
             Rectangle {
@@ -113,9 +106,9 @@ Item {
                         bottom: parent.bottom
                     }
 
-                    implicitWidth: parent.width * ( Pipewire.defaultAudioSource?.audio.volume ?? 0 )
+                    implicitWidth: parent.width * ( Audio.sourceVolume ?? 0 )
                     radius: parent.radius
-                    color: ( Pipewire.defaultAudioSource?.audio.muted ?? false ) ? DynamicColors.palette.m3error : root.barColor
+                    color: ( Audio.sourceMuted ?? false ) ? DynamicColors.palette.m3error : root.barColor
 
                     Behavior on color {
                         CAnim {}

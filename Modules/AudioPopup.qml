@@ -14,8 +14,11 @@ import qs.Helpers
 Item {
     id: root
 
-    implicitWidth: layout.implicitWidth + 10 * 2
-    implicitHeight: layout.implicitHeight + 10 * 2
+    implicitWidth: layout.implicitWidth + 5 * 2
+    implicitHeight: layout.implicitHeight + 5 * 2
+
+	readonly property int topMargin: 0
+	readonly property int rounding: 6
 
     required property var wrapper
 
@@ -128,117 +131,143 @@ Item {
 	component VolumesTab: ColumnLayout {
 		spacing: 12
 
-		RowLayout {
-			Layout.topMargin: 10
-			spacing: 15
-			Rectangle {
-				Layout.preferredWidth: 40
-				Layout.preferredHeight: 40
-				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.palette.m3primary
-				radius: 1000
-				MaterialIcon {
-					anchors.centerIn: parent
-					color: DynamicColors.palette.m3onPrimary
-					text: "volume_up"
-					font.pointSize: 22
+		CustomRect {
+			Layout.topMargin: root.topMargin
+			Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
+			Layout.fillWidth: true
+			color: DynamicColors.tPalette.m3surfaceContainer
+
+			radius: root.rounding
+
+			RowLayout {
+				id: outputVolume
+				anchors.verticalCenter: parent.verticalCenter
+				anchors.left: parent.left
+				anchors.right: parent.right
+				anchors.margins: Appearance.spacing.smaller
+				spacing: 15
+				CustomRect {
+					Layout.preferredWidth: 40
+					Layout.preferredHeight: 40
+					Layout.alignment: Qt.AlignVCenter
+					color: DynamicColors.palette.m3primary
+					radius: 1000
+					MaterialIcon {
+						anchors.centerIn: parent
+						color: DynamicColors.palette.m3onPrimary
+						text: "speaker"
+						font.pointSize: 22
+					}
 				}
-			}
 
-			ColumnLayout {
-				Layout.fillWidth: true
-				RowLayout {
+				ColumnLayout {
 					Layout.fillWidth: true
-
-					CustomText {
-						text: "Output Volume"
+					RowLayout {
 						Layout.fillWidth: true
-						Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+
+						CustomText {
+							text: "Output Volume"
+							Layout.fillWidth: true
+							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+						}
+
+						CustomText {
+							text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`);
+							font.bold: true
+							Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+						}
 					}
 
-					CustomText {
-						text: qsTr("%1").arg(Audio.muted ? qsTr("Muted") : `${Math.round(Audio.volume * 100)}%`);
-						font.bold: true
-						Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-					}
-				}
+					CustomMouseArea {
+						Layout.fillWidth: true
+						Layout.preferredHeight: 10
+						Layout.bottomMargin: 5
 
-				CustomMouseArea {
-					Layout.fillWidth: true
-					Layout.preferredHeight: 10
-					Layout.bottomMargin: 5
+						CustomSlider {
+							anchors.left: parent.left
+							anchors.right: parent.right
+							implicitHeight: 10
+							value: Audio.volume
+							onMoved: Audio.setVolume(value)
 
-					CustomSlider {
-						anchors.left: parent.left
-						anchors.right: parent.right
-						implicitHeight: 10
-						value: Audio.volume
-						onMoved: Audio.setVolume(value)
-
-						Behavior on value { Anim {} }
+							Behavior on value { Anim {} }
+						}
 					}
 				}
 			}
 		}
 
 
-		RowLayout {
-			Layout.topMargin: 10
-			spacing: 15
-			Rectangle {
-				Layout.preferredWidth: 40
-				Layout.preferredHeight: 40
-				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.palette.m3primary
-				radius: 1000
-				MaterialIcon {
-					anchors.centerIn: parent
-					anchors.alignWhenCentered: false
-					color: DynamicColors.palette.m3onPrimary
-					text: "mic"
-					font.pointSize: 22
+		CustomRect {
+			Layout.topMargin: root.topMargin
+			Layout.fillWidth: true
+			Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
+			color: DynamicColors.tPalette.m3surfaceContainer
+
+			radius: root.rounding
+
+			RowLayout {
+				id: inputVolume
+				anchors.verticalCenter: parent.verticalCenter
+				anchors.left: parent.left
+				anchors.right: parent.right
+				anchors.margins: Appearance.spacing.smaller
+				spacing: 15
+				Rectangle {
+					Layout.preferredWidth: 40
+					Layout.preferredHeight: 40
+					Layout.alignment: Qt.AlignVCenter
+					color: DynamicColors.palette.m3primary
+					radius: 1000
+					MaterialIcon {
+						anchors.centerIn: parent
+						anchors.alignWhenCentered: false
+						color: DynamicColors.palette.m3onPrimary
+						text: "mic"
+						font.pointSize: 22
+					}
 				}
-			}
 
-			ColumnLayout {
-				Layout.fillWidth: true
-				RowLayout {
+				ColumnLayout {
 					Layout.fillWidth: true
-					Layout.fillHeight: true
-
-					CustomText {
-						text: "Input Volume"
+					RowLayout {
 						Layout.fillWidth: true
-						Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+						Layout.fillHeight: true
+
+						CustomText {
+							text: "Input Volume"
+							Layout.fillWidth: true
+							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
+						}
+
+						CustomText {
+							text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`);
+							font.bold: true
+							Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+						}
 					}
 
-					CustomText {
-						text: qsTr("%1").arg(Audio.sourceMuted ? qsTr("Muted") : `${Math.round(Audio.sourceVolume * 100)}%`);
-						font.bold: true
-						Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
-					}
-				}
-
-				CustomMouseArea {
-					Layout.fillWidth: true
-					Layout.bottomMargin: 5
-					implicitHeight: 10
-
-					CustomSlider {
-						anchors.left: parent.left
-						anchors.right: parent.right
+					CustomMouseArea {
+						Layout.fillWidth: true
+						Layout.bottomMargin: 5
 						implicitHeight: 10
-						value: Audio.sourceVolume
-						onMoved: Audio.setSourceVolume(value)
 
-						Behavior on value { Anim {} }
+						CustomSlider {
+							anchors.left: parent.left
+							anchors.right: parent.right
+							implicitHeight: 10
+							value: Audio.sourceVolume
+							onMoved: Audio.setSourceVolume(value)
+
+							Behavior on value { Anim {} }
+						}
 					}
 				}
 			}
 		}
 
 		Rectangle {
-			Layout.topMargin: 10
+			Layout.topMargin: root.topMargin
 			Layout.fillWidth: true
 			Layout.preferredHeight: 1
 
@@ -246,147 +275,47 @@ Item {
 		}
 
 		Repeater {
-			model: Audio.appStreams
+			model: Audio.streams.filter(s => s.isSink)
 
-			Item {
+			CustomRect {
 				id: appBox
 
-				Layout.topMargin: 10
+				Layout.topMargin: root.topMargin
 				Layout.fillWidth: true
-				Layout.preferredHeight: 42
-				visible: !isCaptureStream
-				required property PwNode modelData
+				Layout.preferredHeight: 42 + Appearance.spacing.smaller * 2
+				color: DynamicColors.tPalette.m3surfaceContainer
 
-                function isValidMatch(searchTerm, entry) {
-					if (!entry)
-						return false;
-					var search = searchTerm.toLowerCase();
-					var id = (entry.id || "").toLowerCase();
-					var name = (entry.name || "").toLowerCase();
-					var icon = (entry.icon || "").toLowerCase();
-					// Match is valid if search term appears in entry or entry appears in search
-					return id.includes(search) || name.includes(search) || icon.includes(search) || search.includes(id.split('.').pop()) || search.includes(name.replace(/\s+/g, ''));
-                }
+				radius: root.rounding
 
-				readonly property string appName: {
-					if (!modelData)
-						return "Unknown App";
 
-					var props = modelData.properties;
-					var desc = modelData.description || "";
-					var name = modelData.name || "";
-					var mediaName = props["media.name"] || "";
-
-					if ( mediaName !== "playStream" ) {
-						return mediaName;
-					}
-
-					if (!props) {
-						if (desc)
-							return desc;
-						if (name) {
-							var nameParts = name.split(/[-_]/);
-							if (nameParts.length > 0 && nameParts[0])
-								return nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
-							return name;
-						}
-						return "Unknown App";
-					}
-
-					var binaryName = props["application.process.binary"] || "";
-
-					// Try binary name first (fixes Electron apps like vesktop)
-					if (binaryName) {
-						var binParts = binaryName.split("/");
-						if (binParts.length > 0) {
-							var binName = binParts[binParts.length - 1].toLowerCase();
-							var entry = ThemeIcons.findAppEntry(binName);
-							// Only use entry if it's actually related to binary name
-							if (entry && entry.name && isValidMatch(binName, entry))
-								return entry.name;
-						}
-					}
-
-					var computedAppName = props["application.name"] || "";
-					var mediaName = props["media.name"] || "";
-					var appId = props["application.id"] || "";
-
-					if (appId) {
-						var entry = ThemeIcons.findAppEntry(appId);
-						if (entry && entry.name && isValidMatch(appId, entry))
-							return entry.name;
-						if (!computedAppName) {
-							var parts = appId.split(".");
-							if (parts.length > 0 && parts[0])
-								computedAppName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-						}
-					}
-
-					if (!computedAppName && binaryName) {
-						var binParts = binaryName.split("/");
-						if (binParts.length > 0 && binParts[binParts.length - 1])
-							computedAppName = binParts[binParts.length - 1].charAt(0).toUpperCase() + binParts[binParts.length - 1].slice(1);
-					}
-
-					var result = computedAppName || mediaTitle || mediaName || binaryName || desc || name;
-
-					if (!result || result === "" || result === "Unknown App") {
-						if (name) {
-							var nameParts = name.split(/[-_]/);
-							if (nameParts.length > 0 && nameParts[0])
-								result = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
-						}
-					}
-
-					return result || "Unknown App";
-				}
-
-				PwObjectTracker {
-					objects: appBox.modelData ? [appBox.modelData] : []
-				}
-
-				PwNodePeakMonitor {
-					id: peak
-					node: appBox.modelData
-				}
-
-				readonly property bool isCaptureStream: {
-					if (!modelData || !modelData.properties)
-						return false;
-					const props = modelData.properties;
-					// Exclude capture streams - check for stream.capture.sink property
-					if (props["stream.capture.sink"] !== undefined) {
-						return true;
-					}
-					const mediaClass = props["media.class"] || "";
-					// Exclude Stream/Input (capture) but allow Stream/Output (playback)
-					if (mediaClass.includes("Capture") || mediaClass === "Stream/Input" || mediaClass === "Stream/Input/Audio") {
-						return true;
-					}
-					const mediaRole = props["media.role"] || "";
-					if (mediaRole === "Capture") {
-						return true;
-					}
-					return false;
-				}
+				required property var modelData
+				required property int index
 
 				RowLayout {
 					id: layoutVolume
 					anchors.fill: parent
+					anchors.margins: Appearance.spacing.smaller
 					spacing: 15
 
-					IconImage {
-						id: icon
-						property string iconPath1: Quickshell.iconPath(DesktopEntries.byId(appBox.modelData.name).icon);
-						property string iconPath2: Quickshell.iconPath(DesktopEntries.byId(appBox.appName).icon);
-						source: iconPath1 !== "" ? iconPath1 : iconPath2
-						Layout.alignment: Qt.AlignVCenter
-						implicitSize: 42
 
-						StateLayer {
-							radius: 1000
-							onClicked: {
-								appBox.modelData.audio.muted = !appBox.modelData.audio.muted;
+					CustomRect {
+						Layout.preferredWidth: 40
+						Layout.preferredHeight: 40
+						Layout.alignment: Qt.AlignVCenter
+						color: DynamicColors.palette.m3primary
+						radius: 1000
+						MaterialIcon {
+							id: icon
+							anchors.centerIn: parent
+							text: "volume_up"
+							font.pointSize: 22
+							color: DynamicColors.palette.m3onPrimary
+
+							StateLayer {
+								radius: 1000
+								onClicked: {
+									appBox.modelData.audio.muted = !appBox.modelData.audio.muted;
+								}
 							}
 						}
 					}
@@ -397,7 +326,7 @@ Item {
 
 						TextMetrics {
 							id: metrics
-							text: appBox.appName
+							text: Audio.getStreamName(appBox.modelData)
 							elide: Text.ElideRight
 							elideWidth: root.width - 50
 						}
@@ -425,7 +354,6 @@ Item {
 							Layout.fillWidth: true
 							Layout.fillHeight: true
 							Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-							Layout.bottomMargin: 5
 							implicitHeight: 10
 							CustomSlider {
 								anchors.left: parent.left
@@ -433,8 +361,7 @@ Item {
 								implicitHeight: 10
 								value: appBox.modelData.audio.volume
 								onMoved: {
-									Audio.setAppAudioVolume(appBox.modelData, value)
-									console.log(icon.iconPath1, icon.iconPath2)
+									Audio.setStreamVolume(appBox.modelData, value)
 								}
 							}
 						}

@@ -27,7 +27,7 @@ Variants {
 
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.osd || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 			
 			contentItem.focus: true
 
@@ -92,7 +92,7 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.osd || ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith( "traymenu" ))
+				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith( "traymenu" ))
 				windows: [bar]
 				onCleared: {
 					visibilities.launcher = false;
