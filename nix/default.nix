@@ -35,6 +35,7 @@
     libqalculate
     bash
     hyprland
+    zshell-cli
   ];
 
   fontconfig = makeFontsConf {
@@ -101,7 +102,7 @@ in
       qt6.qtbase
       qt6.qtwayland
     ];
-    propagatedBuildInputs = runtimeDeps ++ [zshell-cli];
+    propagatedBuildInputs = runtimeDeps;
 
     cmakeFlags =
       [
