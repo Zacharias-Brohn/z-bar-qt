@@ -1,6 +1,8 @@
 pragma Singleton
 
 import qs.Config
+import ZShell.Services
+import ZShell
 import Quickshell
 import Quickshell.Services.Pipewire
 import QtQuick
@@ -17,15 +19,20 @@ Singleton {
                 acc.sinks.push(node);
             else if (node.audio)
                 acc.sources.push(node);
+        } else if (node.isStream && node.audio) {
+            // Application streams (output streams)
+            acc.streams.push(node);
         }
         return acc;
     }, {
         sources: [],
-        sinks: []
+        sinks: [],
+        streams: []
     })
 
     readonly property list<PwNode> sinks: nodes.sinks
     readonly property list<PwNode> sources: nodes.sources
+    readonly property list<PwNode> streams: nodes.streams
 
     readonly property PwNode sink: Pipewire.defaultAudioSink
     readonly property PwNode source: Pipewire.defaultAudioSource
@@ -39,31 +46,31 @@ Singleton {
     function setVolume(newVolume: real): void {
         if (sink?.ready && sink?.audio) {
             sink.audio.muted = false;
-            sink.audio.volume = Math.max(0, Math.min(100, newVolume));
+            sink.audio.volume = Math.max(0, Math.min(Config.services.maxVolume, newVolume));
         }
     }
 
     function incrementVolume(amount: real): void {
-        setVolume(volume + (amount || 5));
+        setVolume(volume + (amount || Config.services.audioIncrement));
     }
 
     function decrementVolume(amount: real): void {
-        setVolume(volume - (amount || 5));
+        setVolume(volume - (amount || Config.services.audioIncrement));
     }
 
     function setSourceVolume(newVolume: real): void {
         if (source?.ready && source?.audio) {
             source.audio.muted = false;
-            source.audio.volume = Math.max(0, Math.min(100, newVolume));
+            source.audio.volume = Math.max(0, Math.min(Config.services.maxVolume, newVolume));
         }
     }
 
     function incrementSourceVolume(amount: real): void {
-        setSourceVolume(sourceVolume + (amount || 5));
+        setSourceVolume(sourceVolume + (amount || Config.services.audioIncrement));
     }
 
     function decrementSourceVolume(amount: real): void {
-        setSourceVolume(sourceVolume - (amount || 5));
+        setSourceVolume(sourceVolume - (amount || Config.services.audioIncrement));
     }
 
     function setAudioSink(newSink: PwNode): void {
@@ -74,18 +81,42 @@ Singleton {
         Pipewire.preferredDefaultAudioSource = newSource;
     }
 
-	function setAppAudioVolume(appStream: PwNode, newVolume: real): void {
-		if ( appStream?.ready && appStream?.audio ) {
-			appStream.audio.muted = false;
-			appStream.audio.volume = Math.max(0, Math.min(100, newVolume));
-		}
-	}
+    function setStreamVolume(stream: PwNode, newVolume: real): void {
+        if (stream?.ready && stream?.audio) {
+            stream.audio.muted = false;
+            stream.audio.volume = Math.max(0, Math.min(Config.services.maxVolume, newVolume));
+        }
+    }
+
+    function setStreamMuted(stream: PwNode, muted: bool): void {
+        if (stream?.ready && stream?.audio) {
+            stream.audio.muted = muted;
+        }
+    }
+
+    function getStreamVolume(stream: PwNode): real {
+        return stream?.audio?.volume ?? 0;
+    }
+
+    function getStreamMuted(stream: PwNode): bool {
+        return !!stream?.audio?.muted;
+    }
+
+    function getStreamName(stream: PwNode): string {
+        if (!stream)
+            return qsTr("Unknown");
+        // Try application name first, then description, then name
+        return stream.applicationName || stream.description || stream.name || qsTr("Unknown Application");
+    }
 
     onSinkChanged: {
         if (!sink?.ready)
             return;
 
         const newSinkName = sink.description || sink.name || qsTr("Unknown Device");
+
+        if (previousSinkName && previousSinkName !== newSinkName && Config.utilities.toasts.audioOutputChanged)
+            Toaster.toast(qsTr("Audio output changed"), qsTr("Now using: %1").arg(newSinkName), "volume_up");
 
         previousSinkName = newSinkName;
     }
@@ -96,6 +127,9 @@ Singleton {
 
         const newSourceName = source.description || source.name || qsTr("Unknown Device");
 
+        if (previousSourceName && previousSourceName !== newSourceName && Config.utilities.toasts.audioInputChanged)
+            Toaster.toast(qsTr("Audio input changed"), qsTr("Now using: %1").arg(newSourceName), "mic");
+
         previousSourceName = newSourceName;
     }
 
@@ -105,112 +139,6 @@ Singleton {
     }
 
     PwObjectTracker {
-        objects: [...root.sinks, ...root.sources]
+        objects: [...root.sinks, ...root.sources, ...root.streams]
     }
-
-	PwNodeLinkTracker {
-		id: sinkLinkTracker
-		node: root.sink
-	}
-
-	PwObjectTracker {
-		objects: root.appStreams
-	}
-
-	readonly property var appStreams: {
-		var defaultSink = root.sink;
-		var defaultSinkId = defaultSink.id;
-		var connectedStreamIds = {};
-		var connectedStreams = [];
-
-		if ( !sinkLinkTracker.linkGroups ) {
-			return [];
-		}
-
-		var linkGroupsCount = 0;
-		if (sinkLinkTracker.linkGroups.length !== undefined) {
-			linkGroupsCount = sinkLinkTracker.linkGroups.length;
-		} else if (sinkLinkTracker.linkGroups.count !== undefined) {
-			linkGroupsCount = sinkLinkTracker.linkGroups.count;
-		} else {
-			return [];
-		}
-
-		if ( linkGroupsCount === 0 ) {
-			return [];
-		}
-
-		var intermediateNodeIds = {};
-		var nodesToCheck = [];
-
-		for (var i = 0; i < linkGroupsCount; i++) {
-			var linkGroup;
-			if (sinkLinkTracker.linkGroups.get) {
-				linkGroup = sinkLinkTracker.linkGroups.get(i);
-			} else {
-				linkGroup = sinkLinkTracker.linkGroups[i];
-			}
-
-			if (!linkGroup || !linkGroup.source) {
-				continue;
-			}
-
-			var sourceNode = linkGroup.source;
-
-			if (sourceNode.isStream && sourceNode.audio) {
-				if (!connectedStreamIds[sourceNode.id]) {
-					connectedStreamIds[sourceNode.id] = true;
-					connectedStreams.push(sourceNode);
-				}
-			} else {
-				intermediateNodeIds[sourceNode.id] = true;
-				nodesToCheck.push(sourceNode);
-			}
-		}
-
-		if (nodesToCheck.length > 0 || connectedStreams.length === 0) {
-			try {
-				var allNodes = [];
-				if (Pipewire.nodes) {
-					if (Pipewire.nodes.count !== undefined) {
-						var nodeCount = Pipewire.nodes.count;
-						for (var n = 0; n < nodeCount; n++) {
-							var node;
-							if (Pipewire.nodes.get) {
-								node = Pipewire.nodes.get(n);
-							} else {
-								node = Pipewire.nodes[n];
-							}
-							if (node)
-								allNodes.push(node);
-						}
-					} else if (Pipewire.nodes.values) {
-						allNodes = Pipewire.nodes.values;
-					}
-				}
-
-				for (var j = 0; j < allNodes.length; j++) {
-					var node = allNodes[j];
-					if (!node || !node.isStream || !node.audio) {
-						continue;
-					}
-
-					var streamId = node.id;
-					if (connectedStreamIds[streamId]) {
-						continue;
-					}
-
-					if (Object.keys(intermediateNodeIds).length > 0) {
-						connectedStreamIds[streamId] = true;
-						connectedStreams.push(node);
-					} else if (connectedStreams.length === 0) {
-						connectedStreamIds[streamId] = true;
-						connectedStreams.push(node);
-					}
-				}
-			} catch (e)
-			{}
-		}
-		return connectedStreams;
-	}
 }

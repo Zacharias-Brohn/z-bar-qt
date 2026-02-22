@@ -177,7 +177,7 @@ Singleton {
         property list<var> actions
 
         readonly property Timer timer: Timer {
-			property int totalTime: 5000
+			property int totalTime: Config.notifs.defaultExpireTimeout
 			property int remainingTime: totalTime
 			property bool paused: false
 

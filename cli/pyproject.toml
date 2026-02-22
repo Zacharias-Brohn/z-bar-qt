@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "zshell"
+requires-python = ">=3.13"
+version = "0.1.0"
+dependencies = [
+	"typer",
+	"pillow",
+	"materialyoucolor"
+]
+
+[project.scripts]
+zshell-cli = "zshell:main"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.targets.sdist]
+only-include = [
+	"src",
+]
+
+[tool.ruff]
+line-length = 120

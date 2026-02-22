@@ -5,3 +5,8 @@
 build/
 compile_commands.json
 testpython
+pkg/
+*.tar.*
+uv.lock
+.qtcreator/
+dist/

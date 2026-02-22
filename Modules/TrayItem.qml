@@ -39,21 +39,31 @@ Item {
 		}
 	}
 
-    Image {
-        id: icon
+	ColoredIcon {
+		id: icon
 
-        property bool batteryHDPI: root.bar.screen.x < 0 && root.item.icon.includes("battery")
-        property bool nmHDPI: root.bar.screen.x < 0 && root.item.icon.includes("nm-")
+		anchors.centerIn: parent
+		source: root.item.icon
+		implicitSize: 22
+		color: DynamicColors.palette.m3onSurface
+		layer.enabled: DynamicColors.light
+	}
 
-        anchors.centerIn: parent
-        width: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
-        height: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
-        source: root.item.icon
-        mipmap: true
-        smooth: ( batteryHDPI || nmHDPI ) ? false : true
-        asynchronous: true
-        sourceSize.width: ( batteryHDPI || nmHDPI ) ? 16 : 22
-        sourceSize.height: ( batteryHDPI || nmHDPI ) ? 16 : 22
-        fillMode: Image.PreserveAspectFit
-    }
+    // Image {
+    //     id: icon
+    //
+    //     property bool batteryHDPI: root.bar.screen.x < 0 && root.item.icon.includes("battery")
+    //     property bool nmHDPI: root.bar.screen.x < 0 && root.item.icon.includes("nm-")
+    //
+    //     anchors.centerIn: parent
+    //     width: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
+    //     height: batteryHDPI ? 26 : ( nmHDPI ? 25 : 22 )
+    //     source: root.item.icon
+    //     mipmap: true
+    //     smooth: ( batteryHDPI || nmHDPI ) ? false : true
+    //     asynchronous: true
+    //     sourceSize.width: ( batteryHDPI || nmHDPI ) ? 16 : 22
+    //     sourceSize.height: ( batteryHDPI || nmHDPI ) ? 16 : 22
+    //     fillMode: Image.PreserveAspectFit
+    // }
 }

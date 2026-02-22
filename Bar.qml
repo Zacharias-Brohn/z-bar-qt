@@ -5,6 +5,7 @@ import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import qs.Daemons
 import qs.Components
 import qs.Modules
 import qs.Modules.Bar
@@ -26,7 +27,17 @@ Variants {
 
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			
+			contentItem.focus: true
+
+            contentItem.Keys.onEscapePressed: {
+				if ( Config.barConfig.autoHide )
+					visibilities.bar = false;
+				visibilities.sidebar = false;
+				visibilities.dashboard = false;
+			}
+
             PanelWindow {
                 id: exclusionZone
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
@@ -55,13 +66,12 @@ Variants {
                 y: Config.barConfig.autoHide && !visibilities.bar ? 4 : 34
 
 				property list<Region> nullRegions: []
-				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar || visibilities.dashboard
 
-                width: hcurrent ? 0 : bar.width
-                height: hcurrent ? 0 : bar.screen.height - backgroundRect.implicitHeight
+                width: bar.width
+                height: bar.screen.height - backgroundRect.implicitHeight
                 intersection: Intersection.Xor
 
-                regions: hcurrent ? nullRegions : popoutRegions.instances
+                regions: popoutRegions.instances
             }
 
             Variants {
@@ -82,21 +92,14 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher
+				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith( "traymenu" ))
 				windows: [bar]
 				onCleared: {
 					visibilities.launcher = false;
 					visibilities.sidebar = false;
 					visibilities.dashboard = false;
 					visibilities.osd = false;
-				}
-			}
-
-			CustomShortcut {
-				name: "toggle-nc"
-
-				onPressed: {
-					visibilities.sidebar = !visibilities.sidebar
+					panels.popouts.hasCurrent = false;
 				}
 			}
 
@@ -108,8 +111,16 @@ Variants {
 				property bool bar
 				property bool osd
 				property bool launcher
+				property bool notif: NotifServer.popups.length > 0
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
+			}
+
+			Binding {
+				target: visibilities
+				property: "bar"
+				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif
+				when: Config.barConfig.autoHide
 			}
 
             Item {
@@ -150,7 +161,7 @@ Variants {
 					visibilities: visibilities
                 }
 
-                Rectangle {
+                CustomRect {
                     id: backgroundRect
                     property Wrapper popouts: panels.popouts
 					anchors.top: parent.top

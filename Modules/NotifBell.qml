@@ -26,7 +26,7 @@ Item {
 
 			anchors.centerIn: parent
 
-			property color iconColor: DynamicColors.palette.m3tertiaryFixed
+			property color iconColor: DynamicColors.palette.m3onSurface
 
 			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
 			font.family: "Material Symbols Rounded"
@@ -42,10 +42,6 @@ Item {
 			cursorShape: Qt.PointingHandCursor
 			onClicked: {
 				root.visibilities.sidebar = !root.visibilities.sidebar;
-				if ( root.visibilities.dashboard || root.popouts.hasCurrent ) {
-					root.popouts.hasCurrent = false;
-					root.visibilities.dashboard = false;
-				}
 			}
 		}
 	}

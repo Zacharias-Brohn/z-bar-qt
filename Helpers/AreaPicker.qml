@@ -48,6 +48,22 @@ Scope {
         }
     }
 
+	IpcHandler {
+		target: "picker"
+
+		function open(): void {
+			root.freeze = false;
+			root.closing = false;
+			root.activeAsync = true;
+		}
+
+		function openFreeze(): void {
+			root.freeze = true;
+			root.closing = false;
+			root.activeAsync = true;
+		}
+	}
+
     CustomShortcut {
         name: "screenshot"
         onPressed: {
