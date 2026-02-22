@@ -36,6 +36,7 @@ Variants {
 					visibilities.bar = false;
 				visibilities.sidebar = false;
 				visibilities.dashboard = false;
+				visibilities.osd = false;
 			}
 
             PanelWindow {
