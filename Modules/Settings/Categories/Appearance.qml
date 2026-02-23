@@ -37,7 +37,8 @@ CustomRect {
 
 				SettingSwitch {
 					name: "wallust"
-					setting: Config.general.color.wallust
+					object: Config.general.color
+					setting: "wallust"
 				}
 			}
 		}

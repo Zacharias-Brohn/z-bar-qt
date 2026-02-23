@@ -10,7 +10,8 @@ import qs.Helpers
 RowLayout {
 	id: root
 
-	required property bool setting
+	required property var object
+	required property string setting
 	required property string name
 	
 	Layout.preferredHeight: 42
@@ -30,9 +31,9 @@ RowLayout {
 
 		Layout.alignment: Qt.AlignRight
 
-		checked: root.setting
+		checked: root.object[root.setting]
 		onToggled: {
-			root.setting = checked;
+			root.object[root.setting] = checked;
 			Config.save();
 		}
 	}
