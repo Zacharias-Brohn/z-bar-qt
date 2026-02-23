@@ -1,8 +1,7 @@
-import qs.Modules
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
-import Quickshell
+import qs.Components
 import qs.Config
 
 Item {

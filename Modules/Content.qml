@@ -4,10 +4,9 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import QtQuick
 import qs.Config
+import qs.Components
 import qs.Modules.Calendar
 import qs.Modules.WSOverview
-import qs.Modules.Polkit
-import qs.Modules.Dashboard
 import qs.Modules.Network
 import qs.Modules.UPower
 

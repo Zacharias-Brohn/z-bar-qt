@@ -5,7 +5,6 @@ import QtQuick
 import qs.Components
 import qs.Helpers
 import qs.Config
-import qs.Modules as Modules
 import qs.Daemons
 
 Item {
@@ -54,7 +53,7 @@ Item {
             from: ""
             to: "visible"
 
-            Modules.Anim {
+            Anim {
                 target: root
                 property: "implicitWidth"
                 easing.bezierCurve: MaterialEasing.expressiveEffects
@@ -64,7 +63,7 @@ Item {
             from: "visible"
             to: ""
 
-            Modules.Anim {
+            Anim {
                 target: root
                 property: "implicitWidth"
                 easing.bezierCurve: MaterialEasing.expressiveEffects

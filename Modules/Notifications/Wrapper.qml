@@ -1,7 +1,6 @@
 import QtQuick
 import qs.Components
 import qs.Config
-import qs.Modules as Modules
 
 Item {
     id: root
@@ -23,7 +22,7 @@ Item {
     }
 
     transitions: Transition {
-        Modules.Anim {
+        Anim {
             target: root
             property: "implicitHeight"
             duration: MaterialEasing.expressiveEffectsTime

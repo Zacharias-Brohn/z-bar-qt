@@ -5,7 +5,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
-import qs.Modules
+import qs.Components
 import qs.Config
 import qs.Helpers
 

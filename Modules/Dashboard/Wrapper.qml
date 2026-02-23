@@ -1,12 +1,9 @@
 pragma ComponentBehavior: Bound
 
-import ZShell
 import Quickshell
 import QtQuick
 import qs.Components
-import qs.Helpers
 import qs.Config
-import qs.Modules as Modules
 
 Item {
     id: root
@@ -46,7 +43,7 @@ Item {
             from: ""
             to: "visible"
 
-            Modules.Anim {
+            Anim {
                 target: root
                 property: "implicitHeight"
                 duration: MaterialEasing.expressiveEffectsTime
@@ -57,7 +54,7 @@ Item {
             from: "visible"
             to: ""
 
-            Modules.Anim {
+            Anim {
                 target: root
                 property: "implicitHeight"
                 easing.bezierCurve: MaterialEasing.expressiveEffects

@@ -1,9 +1,11 @@
+import Quickshell.Bluetooth
+import Quickshell.Networking as QSNetwork
+import QtQuick
+import QtQuick.Layouts
 import qs.Components
 import qs.Config
 import qs.Modules
 import qs.Daemons
-import QtQuick
-import QtQuick.Layouts
 
 CustomRect {
     id: root
@@ -28,12 +30,50 @@ CustomRect {
             Layout.alignment: Qt.AlignHCenter
             spacing: 7
 
+			Toggle {
+				visible: QSNetwork.Networking.devices.values.length > 0
+				icon: Network.wifiEnabled ? "wifi" : "wifi_off"
+				checked: Network.wifiEnabled
+				onClicked: Network.toggleWifi()
+			}
+
             Toggle {
 				id: toggle
-                icon: "notifications_off"
-                checked: NotifServer.dnd
+                icon: NotifServer.dnd ? "notifications_off" : "notifications"
+                checked: !NotifServer.dnd
                 onClicked: NotifServer.dnd = !NotifServer.dnd
             }
+
+			Toggle {
+				icon: Audio.sourceMuted ? "mic_off" : "mic"
+				checked: !Audio.sourceMuted
+				onClicked: {
+					const audio = Audio.source?.audio;
+					if ( audio )
+						audio.muted = !audio.muted;
+				}
+			}
+
+			Toggle {
+				icon: Audio.muted ? "volume_off" : "volume_up"
+				checked: !Audio.muted
+				onClicked: {
+					const audio = Audio.sink?.audio;
+					if ( audio )
+						audio.muted = !audio.muted;
+				}
+			}
+
+			Toggle {
+				visible: Bluetooth.defaultAdapter?.enabled ?? false
+				icon: Bluetooth.defaultAdapter?.enabled ? "bluetooth" : "bluetooth_disabled"
+				checked: Bluetooth.defaultAdapter?.enabled ?? false
+				onClicked: {
+					const adapter = Bluetooth.defaultAdapter
+					if ( adapter )
+						adapter.enabled = !adapter.enabled;
+				}
+			}
         }
     }
 

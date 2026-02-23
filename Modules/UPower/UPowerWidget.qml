@@ -1,11 +1,9 @@
-import Quickshell
 import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
 import qs.Components
 import qs.Config
 import qs.Helpers as Helpers
-import qs.Modules
 
 Item {
 	id: root

@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 
 import qs.Components
 import qs.Config
-import qs.Modules as Modules
 import QtQuick
 
 Item {
@@ -29,7 +28,7 @@ Item {
             from: ""
             to: "visible"
 
-            Modules.Anim {
+            Anim {
                 target: root
                 property: "implicitWidth"
 				duration: MaterialEasing.expressiveEffectsTime
@@ -40,7 +39,7 @@ Item {
             from: "visible"
             to: ""
 
-            Modules.Anim {
+            Anim {
                 target: root
                 property: "implicitWidth"
 				easing.bezierCurve: MaterialEasing.expressiveEffects

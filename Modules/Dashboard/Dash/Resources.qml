@@ -2,7 +2,6 @@ import QtQuick
 import qs.Components
 import qs.Helpers
 import qs.Config
-import qs.Modules as Modules
 
 Row {
     id: root
@@ -91,7 +90,7 @@ Row {
         }
 
         Behavior on value {
-            Modules.Anim {
+            Anim {
                 duration: Appearance.anim.durations.large
             }
         }

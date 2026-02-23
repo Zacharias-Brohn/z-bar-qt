@@ -1,6 +1,5 @@
 import qs.Components
 import qs.Config
-import qs.Modules as Modules
 import QtQuick
 import QtQuick.Shapes
 
@@ -50,6 +49,6 @@ ShapePath {
     }
 
     Behavior on fillColor {
-        Modules.CAnim {}
+        CAnim {}
     }
 }

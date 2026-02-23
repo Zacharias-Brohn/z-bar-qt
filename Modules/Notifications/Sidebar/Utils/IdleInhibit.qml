@@ -1,6 +1,5 @@
 import qs.Components
 import qs.Config
-import qs.Modules as Modules
 import qs.Helpers
 import QtQuick
 import QtQuick.Layouts
@@ -99,25 +98,25 @@ CustomRect {
         }
 
         Behavior on anchors.bottomMargin {
-            Modules.Anim {
+            Anim {
 				duration: MaterialEasing.expressiveEffectsTime
 				easing.bezierCurve: MaterialEasing.expressiveEffects
             }
         }
 
         Behavior on opacity {
-            Modules.Anim {
+            Anim {
 				duration: MaterialEasing.expressiveEffectsTime
             }
         }
 
         Behavior on scale {
-            Modules.Anim {}
+            Anim {}
         }
     }
 
     Behavior on implicitHeight {
-        Modules.Anim {
+        Anim {
 			duration: MaterialEasing.expressiveEffectsTime
 			easing.bezierCurve: MaterialEasing.expressiveEffects
         }

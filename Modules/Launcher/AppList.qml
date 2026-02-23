@@ -5,9 +5,7 @@ import QtQuick
 import qs.Modules.Launcher.Services
 import qs.Modules.Launcher.Items
 import qs.Components
-import qs.Helpers
 import qs.Config
-import qs.Modules as Modules
 
 CustomListView {
     id: root
@@ -41,7 +39,7 @@ CustomListView {
         implicitHeight: root.currentItem?.implicitHeight ?? 0
 
         Behavior on y {
-            Modules.Anim {
+            Anim {
                 duration: Appearance.anim.durations.small
                 easing.bezierCurve: Appearance.anim.curves.expressiveEffects
             }
@@ -92,7 +90,7 @@ CustomListView {
     transitions: Transition {
         SequentialAnimation {
             ParallelAnimation {
-                Modules.Anim {
+                Anim {
                     target: root
                     property: "opacity"
                     from: 1
@@ -100,7 +98,7 @@ CustomListView {
                     duration: Appearance.anim.durations.small
                     easing.bezierCurve: Appearance.anim.curves.expressiveEffects
                 }
-                Modules.Anim {
+                Anim {
                     target: root
                     property: "scale"
                     from: 1
@@ -114,7 +112,7 @@ CustomListView {
                 properties: "values,delegate"
             }
             ParallelAnimation {
-                Modules.Anim {
+                Anim {
                     target: root
                     property: "opacity"
                     from: 0
@@ -122,7 +120,7 @@ CustomListView {
                     duration: Appearance.anim.durations.small
                     easing.bezierCurve: Appearance.anim.curves.expressiveEffects
                 }
-                Modules.Anim {
+                Anim {
                     target: root
                     property: "scale"
                     from: 0.9
@@ -146,7 +144,7 @@ CustomListView {
     add: Transition {
         enabled: !root.state
 
-        Modules.Anim {
+        Anim {
             properties: "opacity,scale"
             from: 0
             to: 1
@@ -156,7 +154,7 @@ CustomListView {
     remove: Transition {
         enabled: !root.state
 
-        Modules.Anim {
+        Anim {
             properties: "opacity,scale"
             from: 1
             to: 0
@@ -164,31 +162,31 @@ CustomListView {
     }
 
     move: Transition {
-        Modules.Anim {
+        Anim {
             property: "y"
         }
-        Modules.Anim {
+        Anim {
             properties: "opacity,scale"
             to: 1
         }
     }
 
     addDisplaced: Transition {
-        Modules.Anim {
+        Anim {
             property: "y"
             duration: Appearance.anim.durations.small
         }
-        Modules.Anim {
+        Anim {
             properties: "opacity,scale"
             to: 1
         }
     }
 
     displaced: Transition {
-        Modules.Anim {
+        Anim {
             property: "y"
         }
-        Modules.Anim {
+        Anim {
             properties: "opacity,scale"
             to: 1
         }
