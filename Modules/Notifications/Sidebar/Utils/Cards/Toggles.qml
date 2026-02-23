@@ -65,10 +65,11 @@ CustomRect {
 			}
 
 			Toggle {
-				visible: Bluetooth.defaultAdapter?.enabled ?? false
+				visible: Bluetooth.defaultAdapter ?? false
 				icon: Bluetooth.defaultAdapter?.enabled ? "bluetooth" : "bluetooth_disabled"
 				checked: Bluetooth.defaultAdapter?.enabled ?? false
 				onClicked: {
+					// console.log(Bluetooth.defaultAdapter)
 					const adapter = Bluetooth.defaultAdapter
 					if ( adapter )
 						adapter.enabled = !adapter.enabled;
