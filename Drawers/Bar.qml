@@ -113,6 +113,7 @@ Variants {
 				property bool osd
 				property bool launcher
 				property bool notif: NotifServer.popups.length > 0
+				property bool settings
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
 			}
