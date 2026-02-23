@@ -8,6 +8,7 @@ import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
+import qs.Modules.Settings as Settings
 
 Shape {
     id: root
@@ -76,5 +77,14 @@ Shape {
 
 		startX: root.width
 		startY: root.panels.notifications.height
+	}
+
+	Settings.Background {
+		id: settings
+
+		wrapper: root.panels.settings
+
+		startX: ( root.width - wrapper.width ) / 2 - rounding
+		startY: 0
 	}
 }

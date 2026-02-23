@@ -41,4 +41,13 @@ Scope {
 			visibilities.osd = !visibilities.osd
 		}
 	}
+
+	CustomShortcut {
+		name: "toggle-settings"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive()
+			visibilities.settings = !visibilities.settings
+		}
+	}
 }

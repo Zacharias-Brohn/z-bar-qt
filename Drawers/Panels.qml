@@ -9,6 +9,7 @@ import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
+import qs.Modules.Settings as Settings
 import qs.Config
 
 Item {
@@ -26,6 +27,7 @@ Item {
 	readonly property alias osd: osd
 	readonly property alias toasts: toasts
 	readonly property alias launcher: launcher
+	readonly property alias settings: settings
 
     anchors.fill: parent
     // anchors.margins: 8
@@ -120,5 +122,15 @@ Item {
 		anchors.top: notifications.bottom
 		anchors.bottom: utilities.top
 		anchors.right: parent.right
+	}
+
+	Settings.Wrapper {
+		id: settings
+
+		visibilities: root.visibilities
+		panels: root
+
+		anchors.top: parent.top
+		anchors.horizontalCenter: parent.horizontalCenter
 	}
 }
