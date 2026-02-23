@@ -4,7 +4,6 @@ import Quickshell
 import QtQuick
 import qs.Components
 import qs.Config
-import qs.Modules as Modules
 
 Item {
     id: root
@@ -43,7 +42,7 @@ Item {
     SequentialAnimation {
         id: showAnim
 
-        Modules.Anim {
+        Anim {
             target: root
             property: "implicitHeight"
             to: root.contentHeight
@@ -61,7 +60,7 @@ Item {
         ScriptAction {
             script: root.implicitHeight = root.implicitHeight
         }
-        Modules.Anim {
+        Anim {
             target: root
             property: "implicitHeight"
             to: 0

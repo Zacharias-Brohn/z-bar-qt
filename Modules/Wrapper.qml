@@ -2,8 +2,8 @@ import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
+import qs.Components
 import qs.Config
-import qs.Helpers
 
 Item {
     id: root

@@ -5,7 +5,7 @@ import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 import qs.Config
-import qs.Modules
+import qs.Components
 
 Item {
     id: root

@@ -6,7 +6,6 @@ import qs.Modules.Launcher.Services
 import qs.Components
 import qs.Helpers
 import qs.Config
-import qs.Modules as Modules
 
 Item {
     id: root
@@ -176,13 +175,13 @@ Item {
             }
 
             Behavior on width {
-                Modules.Anim {
+                Anim {
                     duration: Appearance.anim.durations.small
                 }
             }
 
             Behavior on opacity {
-                Modules.Anim {
+                Anim {
                     duration: Appearance.anim.durations.small
                 }
             }

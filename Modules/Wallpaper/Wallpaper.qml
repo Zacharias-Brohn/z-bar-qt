@@ -1,8 +1,6 @@
 import Quickshell
 import QtQuick
 import Quickshell.Wayland
-import qs.Helpers
-import qs.Modules
 import qs.Config
 
 Loader {

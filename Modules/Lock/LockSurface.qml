@@ -1,16 +1,11 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 import QtQuick.Effects
 import qs.Config
 import qs.Helpers
-import qs.Effects
 import qs.Components
-import qs.Modules as Modules
 
 WlSessionLockSurface {
     id: root
@@ -34,32 +29,32 @@ WlSessionLockSurface {
         id: unlockAnim
 
         ParallelAnimation {
-            Modules.Anim {
+            Anim {
                 target: lockContent
                 properties: "implicitWidth,implicitHeight"
                 to: lockContent.size
                 duration: Appearance.anim.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
             }
-            Modules.Anim {
+            Anim {
                 target: lockBg
                 property: "radius"
                 to: lockContent.radius
             }
-            Modules.Anim {
+            Anim {
                 target: content
                 property: "scale"
                 to: 0
                 duration: Appearance.anim.durations.expressiveDefaultSpatial
                 easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
             }
-            Modules.Anim {
+            Anim {
                 target: content
                 property: "opacity"
                 to: 0
                 duration: Appearance.anim.durations.small
             }
-            Modules.Anim {
+            Anim {
                 target: lockIcon
                 property: "opacity"
                 to: 1
@@ -69,7 +64,7 @@ WlSessionLockSurface {
                 PauseAnimation {
                     duration: Appearance.anim.durations.small
                 }
-                Modules.Anim {
+                Anim {
                     target: lockContent
                     property: "opacity"
                     to: 0
@@ -90,7 +85,7 @@ WlSessionLockSurface {
 
         SequentialAnimation {
             ParallelAnimation {
-                Modules.Anim {
+                Anim {
                     target: lockContent
                     property: "scale"
                     to: 1
@@ -99,36 +94,36 @@ WlSessionLockSurface {
                 }
             }
             ParallelAnimation {
-                Modules.Anim {
+                Anim {
                     target: lockIcon
                     property: "opacity"
                     to: 0
                 }
-                Modules.Anim {
+                Anim {
                     target: content
                     property: "opacity"
                     to: 1
                 }
-                Modules.Anim {
+                Anim {
                     target: content
                     property: "scale"
                     to: 1
                     duration: Appearance.anim.durations.expressiveDefaultSpatial
                     easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
                 }
-                Modules.Anim {
+                Anim {
                     target: lockBg
                     property: "radius"
                     to: Appearance.rounding.large * 1.5
                 }
-                Modules.Anim {
+                Anim {
                     target: lockContent
                     property: "implicitWidth"
                     to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio
                     duration: Appearance.anim.durations.expressiveDefaultSpatial
                     easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
                 }
-                Modules.Anim {
+                Anim {
                     target: lockContent
                     property: "implicitHeight"
                     to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult

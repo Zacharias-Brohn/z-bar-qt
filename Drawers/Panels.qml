@@ -1,6 +1,6 @@
 import Quickshell
 import QtQuick
-import QtQuick.Shapes
+import qs.Components
 import qs.Modules as Modules
 import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
@@ -33,7 +33,7 @@ Item {
     // anchors.margins: 8
     anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 	Behavior on anchors.topMargin {
-		Modules.Anim {}
+		Anim {}
 	}
 
 	Osd.Wrapper {

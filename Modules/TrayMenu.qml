@@ -1,7 +1,6 @@
 pragma ComponentBehavior: Bound
 
 import Quickshell
-import Quickshell.DBusMenu
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
@@ -9,7 +8,6 @@ import Quickshell.Hyprland
 import QtQml
 import qs.Effects
 import qs.Config
-import qs.Modules
 
 PanelWindow {
     id: root

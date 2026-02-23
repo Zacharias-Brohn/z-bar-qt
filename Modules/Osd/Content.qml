@@ -6,7 +6,6 @@ import qs.Components
 import qs.Helpers
 import qs.Config
 import qs.Daemons
-import qs.Modules as Modules
 
 Item {
     id: root
@@ -125,13 +124,13 @@ Item {
         visible: active
 
         Behavior on Layout.preferredHeight {
-            Modules.Anim {
+            Anim {
                 easing.bezierCurve: Appearance.anim.curves.emphasized
             }
         }
 
         Behavior on opacity {
-            Modules.Anim {}
+            Anim {}
         }
     }
 }

@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import qs.Components
 import qs.Helpers
 import qs.Config
 
