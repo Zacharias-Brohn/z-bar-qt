@@ -1,7 +1,6 @@
 import Quickshell
 import QtQuick
 import qs.Components
-import qs.Modules as Modules
 import qs.Config
 import qs.Helpers
 
@@ -31,7 +30,7 @@ Item {
 			from: ""
 			to: "visible"
 
-			Modules.Anim {
+			Anim {
 				target: root
 				property: "implicitHeight"
 				duration: MaterialEasing.expressiveEffectsTime
@@ -43,7 +42,7 @@ Item {
 			from: "visible"
 			to: ""
 
-			Modules.Anim {
+			Anim {
 				target: root
 				property: "implicitHeight"
 				easing.bezierCurve: MaterialEasing.expressiveEffects
