@@ -13,3 +13,7 @@
 # Stupid idea's from Daivin
 
 - [ ] An on screen pencil to draw on your screen :).
+- [ ] Audio module + cava / audio wave ;) ( Don't make it into minecraft blocks
+      but aan actual wave)
+- [ ] Update module: When there is 1 package it still looks extremely off
+- [ ] Bluetooth device battery view
