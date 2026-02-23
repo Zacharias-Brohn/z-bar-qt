@@ -1,9 +1,10 @@
 <div align="center">
     <img src="/images/shell.png">
 </div>
+
 # ZShell
 
-A feature-rich desktop shell for Hyprland built with [Quickshell](https://quickshell.outfoxxed.me/) and Qt6/QML. Provides a modern, Material Design 3 inspired status bar, application launcher, notification center, wallpaper manager with dynamic color theming, and lock screen.
+A feature-rich desktop shell for [Hyprland](https://hypr.land/) built with [Quickshell](https://quickshell.outfoxxed.me/) and Qt6/QML. Provides a modern, Material Design 3 inspired status bar, application launcher, notification center, wallpaper manager with dynamic color theming, and lock screen.
 
 ## Features
 
@@ -22,8 +23,15 @@ A feature-rich desktop shell for Hyprland built with [Quickshell](https://quicks
 - [Hyprland](https://hyprland.org/)
 - Python 3 with `materialyoucolor` and `Pillow` (for dynamic color generation)
 - PipeWire (for audio)
+- Aubio
+- DDCUtil
+- Mpris
 
 ## Installation
+
+### Arch Linux
+
+For arch-based distros, there is a pkgbuild available at
 
 ```bash
 cmake -B build -G Ninja
@@ -83,7 +91,7 @@ Below a full example of what it could look like.
 }
 ```
 
-Now you can add z-bar-qt as a nixpkgs in environment.systemPackages (or optionally in your homePackages).
+Now you can add z-bar-qt as a nixpkg in environment.systemPackages (or optionally in your homePackages).
 
 ```nix
 { pkgs, inputs, ... }:
@@ -91,42 +99,43 @@ Now you can add z-bar-qt as a nixpkgs in environment.systemPackages (or optional
 {
     environment.systemPackages = with pkgs; [
     inputs.z-bar-qt.packages.${system}.zshell
+    inputs.z-bar-qt.packages.${system}.zshell-cli
     ];
 }
 ```
 
-You can now run ```zshell``` to run the bar.
+You can now run `zshell` to run the bar. `zshell-cli` can be used for additional options.
 
 ## Configuration
 
 Configuration is stored in `~/.config/z-bar/config.json`. Options include:
 
-| Option                            | Description                                                 |
-| --------------------------------- | ----------------------------------------------------------- |
-| `appCount`                        | Max apps shown in launcher                                  |
-| `wallpaperPath`                   | Directory containing wallpapers                             |
-| `baseBgColor` / `baseBorderColor` | Fallback colors when dynamic colors disabled                |
-| `accentColor`                     | Custom accent color override                                |
-| `useDynamicColors`                | Enable Material Design 3 theming from wallpaper             |
-| `barConfig`                       | Enable/disable widgets and configure popouts                |
-| `transparency`                    | UI transparency levels                                      |
-| `baseFont`                        | System font                                                 |
-| `animScale`                       | Animation speed multiplier                                  |
-| `gpuType`                         | GPU type for resource monitoring (`amd`, `nvidia`, `intel`) |
+|              Option               |                         Description                         |
+| :-------------------------------: | :---------------------------------------------------------: |
+|            `appCount`             |                 Max apps shown in launcher                  |
+|          `wallpaperPath`          |               Directory containing wallpapers               |
+| `baseBgColor` / `baseBorderColor` |        Fallback colors when dynamic colors disabled         |
+|           `accentColor`           |                Custom accent color override                 |
+|        `useDynamicColors`         |       Enable Material Design 3 theming from wallpaper       |
+|            `barConfig`            |        Enable/disable widgets and configure popouts         |
+|          `transparency`           |                   UI transparency levels                    |
+|            `baseFont`             |                         System font                         |
+|            `animScale`            |                 Animation speed multiplier                  |
+|             `gpuType`             | GPU type for resource monitoring (`amd`, `nvidia`, `intel`) |
 
 ## Launcher Search Prefixes
 
-| Prefix | Filter              |
-| ------ | ------------------- |
-| `>i`   | App ID              |
-| `>c`   | Categories          |
-| `>d`   | Description/comment |
-| `>e`   | Exec command        |
-| `>w`   | WM class            |
-| `>g`   | Generic name        |
-| `>k`   | Keywords            |
-| `>t`   | Terminal apps only  |
-| `> `   | Wallpaper picker    |
+| Prefix        | Filter              |
+| ------------- | ------------------- |
+| `>i`          | App ID              |
+| `>c`          | Categories          |
+| `>d`          | Description/comment |
+| `>e`          | Exec command        |
+| `>w`          | WM class            |
+| `>g`          | Generic name        |
+| `>k`          | Keywords            |
+| `>t`          | Terminal apps only  |
+| `>wallpaper ` | Wallpaper picker    |
 
 ## Project Structure
 
@@ -142,6 +151,15 @@ Configuration is stored in `~/.config/z-bar/config.json`. Options include:
 ├── Plugins/ZShell/    # Native C++ plugins
 └── scripts/           # Helper scripts (color generation, fuzzy search)
 ```
+
+## Inspiration and Acknowledgements
+
+This project was inspired by the following repositories and resources, which helped me learn both Quickshell and QML:
+
+- [Caelestia](https://github.com/caelestia-dots/shell)
+- [end-4 dots-hyprland](https://github.com/end-4/dots-hyprland)
+
+Thank you to the maintainers and contributors of these projects for sharing their work.
 
 ## License
 

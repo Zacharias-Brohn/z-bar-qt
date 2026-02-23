@@ -22,6 +22,7 @@
   ninja,
   pkg-config,
   pythonEnv,
+  zshell-cli,
 }: let
   version = "1.0.0";
 
@@ -34,6 +35,7 @@
     libqalculate
     bash
     hyprland
+    zshell-cli
   ];
 
   fontconfig = makeFontsConf {

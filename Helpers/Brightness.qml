@@ -201,7 +201,7 @@ Singleton {
             if (isAppleDisplay)
                 Quickshell.execDetached(["asdbctl", "set", rounded]);
             else if (isDdc)
-                Quickshell.execDetached(["ddcutil", "-b", busNum, "setvcp", "10", rounded]);
+                Quickshell.execDetached(["ddcutil", "--disable-dynamic-sleep", "--sleep-multiplier", ".1", "--skip-ddc-checks", "-b", busNum, "setvcp", "10", rounded]);
             else
                 Quickshell.execDetached(["brightnessctl", "s", `${rounded}%`]);
 

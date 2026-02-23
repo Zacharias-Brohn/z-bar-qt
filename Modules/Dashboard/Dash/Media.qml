@@ -1,6 +1,7 @@
 import ZShell.Services
 import QtQuick
 import QtQuick.Shapes
+import qs.Daemons
 import qs.Components
 import qs.Config
 import qs.Helpers

@@ -7,6 +7,8 @@ Slider {
     id: root
 
 	required property real peak
+	property color nonPeakColor: DynamicColors.tPalette.m3primary
+	property color peakColor: DynamicColors.palette.m3primary
 
     background: Item {
         CustomRect {
@@ -16,9 +18,9 @@ Slider {
             anchors.topMargin: root.implicitHeight / 3
             anchors.bottomMargin: root.implicitHeight / 3
 
-            implicitWidth: root.handle.x - root.implicitHeight / 6
+            implicitWidth: root.handle.x - root.implicitHeight
 
-            color: DynamicColors.palette.m3primaryContainer
+            color: root.nonPeakColor
             radius: 1000
             topRightRadius: root.implicitHeight / 15
             bottomRightRadius: root.implicitHeight / 15
@@ -33,7 +35,7 @@ Slider {
 				topRightRadius: root.implicitHeight / 15
 				bottomRightRadius: root.implicitHeight / 15
 
-				color: DynamicColors.palette.m3primary
+				color: root.peakColor
 
 				Behavior on implicitWidth {
 					Anim { duration: 50 }
@@ -48,7 +50,12 @@ Slider {
             anchors.topMargin: root.implicitHeight / 3
             anchors.bottomMargin: root.implicitHeight / 3
 
-            implicitWidth: parent.width - root.handle.x - root.handle.implicitWidth - root.implicitHeight / 6
+            implicitWidth: root.implicitWidth - root.handle.x - root.handle.implicitWidth - root.implicitHeight
+
+			Component.onCompleted: {
+				console.log(root.handle.x, implicitWidth)
+			}
+
 
             color: DynamicColors.tPalette.m3surfaceContainer
             radius: 1000

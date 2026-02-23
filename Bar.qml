@@ -27,7 +27,7 @@ Variants {
 
 			WlrLayershell.namespace: "ZShell-Bar"
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.osd || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 			
 			contentItem.focus: true
 
@@ -36,6 +36,7 @@ Variants {
 					visibilities.bar = false;
 				visibilities.sidebar = false;
 				visibilities.dashboard = false;
+				visibilities.osd = false;
 			}
 
             PanelWindow {
@@ -66,13 +67,12 @@ Variants {
                 y: Config.barConfig.autoHide && !visibilities.bar ? 4 : 34
 
 				property list<Region> nullRegions: []
-				property bool hcurrent: ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu") ) || visibilities.sidebar || visibilities.dashboard
 
-                width: hcurrent ? 0 : bar.width
-                height: hcurrent ? 0 : bar.screen.height - backgroundRect.implicitHeight
+                width: bar.width
+                height: bar.screen.height - backgroundRect.implicitHeight
                 intersection: Intersection.Xor
 
-                regions: hcurrent ? nullRegions : popoutRegions.instances
+                regions: popoutRegions.instances
             }
 
             Variants {
@@ -93,13 +93,14 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher || visibilities.sidebar
+				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith( "traymenu" ))
 				windows: [bar]
 				onCleared: {
 					visibilities.launcher = false;
 					visibilities.sidebar = false;
 					visibilities.dashboard = false;
 					visibilities.osd = false;
+					panels.popouts.hasCurrent = false;
 				}
 			}
 
