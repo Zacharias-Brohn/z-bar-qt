@@ -1,6 +1,5 @@
 import QtQuick
 import qs.Components
-import qs.Modules
 import qs.Config
 
 Item {

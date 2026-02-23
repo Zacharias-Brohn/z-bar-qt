@@ -1,5 +1,4 @@
 import qs.Config
-import qs.Modules
 import QtQuick
 import QtQuick.Effects
 

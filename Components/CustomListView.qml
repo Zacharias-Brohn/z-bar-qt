@@ -1,6 +1,4 @@
 import QtQuick
-import qs.Config
-import qs.Modules
 
 ListView {
     id: root

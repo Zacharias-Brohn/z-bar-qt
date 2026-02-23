@@ -1,8 +1,7 @@
-import qs.Config
-import qs.Modules
 import QtQuick
 import QtQuick.Templates
 import QtQuick.Shapes
+import qs.Config
 
 Switch {
     id: root
@@ -39,6 +38,91 @@ Switch {
 
                 Behavior on opacity {
                     Anim {}
+                }
+            }
+
+            Shape {
+                id: icon
+
+                property point start1: {
+                    if (root.pressed)
+                        return Qt.point(width * 0.1, height / 2);
+                    if (root.checked)
+                        return Qt.point(width * 0.15, height / 2);
+                    return Qt.point(width * 0.15, height * 0.15);
+                }
+                property point end1: {
+                    if (root.pressed) {
+                        if (root.checked)
+                            return Qt.point(width * 0.4, height / 2);
+                        return Qt.point(width * 0.8, height / 2);
+                    }
+                    if (root.checked)
+                        return Qt.point(width * 0.4, height * 0.7);
+                    return Qt.point(width * 0.85, height * 0.85);
+                }
+                property point start2: {
+                    if (root.pressed) {
+                        if (root.checked)
+                            return Qt.point(width * 0.4, height / 2);
+                        return Qt.point(width * 0.2, height / 2);
+                    }
+                    if (root.checked)
+                        return Qt.point(width * 0.4, height * 0.7);
+                    return Qt.point(width * 0.15, height * 0.85);
+                }
+                property point end2: {
+                    if (root.pressed)
+                        return Qt.point(width, height / 2);
+                    if (root.checked)
+                        return Qt.point(width * 0.85, height * 0.2);
+                    return Qt.point(width * 0.85, height * 0.15);
+                }
+
+                anchors.centerIn: parent
+                width: height
+                height: parent.implicitHeight - Appearance.padding.small * 2
+                preferredRendererType: Shape.CurveRenderer
+                asynchronous: true
+
+                ShapePath {
+                    strokeWidth: Appearance.font.size.larger * 0.15
+                    strokeColor: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
+                    fillColor: "transparent"
+                    capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+
+                    startX: icon.start1.x
+                    startY: icon.start1.y
+
+                    PathLine {
+                        x: icon.end1.x
+                        y: icon.end1.y
+                    }
+                    PathMove {
+                        x: icon.start2.x
+                        y: icon.start2.y
+                    }
+                    PathLine {
+                        x: icon.end2.x
+                        y: icon.end2.y
+                    }
+
+                    Behavior on strokeColor {
+                        CAnim {}
+                    }
+                }
+
+                Behavior on start1 {
+                    PropAnim {}
+                }
+                Behavior on end1 {
+                    PropAnim {}
+                }
+                Behavior on start2 {
+                    PropAnim {}
+                }
+                Behavior on end2 {
+                    PropAnim {}
                 }
             }
 

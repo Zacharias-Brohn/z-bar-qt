@@ -1,6 +1,4 @@
-import qs.Helpers
 import qs.Config
-import qs.Modules
 import ZShell.Internal
 import QtQuick
 import QtQuick.Templates

@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Effects
-import qs.Modules
 
 MultiEffect {
     property color sourceColor: "black"

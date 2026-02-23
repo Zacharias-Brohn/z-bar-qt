@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Templates
-import qs.Helpers
 import qs.Config
-import qs.Modules
 
 Slider {
     id: root

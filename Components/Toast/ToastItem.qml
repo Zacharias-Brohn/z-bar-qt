@@ -1,9 +1,7 @@
 import ZShell
 import QtQuick
 import QtQuick.Layouts
-import qs.Modules
 import qs.Components
-import qs.Helpers
 import qs.Config
 
 CustomRect {

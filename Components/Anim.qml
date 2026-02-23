@@ -1,5 +1,4 @@
 import QtQuick
-import qs.Modules
 import qs.Config
 
 NumberAnimation {

@@ -1,8 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
-import qs.Helpers
 import qs.Config
-import qs.Modules
 
 Shape {
     id: root

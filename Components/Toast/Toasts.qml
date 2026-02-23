@@ -1,11 +1,10 @@
 pragma ComponentBehavior: Bound
 
-import qs.Components
-import qs.Config
-import qs.Modules
 import ZShell
 import Quickshell
 import QtQuick
+import qs.Components
+import qs.Config
 
 Item {
     id: root

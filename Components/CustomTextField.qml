@@ -2,9 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import qs.Helpers
 import qs.Config
-import qs.Modules
 
 TextField {
     id: root
