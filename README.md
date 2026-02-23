@@ -91,7 +91,7 @@ Below a full example of what it could look like.
 }
 ```
 
-Now you can add z-bar-qt as a nixpkgs in environment.systemPackages (or optionally in your homePackages).
+Now you can add z-bar-qt as a nixpkg in environment.systemPackages (or optionally in your homePackages).
 
 ```nix
 { pkgs, inputs, ... }:
@@ -99,11 +99,12 @@ Now you can add z-bar-qt as a nixpkgs in environment.systemPackages (or optional
 {
     environment.systemPackages = with pkgs; [
     inputs.z-bar-qt.packages.${system}.zshell
+    inputs.z-bar-qt.packages.${system}.zshell-cli
     ];
 }
 ```
 
-You can now run `zshell` to run the bar.
+You can now run `zshell` to run the bar. `zshell-cli` can be used for additional options.
 
 ## Configuration
 
