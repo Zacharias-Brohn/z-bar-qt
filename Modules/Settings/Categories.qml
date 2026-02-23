@@ -12,10 +12,78 @@ import qs.Helpers
 Item {
 	id: root
 
+	ListModel {
+		id: listModel
+		ListElement {
+			name: "General"
+			icon: "settings"
+		}
+		
+		ListElement {
+			name: "Wallpaper"
+			icon: "wallpaper"
+		}
+
+		ListElement {
+			name: "Bar"
+			icon: "settop_component"
+		}
+
+		ListElement {
+			name: "Lockscreen"
+			icon: "lock"
+		}
+		
+		ListElement {
+			name: "Services"
+			icon: "build_circle"
+		}
+
+		ListElement {
+			name: "Notifications"
+			icon: "notifications"
+		}
+
+		ListElement {
+			name: "Sidebar"
+			icon: "view_sidebar"
+		}
+
+		ListElement {
+			name: "Utilities"
+			icon: "handyman"
+		}
+
+		ListElement {
+			name: "Dashboard"
+			icon: "dashboard"
+		}
+
+		ListElement {
+			name: "Appearance"
+			icon: "colors"
+		}
+
+		ListElement {
+			name: "On screen display"
+			icon: "display_settings"
+		}
+
+		ListElement {
+			name: "Launcher"
+			icon: "rocket_launch"
+		}
+
+		ListElement {
+			name: "Colors"
+			icon: "colors"
+		}
+	}
+
 	required property Item content
 
-	implicitWidth: clayout.implicitWidth + Appearance.padding.smaller * 2
-	implicitHeight: clayout.implicitHeight + Appearance.padding.smaller * 2
+	implicitWidth: clayout.contentWidth + Appearance.padding.smaller * 2
+	implicitHeight: clayout.contentHeight + Appearance.padding.smaller * 2
 
 	CustomRect {
 
@@ -24,103 +92,37 @@ Item {
 		color: DynamicColors.tPalette.m3surfaceContainer
 		radius: 4
 
-		ColumnLayout {
+		CustomListView {
 			id: clayout
+			anchors.centerIn: parent
+			model: listModel
+
+			contentWidth: contentItem.childrenRect.width
+			contentHeight: contentItem.childrenRect.height
+			implicitWidth: contentItem.childrenRect.width
+			implicitHeight: contentItem.childrenRect.height
 
 			spacing: 5
 
-			anchors.centerIn: parent
+			highlight: CustomRect {
+				color: DynamicColors.palette.m3primary
+				radius: 4
 
-			Category {
-				name: "General"
-				icon: "settings"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-			
-			Category {
-				name: "Wallpaper"
-				icon: "wallpaper"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
+				y: clayout.currentItem?.y ?? 0
+				implicitWidth: clayout.width
+				implicitHeight: clayout.currentItem?.implicitHeight ?? 0
 
-			Category {
-				name: "Bar"
-				icon: "settop_component"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
+				Behavior on y {
+					Anim {
+						duration: Appearance.anim.durations.small
+						easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+					}
+				}
 			}
 
-			Category {
-				name: "Lockscreen"
-				icon: "lock"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-			
-			Category {
-				name: "Services"
-				icon: "build_circle"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
+			highlightFollowsCurrentItem: false
 
-			Category {
-				name: "Notifications"
-				icon: "notifications"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "Sidebar"
-				icon: "view_sidebar"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "Utilities"
-				icon: "handyman"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "Dashboard"
-				icon: "dashboard"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "Appearance"
-				icon: "colors"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "On screen display"
-				icon: "display_settings"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "Launcher"
-				icon: "rocket_launch"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
-
-			Category {
-				name: "Colors"
-				icon: "colors"
-				Layout.fillWidth: true
-				Layout.alignment: Qt.AlignHCenter
-			}
+			delegate: Category {}
 		}
 	}
 
@@ -129,6 +131,7 @@ Item {
 
 		required property string name
 		required property string icon
+		required property int index
 
 		implicitWidth: 200
 		implicitHeight: 42
@@ -146,6 +149,7 @@ Item {
 				id: icon
 
 				text: categoryItem.icon
+				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				font.pointSize: 22
 				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 				Layout.preferredWidth: icon.contentWidth
@@ -157,6 +161,7 @@ Item {
 				id: text
 
 				text: categoryItem.name
+				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 				Layout.fillWidth: true
 				Layout.fillHeight: true
@@ -170,6 +175,7 @@ Item {
 
 			onClicked: {
 				root.content.currentCategory = categoryItem.name.toLowerCase();
+				clayout.currentIndex = categoryItem.index;
 			}
 		}
 	}

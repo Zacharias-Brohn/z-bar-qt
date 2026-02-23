@@ -31,6 +31,9 @@ RowLayout {
 		Layout.alignment: Qt.AlignRight
 
 		checked: root.setting
-		onToggled: root.setting = checked
+		onToggled: {
+			root.setting = checked;
+			Config.save();
+		}
 	}
 }
