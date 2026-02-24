@@ -9,54 +9,54 @@ import qs.Helpers
 import qs.Paths
 
 Searcher {
-    id: root
+	id: root
 
-    property bool showPreview: false
-    readonly property string current: showPreview ? previewPath : actualCurrent
-    property string previewPath
-    property string actualCurrent: WallpaperPath.currentWallpaperPath
+	property string actualCurrent: WallpaperPath.currentWallpaperPath
+	readonly property string current: showPreview ? previewPath : actualCurrent
+	property string previewPath
+	property bool showPreview: false
 
-    function setWallpaper(path: string): void {
-        actualCurrent = path;
-        WallpaperPath.currentWallpaperPath = path;
-		if ( Config.general.color.wallust )
+	function preview(path: string): void {
+		previewPath = path;
+		if (Config.general.color.schemeGeneration)
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${previewPath} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
+		showPreview = true;
+	}
+
+	function setWallpaper(path: string): void {
+		actualCurrent = path;
+		WallpaperPath.currentWallpaperPath = path;
+		if (Config.general.color.wallust)
 			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
 		Quickshell.execDetached(["sh", "-c", `zshell-cli wallpaper lockscreen --input-image=${root.actualCurrent} --output-path=${Paths.state}/lockscreen_bg.png --blur-amount=${Config.lock.blurAmount}`]);
-    }
+	}
 
-    function preview(path: string): void {
-        previewPath = path;
-		if ( Config.general.color.schemeGeneration )
-			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${previewPath} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
-        showPreview = true;
-    }
-
-    function stopPreview(): void {
-        showPreview = false;
-		if ( Config.general.color.schemeGeneration )
+	function stopPreview(): void {
+		showPreview = false;
+		if (Config.general.color.schemeGeneration)
 			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${root.actualCurrent} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
-    }
+	}
 
-    list: wallpapers.entries
-    key: "relativePath"
-    useFuzzy: true
-    extraOpts: useFuzzy ? ({}) : ({
-            forward: false
-        })
+	extraOpts: useFuzzy ? ({}) : ({
+			forward: false
+		})
+	key: "relativePath"
+	list: wallpapers.entries
+	useFuzzy: true
 
 	IpcHandler {
-		target: "wallpaper"
-
 		function set(path: string): void {
 			root.setWallpaper(path);
 		}
+
+		target: "wallpaper"
 	}
 
-    FileSystemModel {
-        id: wallpapers
+	FileSystemModel {
+		id: wallpapers
 
-        recursive: true
-        path: Config.general.wallpaperPath
-        filter: FileSystemModel.Images
-    }
+		filter: FileSystemModel.Images
+		path: Config.general.wallpaperPath
+		recursive: true
+	}
 }

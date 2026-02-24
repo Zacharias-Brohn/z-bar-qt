@@ -6,125 +6,125 @@ import qs.Components
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property ShellScreen screen
-    required property PersistentProperties visibilities
-    required property var panels
+	property int contentHeight
+	readonly property real maxHeight: {
+		let max = screen.height - Appearance.spacing.large;
+		if (visibilities.dashboard)
+			max -= panels.dashboard.nonAnimHeight;
+		return max;
+	}
+	required property var panels
+	required property ShellScreen screen
+	readonly property bool shouldBeActive: visibilities.launcher
+	required property PersistentProperties visibilities
 
-    readonly property bool shouldBeActive: visibilities.launcher
-    property int contentHeight
+	implicitHeight: 0
+	implicitWidth: content.implicitWidth
+	visible: height > 0
 
-    readonly property real maxHeight: {
-        let max = screen.height - Appearance.spacing.large;
-        if (visibilities.dashboard)
-            max -= panels.dashboard.nonAnimHeight;
-        return max;
-    }
+	onMaxHeightChanged: timer.start()
+	onShouldBeActiveChanged: {
+		if (shouldBeActive) {
+			timer.stop();
+			hideAnim.stop();
+			showAnim.start();
+		} else {
+			showAnim.stop();
+			hideAnim.start();
+		}
+	}
 
-    onMaxHeightChanged: timer.start()
+	SequentialAnimation {
+		id: showAnim
 
-    visible: height > 0
-    implicitHeight: 0
-    implicitWidth: content.implicitWidth
+		Anim {
+			duration: Appearance.anim.durations.small
+			easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+			property: "implicitHeight"
+			target: root
+			to: root.contentHeight
+		}
 
-    onShouldBeActiveChanged: {
-        if (shouldBeActive) {
-            timer.stop();
-            hideAnim.stop();
-            showAnim.start();
-        } else {
-            showAnim.stop();
-            hideAnim.start();
-        }
-    }
+		ScriptAction {
+			script: root.implicitHeight = Qt.binding(() => content.implicitHeight)
+		}
+	}
 
-    SequentialAnimation {
-        id: showAnim
+	SequentialAnimation {
+		id: hideAnim
 
-        Anim {
-            target: root
-            property: "implicitHeight"
-            to: root.contentHeight
-            duration: Appearance.anim.durations.small
-            easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-        }
-        ScriptAction {
-            script: root.implicitHeight = Qt.binding(() => content.implicitHeight)
-        }
-    }
+		ScriptAction {
+			script: root.implicitHeight = root.implicitHeight
+		}
 
-    SequentialAnimation {
-        id: hideAnim
+		Anim {
+			easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+			property: "implicitHeight"
+			target: root
+			to: 0
+		}
+	}
 
-        ScriptAction {
-            script: root.implicitHeight = root.implicitHeight
-        }
-        Anim {
-            target: root
-            property: "implicitHeight"
-            to: 0
-            easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-        }
-    }
+	Connections {
+		function onEnabledChanged(): void {
+			timer.start();
+		}
 
-    Connections {
-        target: Config.launcher
+		function onMaxShownChanged(): void {
+			timer.start();
+		}
 
-        function onEnabledChanged(): void {
-            timer.start();
-        }
+		target: Config.launcher
+	}
 
-        function onMaxShownChanged(): void {
-            timer.start();
-        }
-    }
+	Connections {
+		function onValuesChanged(): void {
+			if (DesktopEntries.applications.values.length < Config.launcher.maxAppsShown)
+				timer.start();
+		}
 
-    Connections {
-        target: DesktopEntries.applications
+		target: DesktopEntries.applications
+	}
 
-        function onValuesChanged(): void {
-            if (DesktopEntries.applications.values.length < Config.launcher.maxAppsShown)
-                timer.start();
-        }
-    }
+	Timer {
+		id: timer
 
-    Timer {
-        id: timer
+		interval: Appearance.anim.durations.small
 
-        interval: Appearance.anim.durations.small
-        onRunningChanged: {
-            if (running && !root.shouldBeActive) {
-                content.visible = false;
-                content.active = true;
-            } else {
-                root.contentHeight = Math.min(root.maxHeight, content.implicitHeight);
-                content.active = Qt.binding(() => root.shouldBeActive || root.visible);
-                content.visible = true;
-                if (showAnim.running) {
-                    showAnim.stop();
-                    showAnim.start();
-                }
-            }
-        }
-    }
+		onRunningChanged: {
+			if (running && !root.shouldBeActive) {
+				content.visible = false;
+				content.active = true;
+			} else {
+				root.contentHeight = Math.min(root.maxHeight, content.implicitHeight);
+				content.active = Qt.binding(() => root.shouldBeActive || root.visible);
+				content.visible = true;
+				if (showAnim.running) {
+					showAnim.stop();
+					showAnim.start();
+				}
+			}
+		}
+	}
 
-    Loader {
-        id: content
+	Loader {
+		id: content
 
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+		active: false
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		visible: false
 
-        visible: false
-        active: false
-        Component.onCompleted: timer.start()
+		sourceComponent: Content {
+			maxHeight: root.maxHeight
+			panels: root.panels
+			visibilities: root.visibilities
 
-        sourceComponent: Content {
-            visibilities: root.visibilities
-            panels: root.panels
-            maxHeight: root.maxHeight
+			Component.onCompleted: root.contentHeight = implicitHeight
+		}
 
-            Component.onCompleted: root.contentHeight = implicitHeight
-        }
-    }
+		Component.onCompleted: timer.start()
+	}
 }

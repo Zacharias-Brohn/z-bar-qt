@@ -9,156 +9,153 @@ import qs.Helpers
 import qs.Config
 
 ColumnLayout {
-    id: root
+	id: root
 
-    anchors.fill: parent
-    anchors.margins: Appearance.padding.large * 2
-    anchors.topMargin: Appearance.padding.large
+	anchors.fill: parent
+	anchors.margins: Appearance.padding.large * 2
+	anchors.topMargin: Appearance.padding.large
+	spacing: Appearance.spacing.small
 
-    spacing: Appearance.spacing.small
+	RowLayout {
+		Layout.fillHeight: false
+		Layout.fillWidth: true
+		spacing: Appearance.spacing.normal
 
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.fillHeight: false
-        spacing: Appearance.spacing.normal
+		CustomRect {
+			color: DynamicColors.palette.m3primary
+			implicitHeight: prompt.implicitHeight + Appearance.padding.normal * 2
+			implicitWidth: prompt.implicitWidth + Appearance.padding.normal * 2
+			radius: Appearance.rounding.small
 
-        CustomRect {
-            implicitWidth: prompt.implicitWidth + Appearance.padding.normal * 2
-            implicitHeight: prompt.implicitHeight + Appearance.padding.normal * 2
+			MonoText {
+				id: prompt
 
-            color: DynamicColors.palette.m3primary
-            radius: Appearance.rounding.small
+				anchors.centerIn: parent
+				color: DynamicColors.palette.m3onPrimary
+				font.pointSize: root.width > 400 ? Appearance.font.size.larger : Appearance.font.size.normal
+				text: ">"
+			}
+		}
 
-            MonoText {
-                id: prompt
+		MonoText {
+			Layout.fillWidth: true
+			elide: Text.ElideRight
+			font.pointSize: root.width > 400 ? Appearance.font.size.larger : Appearance.font.size.normal
+			text: "caelestiafetch.sh"
+		}
 
-                anchors.centerIn: parent
-                text: ">"
-                font.pointSize: root.width > 400 ? Appearance.font.size.larger : Appearance.font.size.normal
-                color: DynamicColors.palette.m3onPrimary
-            }
-        }
+		WrappedLoader {
+			Layout.fillHeight: true
+			active: !iconLoader.active
 
-        MonoText {
-            Layout.fillWidth: true
-            text: "caelestiafetch.sh"
-            font.pointSize: root.width > 400 ? Appearance.font.size.larger : Appearance.font.size.normal
-            elide: Text.ElideRight
-        }
+			sourceComponent: OsLogo {
+			}
+		}
+	}
 
-        WrappedLoader {
-            Layout.fillHeight: true
-            active: !iconLoader.active
+	RowLayout {
+		Layout.fillHeight: false
+		Layout.fillWidth: true
+		spacing: height * 0.15
 
-            sourceComponent: OsLogo {}
-        }
-    }
+		WrappedLoader {
+			id: iconLoader
 
-    RowLayout {
-        Layout.fillWidth: true
-        Layout.fillHeight: false
-        spacing: height * 0.15
+			Layout.fillHeight: true
+			active: root.width > 320
 
-        WrappedLoader {
-            id: iconLoader
+			sourceComponent: OsLogo {
+			}
+		}
 
-            Layout.fillHeight: true
-            active: root.width > 320
+		ColumnLayout {
+			Layout.bottomMargin: Appearance.padding.normal
+			Layout.fillWidth: true
+			Layout.leftMargin: iconLoader.active ? 0 : width * 0.1
+			Layout.topMargin: Appearance.padding.normal
+			spacing: Appearance.spacing.normal
 
-            sourceComponent: OsLogo {}
-        }
+			WrappedLoader {
+				Layout.fillWidth: true
+				active: !batLoader.active && root.height > 200
 
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.topMargin: Appearance.padding.normal
-            Layout.bottomMargin: Appearance.padding.normal
-            Layout.leftMargin: iconLoader.active ? 0 : width * 0.1
-            spacing: Appearance.spacing.normal
+				sourceComponent: FetchText {
+					text: `OS  : ${SystemInfo.osPrettyName || SysInfo.osName}`
+				}
+			}
 
-            WrappedLoader {
-                Layout.fillWidth: true
-                active: !batLoader.active && root.height > 200
+			WrappedLoader {
+				Layout.fillWidth: true
+				active: root.height > (batLoader.active ? 200 : 110)
 
-                sourceComponent: FetchText {
-                    text: `OS  : ${SystemInfo.osPrettyName || SysInfo.osName}`
-                }
-            }
+				sourceComponent: FetchText {
+					text: `WM  : ${SystemInfo.wm}`
+				}
+			}
 
-            WrappedLoader {
-                Layout.fillWidth: true
-                active: root.height > (batLoader.active ? 200 : 110)
+			WrappedLoader {
+				Layout.fillWidth: true
+				active: !batLoader.active || root.height > 110
 
-                sourceComponent: FetchText {
-                    text: `WM  : ${SystemInfo.wm}`
-                }
-            }
+				sourceComponent: FetchText {
+					text: `USER: ${SystemInfo.user}`
+				}
+			}
 
-            WrappedLoader {
-                Layout.fillWidth: true
-                active: !batLoader.active || root.height > 110
+			FetchText {
+				text: `UP  : ${SystemInfo.uptime}`
+			}
 
-                sourceComponent: FetchText {
-                    text: `USER: ${SystemInfo.user}`
-                }
-            }
+			WrappedLoader {
+				id: batLoader
 
-            FetchText {
-                text: `UP  : ${SystemInfo.uptime}`
-            }
+				Layout.fillWidth: true
+				active: UPower.displayDevice.isLaptopBattery
 
-            WrappedLoader {
-                id: batLoader
+				sourceComponent: FetchText {
+					text: `BATT: ${[UPowerDeviceState.Charging, UPowerDeviceState.FullyCharged, UPowerDeviceState.PendingCharge].includes(UPower.displayDevice.state) ? "(+) " : ""}${Math.round(UPower.displayDevice.percentage * 100)}%`
+				}
+			}
+		}
+	}
 
-                Layout.fillWidth: true
-                active: UPower.displayDevice.isLaptopBattery
+	WrappedLoader {
+		Layout.alignment: Qt.AlignHCenter
+		active: root.height > 180
 
-                sourceComponent: FetchText {
-                    text: `BATT: ${[UPowerDeviceState.Charging, UPowerDeviceState.FullyCharged, UPowerDeviceState.PendingCharge].includes(UPower.displayDevice.state) ? "(+) " : ""}${Math.round(UPower.displayDevice.percentage * 100)}%`
-                }
-            }
-        }
-    }
+		sourceComponent: RowLayout {
+			spacing: Appearance.spacing.large
 
-    WrappedLoader {
-        Layout.alignment: Qt.AlignHCenter
-        active: root.height > 180
+			Repeater {
+				model: Math.max(0, Math.min(8, root.width / (Appearance.font.size.larger * 2 + Appearance.spacing.large)))
 
-        sourceComponent: RowLayout {
-            spacing: Appearance.spacing.large
+				CustomRect {
+					required property int index
 
-            Repeater {
-                model: Math.max(0, Math.min(8, root.width / (Appearance.font.size.larger * 2 + Appearance.spacing.large)))
+					color: DynamicColors.palette[`term${index}`]
+					implicitHeight: Appearance.font.size.larger * 2
+					implicitWidth: implicitHeight
+					radius: Appearance.rounding.small
+				}
+			}
+		}
+	}
 
-                CustomRect {
-                    required property int index
-
-                    implicitWidth: implicitHeight
-                    implicitHeight: Appearance.font.size.larger * 2
-                    color: DynamicColors.palette[`term${index}`]
-                    radius: Appearance.rounding.small
-                }
-            }
-        }
-    }
-
-    component WrappedLoader: Loader {
-        visible: active
-    }
-
-    component OsLogo: ColoredIcon {
-        source: SystemInfo.osLogo
-        implicitSize: height
-        color: DynamicColors.palette.m3primary
-        layer.enabled: Config.lock.recolorLogo || SystemInfo.isDefaultLogo
-    }
-
-    component FetchText: MonoText {
-        Layout.fillWidth: true
-        font.pointSize: root.width > 400 ? Appearance.font.size.larger : Appearance.font.size.normal
-        elide: Text.ElideRight
-    }
-
-    component MonoText: CustomText {
-        font.family: Appearance.font.family.mono
-    }
+	component FetchText: MonoText {
+		Layout.fillWidth: true
+		elide: Text.ElideRight
+		font.pointSize: root.width > 400 ? Appearance.font.size.larger : Appearance.font.size.normal
+	}
+	component MonoText: CustomText {
+		font.family: Appearance.font.family.mono
+	}
+	component OsLogo: ColoredIcon {
+		color: DynamicColors.palette.m3primary
+		implicitSize: height
+		layer.enabled: Config.lock.recolorLogo || SystemInfo.isDefaultLogo
+		source: SystemInfo.osLogo
+	}
+	component WrappedLoader: Loader {
+		visible: active
+	}
 }

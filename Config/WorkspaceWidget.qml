@@ -1,6 +1,6 @@
 import Quickshell.Io
 
 JsonObject {
-    property string textColor: "black"
-    property string inactiveTextColor: "white"
+	property string inactiveTextColor: "white"
+	property string textColor: "black"
 }

@@ -8,198 +8,195 @@ import qs.Helpers
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property var lock
+	required property var lock
 
 	anchors.fill: parent
 
-    Image {
-        anchors.fill: parent
-        source: Players.active?.trackArtUrl ?? ""
+	Image {
+		anchors.fill: parent
+		asynchronous: true
+		fillMode: Image.PreserveAspectCrop
+		layer.enabled: true
+		opacity: status === Image.Ready ? 1 : 0
+		source: Players.active?.trackArtUrl ?? ""
+		sourceSize.height: height
+		sourceSize.width: width
 
-        asynchronous: true
-        fillMode: Image.PreserveAspectCrop
-        sourceSize.width: width
-        sourceSize.height: height
+		layer.effect: OpacityMask {
+			maskSource: mask
+		}
+		Behavior on opacity {
+			Anim {
+				duration: Appearance.anim.durations.extraLarge
+			}
+		}
+	}
 
-        layer.enabled: true
-        layer.effect: OpacityMask {
-            maskSource: mask
-        }
+	Rectangle {
+		id: mask
 
-        opacity: status === Image.Ready ? 1 : 0
+		anchors.fill: parent
+		layer.enabled: true
+		visible: false
 
-        Behavior on opacity {
-            Anim {
-                duration: Appearance.anim.durations.extraLarge
-            }
-        }
-    }
+		gradient: Gradient {
+			orientation: Gradient.Horizontal
 
-    Rectangle {
-        id: mask
+			GradientStop {
+				color: Qt.rgba(0, 0, 0, 0.5)
+				position: 0
+			}
 
-        anchors.fill: parent
-        layer.enabled: true
-        visible: false
+			GradientStop {
+				color: Qt.rgba(0, 0, 0, 0.2)
+				position: 0.4
+			}
 
-        gradient: Gradient {
-            orientation: Gradient.Horizontal
+			GradientStop {
+				color: Qt.rgba(0, 0, 0, 0)
+				position: 0.8
+			}
+		}
+	}
 
-            GradientStop {
-                position: 0
-                color: Qt.rgba(0, 0, 0, 0.5)
-            }
-            GradientStop {
-                position: 0.4
-                color: Qt.rgba(0, 0, 0, 0.2)
-            }
-            GradientStop {
-                position: 0.8
-                color: Qt.rgba(0, 0, 0, 0)
-            }
-        }
-    }
+	ColumnLayout {
+		id: layout
 
-    ColumnLayout {
-        id: layout
+		anchors.fill: parent
+		anchors.margins: Appearance.padding.large
 
-        anchors.fill: parent
-        anchors.margins: Appearance.padding.large
+		CustomText {
+			Layout.bottomMargin: Appearance.spacing.larger
+			Layout.topMargin: Appearance.padding.large
+			color: DynamicColors.palette.m3onSurfaceVariant
+			font.family: Appearance.font.family.mono
+			font.weight: 500
+			text: qsTr("Now playing")
+		}
 
-        CustomText {
-            Layout.topMargin: Appearance.padding.large
-            Layout.bottomMargin: Appearance.spacing.larger
-            text: qsTr("Now playing")
-            color: DynamicColors.palette.m3onSurfaceVariant
-            font.family: Appearance.font.family.mono
-            font.weight: 500
-        }
+		CustomText {
+			Layout.fillWidth: true
+			animate: true
+			color: DynamicColors.palette.m3primary
+			elide: Text.ElideRight
+			font.family: Appearance.font.family.mono
+			font.pointSize: Appearance.font.size.large
+			font.weight: 600
+			horizontalAlignment: Text.AlignHCenter
+			text: Players.active?.trackArtist ?? qsTr("No media")
+		}
 
-        CustomText {
-            Layout.fillWidth: true
-            animate: true
-            text: Players.active?.trackArtist ?? qsTr("No media")
-            color: DynamicColors.palette.m3primary
-            horizontalAlignment: Text.AlignHCenter
-            font.pointSize: Appearance.font.size.large
-            font.family: Appearance.font.family.mono
-            font.weight: 600
-            elide: Text.ElideRight
-        }
+		CustomText {
+			Layout.fillWidth: true
+			animate: true
+			elide: Text.ElideRight
+			font.family: Appearance.font.family.mono
+			font.pointSize: Appearance.font.size.larger
+			horizontalAlignment: Text.AlignHCenter
+			text: Players.active?.trackTitle ?? qsTr("No media")
+		}
 
-        CustomText {
-            Layout.fillWidth: true
-            animate: true
-            text: Players.active?.trackTitle ?? qsTr("No media")
-            horizontalAlignment: Text.AlignHCenter
-            font.pointSize: Appearance.font.size.larger
-            font.family: Appearance.font.family.mono
-            elide: Text.ElideRight
-        }
+		RowLayout {
+			Layout.alignment: Qt.AlignHCenter
+			Layout.bottomMargin: Appearance.padding.large
+			Layout.topMargin: Appearance.spacing.large * 1.2
+			spacing: Appearance.spacing.large
 
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            Layout.topMargin: Appearance.spacing.large * 1.2
-            Layout.bottomMargin: Appearance.padding.large
+			PlayerControl {
+				function onClicked(): void {
+					if (Players.active?.canGoPrevious)
+						Players.active.previous();
+				}
 
-            spacing: Appearance.spacing.large
+				icon: "skip_previous"
+			}
 
-            PlayerControl {
-                icon: "skip_previous"
+			PlayerControl {
+				function onClicked(): void {
+					if (Players.active?.canTogglePlaying)
+						Players.active.togglePlaying();
+				}
 
-                function onClicked(): void {
-                    if (Players.active?.canGoPrevious)
-                        Players.active.previous();
-                }
-            }
+				active: Players.active?.isPlaying ?? false
+				animate: true
+				colour: "Primary"
+				icon: active ? "pause" : "play_arrow"
+				level: active ? 2 : 1
+			}
 
-            PlayerControl {
-                animate: true
-                icon: active ? "pause" : "play_arrow"
-                colour: "Primary"
-                level: active ? 2 : 1
-                active: Players.active?.isPlaying ?? false
+			PlayerControl {
+				function onClicked(): void {
+					if (Players.active?.canGoNext)
+						Players.active.next();
+				}
 
-                function onClicked(): void {
-                    if (Players.active?.canTogglePlaying)
-                        Players.active.togglePlaying();
-                }
-            }
+				icon: "skip_next"
+			}
+		}
+	}
 
-            PlayerControl {
-                icon: "skip_next"
+	component PlayerControl: CustomRect {
+		id: control
 
-                function onClicked(): void {
-                    if (Players.active?.canGoNext)
-                        Players.active.next();
-                }
-            }
-        }
-    }
+		property bool active
+		property alias animate: controlIcon.animate
+		property string colour: "Secondary"
+		property alias icon: controlIcon.text
+		property int level: 1
 
-    component PlayerControl: CustomRect {
-        id: control
+		function onClicked(): void {
+		}
 
-        property alias animate: controlIcon.animate
-        property alias icon: controlIcon.text
-        property bool active
-        property string colour: "Secondary"
-        property int level: 1
+		Layout.preferredWidth: implicitWidth + (controlState.pressed ? Appearance.padding.normal * 2 : active ? Appearance.padding.small * 2 : 0)
+		color: active ? DynamicColors.palette[`m3${colour.toLowerCase()}`] : DynamicColors.palette[`m3${colour.toLowerCase()}Container`]
+		implicitHeight: controlIcon.implicitHeight + Appearance.padding.normal * 2
+		implicitWidth: controlIcon.implicitWidth + Appearance.padding.large * 2
+		radius: active || controlState.pressed ? Appearance.rounding.small : Appearance.rounding.normal
 
-        function onClicked(): void {
-        }
+		Behavior on Layout.preferredWidth {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+		Behavior on radius {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
 
-        Layout.preferredWidth: implicitWidth + (controlState.pressed ? Appearance.padding.normal * 2 : active ? Appearance.padding.small * 2 : 0)
-        implicitWidth: controlIcon.implicitWidth + Appearance.padding.large * 2
-        implicitHeight: controlIcon.implicitHeight + Appearance.padding.normal * 2
+		Elevation {
+			anchors.fill: parent
+			level: controlState.containsMouse && !controlState.pressed ? control.level + 1 : control.level
+			radius: parent.radius
+			z: -1
+		}
 
-        color: active ? DynamicColors.palette[`m3${colour.toLowerCase()}`] : DynamicColors.palette[`m3${colour.toLowerCase()}Container`]
-        radius: active || controlState.pressed ? Appearance.rounding.small : Appearance.rounding.normal
+		StateLayer {
+			id: controlState
 
-        Elevation {
-            anchors.fill: parent
-            radius: parent.radius
-            z: -1
-            level: controlState.containsMouse && !controlState.pressed ? control.level + 1 : control.level
-        }
+			function onClicked(): void {
+				control.onClicked();
+			}
 
-        StateLayer {
-            id: controlState
+			color: control.active ? DynamicColors.palette[`m3on${control.colour}`] : DynamicColors.palette[`m3on${control.colour}Container`]
+		}
 
-            color: control.active ? DynamicColors.palette[`m3on${control.colour}`] : DynamicColors.palette[`m3on${control.colour}Container`]
+		MaterialIcon {
+			id: controlIcon
 
-            function onClicked(): void {
-                control.onClicked();
-            }
-        }
+			anchors.centerIn: parent
+			color: control.active ? DynamicColors.palette[`m3on${control.colour}`] : DynamicColors.palette[`m3on${control.colour}Container`]
+			fill: control.active ? 1 : 0
+			font.pointSize: Appearance.font.size.large
 
-        MaterialIcon {
-            id: controlIcon
-
-            anchors.centerIn: parent
-            color: control.active ? DynamicColors.palette[`m3on${control.colour}`] : DynamicColors.palette[`m3on${control.colour}Container`]
-            font.pointSize: Appearance.font.size.large
-            fill: control.active ? 1 : 0
-
-            Behavior on fill {
-                Anim {}
-            }
-        }
-
-        Behavior on Layout.preferredWidth {
-            Anim {
-                duration: Appearance.anim.durations.expressiveFastSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
-            }
-        }
-
-        Behavior on radius {
-            Anim {
-                duration: Appearance.anim.durations.expressiveFastSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
-            }
-        }
-    }
+			Behavior on fill {
+				Anim {
+				}
+			}
+		}
+	}
 }

@@ -4,147 +4,152 @@ import QtQuick.Shapes
 import qs.Config
 
 Switch {
-    id: root
+	id: root
 
-    property int cLayer: 1
+	property int cLayer: 1
 
-    implicitWidth: implicitIndicatorWidth
-    implicitHeight: implicitIndicatorHeight
+	implicitHeight: implicitIndicatorHeight
+	implicitWidth: implicitIndicatorWidth
 
-    indicator: CustomRect {
-        radius: 1000
-        color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
+	indicator: CustomRect {
+		color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, root.cLayer)
+		implicitHeight: 13 + 7 * 2
+		implicitWidth: implicitHeight * 1.7
+		radius: 1000
 
-        implicitWidth: implicitHeight * 1.7
-        implicitHeight: 13 + 7 * 2
+		CustomRect {
+			readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
 
-        CustomRect {
-            readonly property real nonAnimWidth: root.pressed ? implicitHeight * 1.3 : implicitHeight
+			anchors.verticalCenter: parent.verticalCenter
+			color: root.checked ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
+			implicitHeight: parent.implicitHeight - 10
+			implicitWidth: nonAnimWidth
+			radius: 1000
+			x: root.checked ? parent.implicitWidth - nonAnimWidth - 10 / 2 : 10 / 2
 
-            radius: 1000
-            color: root.checked ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3outline, root.cLayer + 1)
+			Behavior on implicitWidth {
+				Anim {
+				}
+			}
+			Behavior on x {
+				Anim {
+				}
+			}
 
-            x: root.checked ? parent.implicitWidth - nonAnimWidth - 10 / 2 : 10 / 2
-            implicitWidth: nonAnimWidth
-            implicitHeight: parent.implicitHeight - 10
-            anchors.verticalCenter: parent.verticalCenter
+			CustomRect {
+				anchors.fill: parent
+				color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
+				opacity: root.pressed ? 0.1 : root.hovered ? 0.08 : 0
+				radius: parent.radius
 
-            CustomRect {
-                anchors.fill: parent
-                radius: parent.radius
+				Behavior on opacity {
+					Anim {
+					}
+				}
+			}
 
-                color: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
-                opacity: root.pressed ? 0.1 : root.hovered ? 0.08 : 0
+			Shape {
+				id: icon
 
-                Behavior on opacity {
-                    Anim {}
-                }
-            }
+				property point end1: {
+					if (root.pressed) {
+						if (root.checked)
+							return Qt.point(width * 0.4, height / 2);
+						return Qt.point(width * 0.8, height / 2);
+					}
+					if (root.checked)
+						return Qt.point(width * 0.4, height * 0.7);
+					return Qt.point(width * 0.85, height * 0.85);
+				}
+				property point end2: {
+					if (root.pressed)
+						return Qt.point(width, height / 2);
+					if (root.checked)
+						return Qt.point(width * 0.85, height * 0.2);
+					return Qt.point(width * 0.85, height * 0.15);
+				}
+				property point start1: {
+					if (root.pressed)
+						return Qt.point(width * 0.1, height / 2);
+					if (root.checked)
+						return Qt.point(width * 0.15, height / 2);
+					return Qt.point(width * 0.15, height * 0.15);
+				}
+				property point start2: {
+					if (root.pressed) {
+						if (root.checked)
+							return Qt.point(width * 0.4, height / 2);
+						return Qt.point(width * 0.2, height / 2);
+					}
+					if (root.checked)
+						return Qt.point(width * 0.4, height * 0.7);
+					return Qt.point(width * 0.15, height * 0.85);
+				}
 
-            Shape {
-                id: icon
+				anchors.centerIn: parent
+				asynchronous: true
+				height: parent.implicitHeight - Appearance.padding.small * 2
+				preferredRendererType: Shape.CurveRenderer
+				width: height
 
-                property point start1: {
-                    if (root.pressed)
-                        return Qt.point(width * 0.1, height / 2);
-                    if (root.checked)
-                        return Qt.point(width * 0.15, height / 2);
-                    return Qt.point(width * 0.15, height * 0.15);
-                }
-                property point end1: {
-                    if (root.pressed) {
-                        if (root.checked)
-                            return Qt.point(width * 0.4, height / 2);
-                        return Qt.point(width * 0.8, height / 2);
-                    }
-                    if (root.checked)
-                        return Qt.point(width * 0.4, height * 0.7);
-                    return Qt.point(width * 0.85, height * 0.85);
-                }
-                property point start2: {
-                    if (root.pressed) {
-                        if (root.checked)
-                            return Qt.point(width * 0.4, height / 2);
-                        return Qt.point(width * 0.2, height / 2);
-                    }
-                    if (root.checked)
-                        return Qt.point(width * 0.4, height * 0.7);
-                    return Qt.point(width * 0.15, height * 0.85);
-                }
-                property point end2: {
-                    if (root.pressed)
-                        return Qt.point(width, height / 2);
-                    if (root.checked)
-                        return Qt.point(width * 0.85, height * 0.2);
-                    return Qt.point(width * 0.85, height * 0.15);
-                }
+				Behavior on end1 {
+					PropAnim {
+					}
+				}
+				Behavior on end2 {
+					PropAnim {
+					}
+				}
+				Behavior on start1 {
+					PropAnim {
+					}
+				}
+				Behavior on start2 {
+					PropAnim {
+					}
+				}
 
-                anchors.centerIn: parent
-                width: height
-                height: parent.implicitHeight - Appearance.padding.small * 2
-                preferredRendererType: Shape.CurveRenderer
-                asynchronous: true
+				ShapePath {
+					capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+					fillColor: "transparent"
+					startX: icon.start1.x
+					startY: icon.start1.y
+					strokeColor: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
+					strokeWidth: Appearance.font.size.larger * 0.15
 
-                ShapePath {
-                    strokeWidth: Appearance.font.size.larger * 0.15
-                    strokeColor: root.checked ? DynamicColors.palette.m3primary : DynamicColors.palette.m3surfaceContainerHighest
-                    fillColor: "transparent"
-                    capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+					Behavior on strokeColor {
+						CAnim {
+						}
+					}
 
-                    startX: icon.start1.x
-                    startY: icon.start1.y
+					PathLine {
+						x: icon.end1.x
+						y: icon.end1.y
+					}
 
-                    PathLine {
-                        x: icon.end1.x
-                        y: icon.end1.y
-                    }
-                    PathMove {
-                        x: icon.start2.x
-                        y: icon.start2.y
-                    }
-                    PathLine {
-                        x: icon.end2.x
-                        y: icon.end2.y
-                    }
+					PathMove {
+						x: icon.start2.x
+						y: icon.start2.y
+					}
 
-                    Behavior on strokeColor {
-                        CAnim {}
-                    }
-                }
+					PathLine {
+						x: icon.end2.x
+						y: icon.end2.y
+					}
+				}
+			}
+		}
+	}
 
-                Behavior on start1 {
-                    PropAnim {}
-                }
-                Behavior on end1 {
-                    PropAnim {}
-                }
-                Behavior on start2 {
-                    PropAnim {}
-                }
-                Behavior on end2 {
-                    PropAnim {}
-                }
-            }
+	MouseArea {
+		anchors.fill: parent
+		cursorShape: Qt.PointingHandCursor
+		enabled: false
+	}
 
-            Behavior on x {
-                Anim {}
-            }
-
-            Behavior on implicitWidth {
-                Anim {}
-            }
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        cursorShape: Qt.PointingHandCursor
-        enabled: false
-    }
-
-    component PropAnim: PropertyAnimation {
+	component PropAnim: PropertyAnimation {
 		duration: MaterialEasing.expressiveEffectsTime
 		easing.bezierCurve: MaterialEasing.expressiveEffects
-        easing.type: Easing.BezierSpline
-    }
+		easing.type: Easing.BezierSpline
+	}
 }

@@ -4,23 +4,33 @@
 import Quickshell
 import qs.Modules
 import qs.Modules.Wallpaper
-import qs.Modules.Lock as Lock
+import qs.Modules.Lock
 import qs.Drawers
 import qs.Helpers
 import qs.Modules.Polkit
 
 ShellRoot {
-    Bar {}
-    Wallpaper {}
-    AreaPicker {}
-	Lock.Lock {
-		id: lock
+	Bar {
 	}
 
-	Shortcuts {}
-	Lock.IdleInhibitor {
+	Wallpaper {
+	}
+
+	AreaPicker {
+	}
+
+	Lock {
+		id: lock
+
+	}
+
+	Shortcuts {
+	}
+
+	IdleMonitors {
 		lock: lock
 	}
 
-	Polkit {}
+	Polkit {
+	}
 }

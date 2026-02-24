@@ -8,117 +8,109 @@ import qs.Helpers
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property var list
-    readonly property string math: list.search.text.slice(`${Config.launcher.actionPrefix}calc `.length)
+	required property var list
+	readonly property string math: list.search.text.slice(`${Config.launcher.actionPrefix}calc `.length)
 
-    function onClicked(): void {
-        Quickshell.execDetached(["wl-copy", Qalculator.eval(math, false)]);
-        root.list.visibilities.launcher = false;
-    }
+	function onClicked(): void {
+		Quickshell.execDetached(["wl-copy", Qalculator.eval(math, false)]);
+		root.list.visibilities.launcher = false;
+	}
 
-    implicitHeight: Config.launcher.sizes.itemHeight
+	anchors.left: parent?.left
+	anchors.right: parent?.right
+	implicitHeight: Config.launcher.sizes.itemHeight
 
-    anchors.left: parent?.left
-    anchors.right: parent?.right
+	StateLayer {
+		function onClicked(): void {
+			root.onClicked();
+		}
 
-    StateLayer {
-        radius: Appearance.rounding.normal
+		radius: Appearance.rounding.normal
+	}
 
-        function onClicked(): void {
-            root.onClicked();
-        }
-    }
+	RowLayout {
+		anchors.left: parent.left
+		anchors.margins: Appearance.padding.larger
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
+		spacing: Appearance.spacing.normal
 
-    RowLayout {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.margins: Appearance.padding.larger
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			font.pointSize: Appearance.font.size.extraLarge
+			text: "function"
+		}
 
-        spacing: Appearance.spacing.normal
+		CustomText {
+			id: result
 
-        MaterialIcon {
-            text: "function"
-            font.pointSize: Appearance.font.size.extraLarge
-            Layout.alignment: Qt.AlignVCenter
-        }
+			Layout.alignment: Qt.AlignVCenter
+			Layout.fillWidth: true
+			color: {
+				if (text.includes("error: ") || text.includes("warning: "))
+					return DynamicColors.palette.m3error;
+				if (!root.math)
+					return DynamicColors.palette.m3onSurfaceVariant;
+				return DynamicColors.palette.m3onSurface;
+			}
+			elide: Text.ElideLeft
+			text: root.math.length > 0 ? Qalculator.eval(root.math) : qsTr("Type an expression to calculate")
+		}
 
-        CustomText {
-            id: result
+		CustomRect {
+			Layout.alignment: Qt.AlignVCenter
+			clip: true
+			color: DynamicColors.palette.m3tertiary
+			implicitHeight: Math.max(label.implicitHeight, icon.implicitHeight) + Appearance.padding.small * 2
+			implicitWidth: (stateLayer.containsMouse ? label.implicitWidth + label.anchors.rightMargin : 0) + icon.implicitWidth + Appearance.padding.normal * 2
+			radius: Appearance.rounding.normal
 
-            color: {
-                if (text.includes("error: ") || text.includes("warning: "))
-                    return DynamicColors.palette.m3error;
-                if (!root.math)
-                    return DynamicColors.palette.m3onSurfaceVariant;
-                return DynamicColors.palette.m3onSurface;
-            }
+			Behavior on implicitWidth {
+				Anim {
+					easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+				}
+			}
 
-            text: root.math.length > 0 ? Qalculator.eval(root.math) : qsTr("Type an expression to calculate")
-            elide: Text.ElideLeft
+			StateLayer {
+				id: stateLayer
 
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
-        }
+				function onClicked(): void {
+					Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.terminal, "fish", "-C", `exec qalc -i '${root.math}'`]);
+					root.list.visibilities.launcher = false;
+				}
 
-        CustomRect {
-            color: DynamicColors.palette.m3tertiary
-            radius: Appearance.rounding.normal
-            clip: true
+				color: DynamicColors.palette.m3onTertiary
+			}
 
-            implicitWidth: (stateLayer.containsMouse ? label.implicitWidth + label.anchors.rightMargin : 0) + icon.implicitWidth + Appearance.padding.normal * 2
-            implicitHeight: Math.max(label.implicitHeight, icon.implicitHeight) + Appearance.padding.small * 2
+			CustomText {
+				id: label
 
-            Layout.alignment: Qt.AlignVCenter
+				anchors.right: icon.left
+				anchors.rightMargin: Appearance.spacing.small
+				anchors.verticalCenter: parent.verticalCenter
+				color: DynamicColors.palette.m3onTertiary
+				font.pointSize: Appearance.font.size.normal
+				opacity: stateLayer.containsMouse ? 1 : 0
+				text: qsTr("Open in calculator")
 
-            StateLayer {
-                id: stateLayer
+				Behavior on opacity {
+					Anim {
+					}
+				}
+			}
 
-                color: DynamicColors.palette.m3onTertiary
+			MaterialIcon {
+				id: icon
 
-                function onClicked(): void {
-                    Quickshell.execDetached(["app2unit", "--", ...Config.general.apps.terminal, "fish", "-C", `exec qalc -i '${root.math}'`]);
-                    root.list.visibilities.launcher = false;
-                }
-            }
-
-            CustomText {
-                id: label
-
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: icon.left
-                anchors.rightMargin: Appearance.spacing.small
-
-                text: qsTr("Open in calculator")
-                color: DynamicColors.palette.m3onTertiary
-                font.pointSize: Appearance.font.size.normal
-
-                opacity: stateLayer.containsMouse ? 1 : 0
-
-                Behavior on opacity {
-                    Anim {}
-                }
-            }
-
-            MaterialIcon {
-                id: icon
-
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.right: parent.right
-                anchors.rightMargin: Appearance.padding.normal
-
-                text: "open_in_new"
-                color: DynamicColors.palette.m3onTertiary
-                font.pointSize: Appearance.font.size.large
-            }
-
-            Behavior on implicitWidth {
-                Anim {
-                    easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-                }
-            }
-        }
-    }
+				anchors.right: parent.right
+				anchors.rightMargin: Appearance.padding.normal
+				anchors.verticalCenter: parent.verticalCenter
+				color: DynamicColors.palette.m3onTertiary
+				font.pointSize: Appearance.font.size.large
+				text: "open_in_new"
+			}
+		}
+	}
 }

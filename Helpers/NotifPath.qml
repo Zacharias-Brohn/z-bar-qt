@@ -4,13 +4,13 @@ import Quickshell.Io
 import Quickshell
 
 Singleton {
-    id: root
+	id: root
 
-    property alias notifPath: storage.notifPath
+	property alias notifPath: storage.notifPath
 
-    JsonAdapter {
-        id: storage
+	JsonAdapter {
+		id: storage
 
-        property string notifPath: Quickshell.statePath("notifications.json")
-    }
+		property string notifPath: Quickshell.statePath("notifications.json")
+	}
 }

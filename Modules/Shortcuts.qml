@@ -7,29 +7,29 @@ import qs.Helpers
 Scope {
 	id: root
 
-	property bool launcherInterrupted
 	readonly property bool hasFullscreen: Hypr.focusedWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2) ?? false
+	property bool launcherInterrupted
 
+	CustomShortcut {
+		description: "Toggle launcher"
+		name: "toggle-launcher"
 
-    CustomShortcut {
-        name: "toggle-launcher"
-        description: "Toggle launcher"
-        onPressed: root.launcherInterrupted = false
-        onReleased: {
-            if (!root.launcherInterrupted && !root.hasFullscreen) {
-                const visibilities = Visibilities.getForActive();
-                visibilities.launcher = !visibilities.launcher;
-            }
-            root.launcherInterrupted = false;
-        }
-    }
+		onPressed: root.launcherInterrupted = false
+		onReleased: {
+			if (!root.launcherInterrupted && !root.hasFullscreen) {
+				const visibilities = Visibilities.getForActive();
+				visibilities.launcher = !visibilities.launcher;
+			}
+			root.launcherInterrupted = false;
+		}
+	}
 
 	CustomShortcut {
 		name: "toggle-nc"
 
 		onPressed: {
-			const visibilities = Visibilities.getForActive()
-			visibilities.sidebar = !visibilities.sidebar
+			const visibilities = Visibilities.getForActive();
+			visibilities.sidebar = !visibilities.sidebar;
 		}
 	}
 
@@ -37,8 +37,8 @@ Scope {
 		name: "show-osd"
 
 		onPressed: {
-			const visibilities = Visibilities.getForActive()
-			visibilities.osd = !visibilities.osd
+			const visibilities = Visibilities.getForActive();
+			visibilities.osd = !visibilities.osd;
 		}
 	}
 
@@ -46,8 +46,8 @@ Scope {
 		name: "toggle-settings"
 
 		onPressed: {
-			const visibilities = Visibilities.getForActive()
-			visibilities.settings = !visibilities.settings
+			const visibilities = Visibilities.getForActive();
+			visibilities.settings = !visibilities.settings;
 		}
 	}
 }

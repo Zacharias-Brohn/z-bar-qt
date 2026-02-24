@@ -5,71 +5,73 @@ import qs.Config
 import qs.Components
 
 Item {
-    id: root
-    required property string resourceName
-    required property double percentage
-    required property int warningThreshold
-    required property string details
-    required property string iconString
-    property color barColor: DynamicColors.palette.m3primary
-    property color warningBarColor: DynamicColors.palette.m3error
-    property color textColor: DynamicColors.palette.m3onSurface
+	id: root
 
-    Layout.preferredWidth: 158
-    Layout.preferredHeight: columnLayout.implicitHeight
+	property color barColor: DynamicColors.palette.m3primary
+	required property string details
+	required property string iconString
+	required property double percentage
+	required property string resourceName
+	property color textColor: DynamicColors.palette.m3onSurface
+	property color warningBarColor: DynamicColors.palette.m3error
+	required property int warningThreshold
 
-    ColumnLayout {
-        id: columnLayout
-        anchors.fill: parent
-        spacing: 4
+	Layout.preferredHeight: columnLayout.implicitHeight
+	Layout.preferredWidth: 158
 
-        Row {
-            spacing: 6
-            Layout.alignment: Qt.AlignLeft
-            Layout.fillWidth: true
+	ColumnLayout {
+		id: columnLayout
 
-            MaterialIcon {
-                font.family: "Material Symbols Rounded"
-                font.pointSize: 28
-                text: root.iconString
-                color: root.textColor
-            }
+		anchors.fill: parent
+		spacing: 4
 
-            CustomText {
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.resourceName
-                font.pointSize: 12
-                color: root.textColor
-            }
-        }
+		Row {
+			Layout.alignment: Qt.AlignLeft
+			Layout.fillWidth: true
+			spacing: 6
 
-        Rectangle {
-            Layout.alignment: Qt.AlignLeft
-            Layout.fillWidth: true
-            Layout.preferredHeight: 6
-            radius: height / 2
-            color: "#40000000"
+			MaterialIcon {
+				color: root.textColor
+				font.family: "Material Symbols Rounded"
+				font.pointSize: 28
+				text: root.iconString
+			}
 
-            Rectangle {
-                width: parent.width * Math.min(root.percentage, 1)
-                height: parent.height
-                radius: height / 2
-                color: root.percentage * 100 >= root.warningThreshold ? root.warningBarColor : root.barColor
+			CustomText {
+				anchors.verticalCenter: parent.verticalCenter
+				color: root.textColor
+				font.pointSize: 12
+				text: root.resourceName
+			}
+		}
 
-                Behavior on width {
-                    Anim {
-                        duration: MaterialEasing.expressiveEffectsTime
-                        easing.bezierCurve: MaterialEasing.expressiveEffects
-                    }
-                }
-            }
-        }
+		Rectangle {
+			Layout.alignment: Qt.AlignLeft
+			Layout.fillWidth: true
+			Layout.preferredHeight: 6
+			color: "#40000000"
+			radius: height / 2
 
-        CustomText {
-            Layout.alignment: Qt.AlignLeft
-            text: root.details
-            font.pointSize: 10
-            color: root.textColor
-        }
-    }
+			Rectangle {
+				color: root.percentage * 100 >= root.warningThreshold ? root.warningBarColor : root.barColor
+				height: parent.height
+				radius: height / 2
+				width: parent.width * Math.min(root.percentage, 1)
+
+				Behavior on width {
+					Anim {
+						duration: MaterialEasing.expressiveEffectsTime
+						easing.bezierCurve: MaterialEasing.expressiveEffects
+					}
+				}
+			}
+		}
+
+		CustomText {
+			Layout.alignment: Qt.AlignLeft
+			color: root.textColor
+			font.pointSize: 10
+			text: root.details
+		}
+	}
 }

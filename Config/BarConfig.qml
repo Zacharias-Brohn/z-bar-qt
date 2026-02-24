@@ -2,9 +2,6 @@ import Quickshell.Io
 
 JsonObject {
 	property bool autoHide: false
-	property int rounding: 8
-	property Popouts popouts: Popouts {}
-
 	property list<var> entries: [
 		{
 			id: "workspaces",
@@ -59,14 +56,17 @@ JsonObject {
 			enabled: true
 		},
 	]
+	property Popouts popouts: Popouts {
+	}
+	property int rounding: 8
 
 	component Popouts: JsonObject {
-		property bool tray: true
-		property bool audio: true
 		property bool activeWindow: true
-		property bool resources: true
+		property bool audio: true
 		property bool clock: true
 		property bool network: true
+		property bool resources: true
+		property bool tray: true
 		property bool upower: true
 	}
 }

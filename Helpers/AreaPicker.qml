@@ -8,49 +8,49 @@ import ZShell
 import qs.Components
 
 Scope {
-    LazyLoader {
-        id: root
+	LazyLoader {
+		id: root
 
-        property bool freeze
-        property bool closing
+		property bool closing
+		property bool freeze
 
-        Variants {
-            model: Quickshell.screens
-            PanelWindow {
-                id: win
-                color: "transparent"
+		Variants {
+			model: Quickshell.screens
 
-                required property ShellScreen modelData
+			PanelWindow {
+				id: win
 
-                screen: modelData
-                WlrLayershell.namespace: "areapicker"
-                WlrLayershell.exclusionMode: ExclusionMode.Ignore
-                WlrLayershell.layer: WlrLayer.Overlay
-                WlrLayershell.keyboardFocus: root.closing ? WlrKeyboardFocus.None : WlrKeyboardFocus.Exclusive
-                mask: root.closing ? empty : null
+				required property ShellScreen modelData
 
-                anchors {
-                    top: true
-                    bottom: true
-                    left: true
-                    right: true
-                }
+				WlrLayershell.exclusionMode: ExclusionMode.Ignore
+				WlrLayershell.keyboardFocus: root.closing ? WlrKeyboardFocus.None : WlrKeyboardFocus.Exclusive
+				WlrLayershell.layer: WlrLayer.Overlay
+				WlrLayershell.namespace: "areapicker"
+				color: "transparent"
+				mask: root.closing ? empty : null
+				screen: modelData
 
-                Region {
-                    id: empty
-                }
+				anchors {
+					bottom: true
+					left: true
+					right: true
+					top: true
+				}
 
-                Picker {
-                    loader: root
-                    screen: win.modelData
-                }
-            }
-        }
-    }
+				Region {
+					id: empty
+
+				}
+
+				Picker {
+					loader: root
+					screen: win.modelData
+				}
+			}
+		}
+	}
 
 	IpcHandler {
-		target: "picker"
-
 		function open(): void {
 			root.freeze = false;
 			root.closing = false;
@@ -62,23 +62,27 @@ Scope {
 			root.closing = false;
 			root.activeAsync = true;
 		}
+
+		target: "picker"
 	}
 
-    CustomShortcut {
-        name: "screenshot"
-        onPressed: {
-            root.freeze = false;
-            root.closing = false;
-            root.activeAsync = true;
-        }
-    }
+	CustomShortcut {
+		name: "screenshot"
 
-    CustomShortcut {
-        name: "screenshotFreeze"
-        onPressed: {
-            root.freeze = true;
-            root.closing = false;
-            root.activeAsync = true;
-        }
-    }
+		onPressed: {
+			root.freeze = false;
+			root.closing = false;
+			root.activeAsync = true;
+		}
+	}
+
+	CustomShortcut {
+		name: "screenshotFreeze"
+
+		onPressed: {
+			root.freeze = true;
+			root.closing = false;
+			root.activeAsync = true;
+		}
+	}
 }

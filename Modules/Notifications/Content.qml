@@ -6,198 +6,196 @@ import Quickshell.Widgets
 import QtQuick
 
 Item {
-    id: root
+	id: root
 
-    required property PersistentProperties visibilities
-    required property Item panels
-    readonly property int padding: 6
+	readonly property int padding: 6
+	required property Item panels
+	required property PersistentProperties visibilities
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    anchors.right: parent.right
+	anchors.bottom: parent.bottom
+	anchors.right: parent.right
+	anchors.top: parent.top
+	implicitHeight: {
+		const count = list.count;
+		if (count === 0)
+			return 0;
 
-    implicitWidth: Config.notifs.sizes.width + padding * 2
-    implicitHeight: {
-        const count = list.count;
-        if (count === 0)
-            return 0;
+		let height = (count - 1) * 8;
+		for (let i = 0; i < count; i++)
+			height += list.itemAtIndex(i)?.nonAnimHeight ?? 0;
 
-        let height = (count - 1) * 8;
-        for (let i = 0; i < count; i++)
-            height += list.itemAtIndex(i)?.nonAnimHeight ?? 0;
+		if (visibilities && panels) {
+			if (visibilities.osd) {
+				const h = panels.osd.y - 8 * 2 - padding * 2;
+				if (height > h)
+					height = h;
+			}
 
-        if (visibilities && panels) {
-            if (visibilities.osd) {
-                const h = panels.osd.y - 8 * 2 - padding * 2;
-                if (height > h)
-                    height = h;
-            }
+			if (visibilities.session) {
+				const h = panels.session.y - 8 * 2 - padding * 2;
+				if (height > h)
+					height = h;
+			}
+		}
 
-            if (visibilities.session) {
-                const h = panels.session.y - 8 * 2 - padding * 2;
-                if (height > h)
-                    height = h;
-            }
-        }
+		return Math.min((QsWindow.window?.screen?.height ?? 0) - 1 * 2, height + padding * 2);
+	}
+	implicitWidth: Config.notifs.sizes.width + padding * 2
 
-        return Math.min((QsWindow.window?.screen?.height ?? 0) - 1 * 2, height + padding * 2);
-    }
+	Behavior on implicitHeight {
+		Anim {
+		}
+	}
 
-    ClippingWrapperRectangle {
-        anchors.fill: parent
-        anchors.margins: root.padding
+	ClippingWrapperRectangle {
+		anchors.fill: parent
+		anchors.margins: root.padding
+		color: "transparent"
+		radius: 4
 
-        color: "transparent"
-        radius: 4
+		CustomListView {
+			id: list
 
-        CustomListView {
-            id: list
+			anchors.fill: parent
+			cacheBuffer: QsWindow.window?.screen.height ?? 0
+			orientation: Qt.Vertical
+			spacing: 0
 
-            model: ScriptModel {
-                values: NotifServer.popups.filter(n => !n.closed)
-            }
+			delegate: Item {
+				id: wrapper
 
-            anchors.fill: parent
+				property int idx
+				required property int index
+				required property NotifServer.Notif modelData
+				readonly property alias nonAnimHeight: notif.nonAnimHeight
 
-            orientation: Qt.Vertical
-            spacing: 0
-            cacheBuffer: QsWindow.window?.screen.height ?? 0
+				implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : 8)
+				implicitWidth: notif.implicitWidth
 
-            delegate: Item {
-                id: wrapper
+				ListView.onRemove: removeAnim.start()
+				onIndexChanged: {
+					if (index !== -1)
+						idx = index;
+				}
 
-                required property NotifServer.Notif modelData
-                required property int index
-                readonly property alias nonAnimHeight: notif.nonAnimHeight
-                property int idx
+				SequentialAnimation {
+					id: removeAnim
 
-                onIndexChanged: {
-                    if (index !== -1)
-                        idx = index;
-                }
+					PropertyAction {
+						property: "ListView.delayRemove"
+						target: wrapper
+						value: true
+					}
 
-                implicitWidth: notif.implicitWidth
-                implicitHeight: notif.implicitHeight + (idx === 0 ? 0 : 8)
+					PropertyAction {
+						property: "enabled"
+						target: wrapper
+						value: false
+					}
 
-                ListView.onRemove: removeAnim.start()
+					PropertyAction {
+						property: "implicitHeight"
+						target: wrapper
+						value: 0
+					}
 
-                SequentialAnimation {
-                    id: removeAnim
+					PropertyAction {
+						property: "z"
+						target: wrapper
+						value: 1
+					}
 
-                    PropertyAction {
-                        target: wrapper
-                        property: "ListView.delayRemove"
-                        value: true
-                    }
-                    PropertyAction {
-                        target: wrapper
-                        property: "enabled"
-                        value: false
-                    }
-                    PropertyAction {
-                        target: wrapper
-                        property: "implicitHeight"
-                        value: 0
-                    }
-                    PropertyAction {
-                        target: wrapper
-                        property: "z"
-                        value: 1
-                    }
-                    Anim {
-                        target: notif
-                        property: "x"
-                        to: (notif.x >= 0 ? Config.notifs.sizes.width : -Config.notifs.sizes.width) * 2
+					Anim {
 						duration: MaterialEasing.expressiveEffectsTime
 						easing.bezierCurve: MaterialEasing.expressiveEffects
-                    }
-                    PropertyAction {
-                        target: wrapper
-                        property: "ListView.delayRemove"
-                        value: false
-                    }
-                }
+						property: "x"
+						target: notif
+						to: (notif.x >= 0 ? Config.notifs.sizes.width : -Config.notifs.sizes.width) * 2
+					}
 
-                ClippingRectangle {
-                    anchors.top: parent.top
-                    anchors.topMargin: wrapper.idx === 0 ? 0 : 8
+					PropertyAction {
+						property: "ListView.delayRemove"
+						target: wrapper
+						value: false
+					}
+				}
 
-                    color: "transparent"
-                    radius: 4
-                    implicitWidth: notif.implicitWidth
-                    implicitHeight: notif.implicitHeight
+				ClippingRectangle {
+					anchors.top: parent.top
+					anchors.topMargin: wrapper.idx === 0 ? 0 : 8
+					color: "transparent"
+					implicitHeight: notif.implicitHeight
+					implicitWidth: notif.implicitWidth
+					radius: 4
 
-                    Notification {
-                        id: notif
+					Notification {
+						id: notif
 
-                        modelData: wrapper.modelData
-                    }
-                }
-            }
+						modelData: wrapper.modelData
+					}
+				}
+			}
+			displaced: Transition {
+				Anim {
+					property: "y"
+				}
+			}
+			model: ScriptModel {
+				values: NotifServer.popups.filter(n => !n.closed)
+			}
+			move: Transition {
+				Anim {
+					property: "y"
+				}
+			}
 
-            move: Transition {
-                Anim {
-                    property: "y"
-                }
-            }
+			ExtraIndicator {
+				anchors.top: parent.top
+				extra: {
+					const count = list.count;
+					if (count === 0)
+						return 0;
 
-            displaced: Transition {
-                Anim {
-                    property: "y"
-                }
-            }
+					const scrollY = list.contentY;
 
-            ExtraIndicator {
-                anchors.top: parent.top
-                extra: {
-                    const count = list.count;
-                    if (count === 0)
-                        return 0;
+					let height = 0;
+					for (let i = 0; i < count; i++) {
+						height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + 8;
 
-                    const scrollY = list.contentY;
+						if (height - 8 >= scrollY)
+							return i;
+					}
 
-                    let height = 0;
-                    for (let i = 0; i < count; i++) {
-                        height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + 8;
+					return count;
+				}
+			}
 
-                        if (height - 8 >= scrollY)
-                            return i;
-                    }
+			ExtraIndicator {
+				anchors.bottom: parent.bottom
+				extra: {
+					const count = list.count;
+					if (count === 0)
+						return 0;
 
-                    return count;
-                }
-            }
+					const scrollY = list.contentHeight - (list.contentY + list.height);
 
-            ExtraIndicator {
-                anchors.bottom: parent.bottom
-                extra: {
-                    const count = list.count;
-                    if (count === 0)
-                        return 0;
+					let height = 0;
+					for (let i = count - 1; i >= 0; i--) {
+						height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + 8;
 
-                    const scrollY = list.contentHeight - (list.contentY + list.height);
+						if (height - 8 >= scrollY)
+							return count - i - 1;
+					}
 
-                    let height = 0;
-                    for (let i = count - 1; i >= 0; i--) {
-                        height += (list.itemAtIndex(i)?.nonAnimHeight ?? 0) + 8;
+					return 0;
+				}
+			}
+		}
+	}
 
-                        if (height - 8 >= scrollY)
-                            return count - i - 1;
-                    }
-
-                    return 0;
-                }
-            }
-        }
-    }
-
-    Behavior on implicitHeight {
-        Anim {}
-    }
-
-    component Anim: NumberAnimation {
-		easing.type: Easing.BezierSpline
+	component Anim: NumberAnimation {
 		duration: MaterialEasing.expressiveEffectsTime
 		easing.bezierCurve: MaterialEasing.expressiveEffects
-    }
+		easing.type: Easing.BezierSpline
+	}
 }

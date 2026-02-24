@@ -8,81 +8,79 @@ import qs.Config
 import qs.Components
 
 Item {
-    id: root
+	id: root
 
-	required property PersistentProperties visibilities
+	readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
+	readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
 	required property PersistentProperties state
-    readonly property real nonAnimWidth: view.implicitWidth + viewWrapper.anchors.margins * 2
-    readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
+	required property PersistentProperties visibilities
 
-    implicitWidth: nonAnimWidth
-    implicitHeight: nonAnimHeight
+	implicitHeight: nonAnimHeight
+	implicitWidth: nonAnimWidth
 
-    ClippingRectangle {
-        id: viewWrapper
+	Behavior on implicitHeight {
+		Anim {
+			duration: MaterialEasing.expressiveEffectsTime
+			easing.bezierCurve: MaterialEasing.expressiveEffects
+		}
+	}
+	Behavior on implicitWidth {
+		Anim {
+			duration: MaterialEasing.expressiveEffectsTime
+			easing.bezierCurve: MaterialEasing.expressiveEffects
+		}
+	}
 
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
+	ClippingRectangle {
+		id: viewWrapper
+
+		anchors.bottom: parent.bottom
+		anchors.left: parent.left
 		anchors.margins: Appearance.padding.smaller
+		anchors.right: parent.right
+		anchors.top: parent.top
+		color: "transparent"
+		radius: 6
 
-        radius: 6
-        color: "transparent"
+		Item {
+			id: view
 
-        Item {
-            id: view
+			readonly property int currentIndex: root.state.currentTab
+			readonly property Item currentItem: row.children[currentIndex]
 
-            readonly property int currentIndex: root.state.currentTab
-            readonly property Item currentItem: row.children[currentIndex]
+			anchors.fill: parent
+			implicitHeight: currentItem.implicitHeight
+			implicitWidth: currentItem.implicitWidth
 
-            anchors.fill: parent
+			RowLayout {
+				id: row
 
-            implicitWidth: currentItem.implicitWidth
-            implicitHeight: currentItem.implicitHeight
+				Pane {
+					index: 0
 
-            RowLayout {
-                id: row
-
-                Pane {
-                    index: 0
-                    sourceComponent: Dash {
-                        state: root.state
+					sourceComponent: Dash {
+						state: root.state
 						visibilities: root.visibilities
-                    }
-                }
-            }
-        }
-    }
+					}
+				}
+			}
+		}
+	}
 
-    Behavior on implicitWidth {
-        Anim {
-            duration: MaterialEasing.expressiveEffectsTime
-            easing.bezierCurve: MaterialEasing.expressiveEffects
-        }
-    }
+	component Pane: Loader {
+		id: pane
 
-    Behavior on implicitHeight {
-        Anim {
-            duration: MaterialEasing.expressiveEffectsTime
-            easing.bezierCurve: MaterialEasing.expressiveEffects
-        }
-    }
+		required property int index
 
-    component Pane: Loader {
-        id: pane
+		Layout.alignment: Qt.AlignTop
 
-        required property int index
-
-        Layout.alignment: Qt.AlignTop
-
-        Component.onCompleted: active = Qt.binding(() => {
-            // Always keep current tab loaded
-            if (pane.index === view.currentIndex)
-                return true;
-            const vx = Math.floor(view.visibleArea.xPosition * view.contentWidth);
-            const vex = Math.floor(vx + view.visibleArea.widthRatio * view.contentWidth);
-            return (vx >= x && vx <= x + implicitWidth) || (vex >= x && vex <= x + implicitWidth);
-        })
-    }
+		Component.onCompleted: active = Qt.binding(() => {
+			// Always keep current tab loaded
+			if (pane.index === view.currentIndex)
+				return true;
+			const vx = Math.floor(view.visibleArea.xPosition * view.contentWidth);
+			const vex = Math.floor(vx + view.visibleArea.widthRatio * view.contentWidth);
+			return (vx >= x && vx <= x + implicitWidth) || (vex >= x && vex <= x + implicitWidth);
+		})
+	}
 }

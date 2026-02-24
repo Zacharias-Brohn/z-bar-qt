@@ -8,5 +8,4 @@ import qs.Config
 import qs.Helpers
 
 Item {
-
 }

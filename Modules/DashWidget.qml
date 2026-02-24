@@ -9,12 +9,12 @@ CustomRect {
 
 	required property PersistentProperties visibilities
 
-	anchors.top: parent.top
 	anchors.bottom: parent.bottom
-	anchors.topMargin: 6
 	anchors.bottomMargin: 6
-	implicitWidth: 40
+	anchors.top: parent.top
+	anchors.topMargin: 6
 	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitWidth: 40
 	radius: 1000
 
 	StateLayer {
@@ -25,7 +25,7 @@ CustomRect {
 
 	MaterialIcon {
 		anchors.centerIn: parent
-		text: "widgets"
 		color: DynamicColors.palette.m3onSurface
+		text: "widgets"
 	}
 }

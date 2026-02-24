@@ -8,129 +8,128 @@ import qs.Config
 import qs.Daemons
 
 Item {
-    id: root
+	id: root
 
-    required property Brightness.Monitor monitor
-    required property var visibilities
+	required property real brightness
+	required property Brightness.Monitor monitor
+	required property bool muted
+	required property bool sourceMuted
+	required property real sourceVolume
+	required property var visibilities
+	required property real volume
 
-    required property real volume
-    required property bool muted
-    required property real sourceVolume
-    required property bool sourceMuted
-    required property real brightness
+	implicitHeight: layout.implicitHeight + Appearance.padding.small * 2
+	implicitWidth: layout.implicitWidth + Appearance.padding.small * 2
 
-    implicitWidth: layout.implicitWidth + Appearance.padding.small * 2
-    implicitHeight: layout.implicitHeight + Appearance.padding.small * 2
+	ColumnLayout {
+		id: layout
 
-    ColumnLayout {
-        id: layout
+		anchors.centerIn: parent
+		spacing: Appearance.spacing.normal
 
-        anchors.centerIn: parent
-        spacing: Appearance.spacing.normal
+		// Speaker volume
+		CustomMouseArea {
+			function onWheel(event: WheelEvent) {
+				if (event.angleDelta.y > 0)
+					Audio.incrementVolume();
+				else if (event.angleDelta.y < 0)
+					Audio.decrementVolume();
+			}
 
-        // Speaker volume
-        CustomMouseArea {
-            implicitWidth: Config.osd.sizes.sliderWidth
-            implicitHeight: Config.osd.sizes.sliderHeight
+			implicitHeight: Config.osd.sizes.sliderHeight
+			implicitWidth: Config.osd.sizes.sliderWidth
 
-            function onWheel(event: WheelEvent) {
-                if (event.angleDelta.y > 0)
-                    Audio.incrementVolume();
-                else if (event.angleDelta.y < 0)
-                    Audio.decrementVolume();
-            }
-
-            FilledSlider {
-                anchors.fill: parent
-
-                icon: Icons.getVolumeIcon(value, root.muted)
-                value: root.volume
-				to: Config.services.maxVolume
+			FilledSlider {
+				anchors.fill: parent
 				color: Audio.muted ? DynamicColors.palette.m3error : DynamicColors.palette.m3secondary
-                onMoved: Audio.setVolume(value)
-            }
-        }
+				icon: Icons.getVolumeIcon(value, root.muted)
+				to: Config.services.maxVolume
+				value: root.volume
 
-        // Microphone volume
-        WrappedLoader {
-            shouldBeActive: Config.osd.enableMicrophone && (!Config.osd.enableBrightness || !root.visibilities.session)
+				onMoved: Audio.setVolume(value)
+			}
+		}
 
-            sourceComponent: CustomMouseArea {
-                implicitWidth: Config.osd.sizes.sliderWidth
-                implicitHeight: Config.osd.sizes.sliderHeight
+		// Microphone volume
+		WrappedLoader {
+			shouldBeActive: Config.osd.enableMicrophone && (!Config.osd.enableBrightness || !root.visibilities.session)
 
-                function onWheel(event: WheelEvent) {
-                    if (event.angleDelta.y > 0)
-                        Audio.incrementSourceVolume();
-                    else if (event.angleDelta.y < 0)
-                        Audio.decrementSourceVolume();
-                }
+			sourceComponent: CustomMouseArea {
+				function onWheel(event: WheelEvent) {
+					if (event.angleDelta.y > 0)
+						Audio.incrementSourceVolume();
+					else if (event.angleDelta.y < 0)
+						Audio.decrementSourceVolume();
+				}
 
-                FilledSlider {
-                    anchors.fill: parent
+				implicitHeight: Config.osd.sizes.sliderHeight
+				implicitWidth: Config.osd.sizes.sliderWidth
 
-                    icon: Icons.getMicVolumeIcon(value, root.sourceMuted)
-                    value: root.sourceVolume
-                    to: Config.services.maxVolume
+				FilledSlider {
+					anchors.fill: parent
 					color: Audio.sourceMuted ? DynamicColors.palette.m3error : DynamicColors.palette.m3secondary
-                    onMoved: Audio.setSourceVolume(value)
-                }
-            }
-        }
+					icon: Icons.getMicVolumeIcon(value, root.sourceMuted)
+					to: Config.services.maxVolume
+					value: root.sourceVolume
 
-        // Brightness
-        WrappedLoader {
-            shouldBeActive: Config.osd.enableBrightness
+					onMoved: Audio.setSourceVolume(value)
+				}
+			}
+		}
 
-            sourceComponent: CustomMouseArea {
-                implicitWidth: Config.osd.sizes.sliderWidth
-                implicitHeight: Config.osd.sizes.sliderHeight
+		// Brightness
+		WrappedLoader {
+			shouldBeActive: Config.osd.enableBrightness
 
-                function onWheel(event: WheelEvent) {
-                    const monitor = root.monitor;
-                    if (!monitor)
-                        return;
-                    if (event.angleDelta.y > 0)
-                        monitor.setBrightness(monitor.brightness + Config.services.brightnessIncrement);
-                    else if (event.angleDelta.y < 0)
-                        monitor.setBrightness(monitor.brightness - Config.services.brightnessIncrement);
-                }
+			sourceComponent: CustomMouseArea {
+				function onWheel(event: WheelEvent) {
+					const monitor = root.monitor;
+					if (!monitor)
+						return;
+					if (event.angleDelta.y > 0)
+						monitor.setBrightness(monitor.brightness + Config.services.brightnessIncrement);
+					else if (event.angleDelta.y < 0)
+						monitor.setBrightness(monitor.brightness - Config.services.brightnessIncrement);
+				}
 
-                FilledSlider {
-                    anchors.fill: parent
+				implicitHeight: Config.osd.sizes.sliderHeight
+				implicitWidth: Config.osd.sizes.sliderWidth
 
-                    icon: `brightness_${(Math.round(value * 6) + 1)}`
-                    value: root.brightness
-                    onMoved: {
-						if ( Config.osd.allMonBrightness ) {
-							root.monitor?.setBrightness(value)
+				FilledSlider {
+					anchors.fill: parent
+					icon: `brightness_${(Math.round(value * 6) + 1)}`
+					value: root.brightness
+
+					onMoved: {
+						if (Config.osd.allMonBrightness) {
+							root.monitor?.setBrightness(value);
 						} else {
 							for (const mon of Brightness.monitors) {
-								mon.setBrightness(value)
+								mon.setBrightness(value);
 							}
 						}
 					}
-                }
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    component WrappedLoader: Loader {
-        required property bool shouldBeActive
+	component WrappedLoader: Loader {
+		required property bool shouldBeActive
 
-        Layout.preferredHeight: shouldBeActive ? Config.osd.sizes.sliderHeight : 0
-        opacity: shouldBeActive ? 1 : 0
-        active: opacity > 0
-        visible: active
+		Layout.preferredHeight: shouldBeActive ? Config.osd.sizes.sliderHeight : 0
+		active: opacity > 0
+		opacity: shouldBeActive ? 1 : 0
+		visible: active
 
-        Behavior on Layout.preferredHeight {
-            Anim {
-                easing.bezierCurve: Appearance.anim.curves.emphasized
-            }
-        }
-
-        Behavior on opacity {
-            Anim {}
-        }
-    }
+		Behavior on Layout.preferredHeight {
+			Anim {
+				easing.bezierCurve: Appearance.anim.curves.emphasized
+			}
+		}
+		Behavior on opacity {
+			Anim {
+			}
+		}
+	}
 }

@@ -6,75 +6,75 @@ import qs.Helpers
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    property string source: Wallpapers.current
-    property Image current: one
+	property Image current: one
+	property string source: Wallpapers.current
 
-    anchors.fill: parent
+	anchors.fill: parent
 
-    onSourceChanged: {
-        if (!source) {
-            current = null;
-        } else if (current === one) {
-            two.update();
-        } else {
-            one.update();
-        }
-    }
+	Component.onCompleted: {
+		console.log(root.source);
+		if (source)
+			Qt.callLater(() => one.update());
+	}
+	onSourceChanged: {
+		if (!source) {
+			current = null;
+		} else if (current === one) {
+			two.update();
+		} else {
+			one.update();
+		}
+	}
 
-    Component.onCompleted: {
-        console.log(root.source)
-        if (source)
-            Qt.callLater(() => one.update());
-    }
+	Img {
+		id: one
 
-    Img {
-        id: one
-    }
+	}
 
-    Img {
-        id: two
-    }
+	Img {
+		id: two
 
-    component Img: CachingImage {
-        id: img
+	}
 
-        function update(): void {
-            if (path === root.source) {
-                root.current = this;
-            } else {
-                path = root.source;
-            }
-        }
+	component Img: CachingImage {
+		id: img
 
-        anchors.fill: parent
+		function update(): void {
+			if (path === root.source) {
+				root.current = this;
+			} else {
+				path = root.source;
+			}
+		}
 
-        opacity: 0
-        scale: Wallpapers.showPreview ? 1 : 0.8
-        asynchronous: true
-        onStatusChanged: {
-            if (status === Image.Ready) {
-                root.current = this;
-            }
-        }
+		anchors.fill: parent
+		asynchronous: true
+		opacity: 0
+		scale: Wallpapers.showPreview ? 1 : 0.8
 
-        states: State {
-            name: "visible"
-            when: root.current === img
+		states: State {
+			name: "visible"
+			when: root.current === img
 
-            PropertyChanges {
-                img.opacity: 1
-                img.scale: 1
-            }
-        }
+			PropertyChanges {
+				img.opacity: 1
+				img.scale: 1
+			}
+		}
+		transitions: Transition {
+			Anim {
+				duration: Config.background.wallFadeDuration
+				properties: "opacity,scale"
+				target: img
+			}
+		}
 
-        transitions: Transition {
-            Anim {
-                target: img
-                properties: "opacity,scale"
-                duration: Config.background.wallFadeDuration
-            }
-        }
-    }
+		onStatusChanged: {
+			if (status === Image.Ready) {
+				root.current = this;
+			}
+		}
+	}
 }

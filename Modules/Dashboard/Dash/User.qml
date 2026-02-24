@@ -7,122 +7,116 @@ import Quickshell
 import QtQuick
 
 Row {
-    id: root
+	id: root
 
-    required property PersistentProperties state
+	required property PersistentProperties state
 
-    padding: 20
-    spacing: 12
+	padding: 20
+	spacing: 12
 
-    CustomClippingRect {
-        implicitWidth: info.implicitHeight
-        implicitHeight: info.implicitHeight
+	CustomClippingRect {
+		color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+		implicitHeight: info.implicitHeight
+		implicitWidth: info.implicitHeight
+		radius: 8
 
-        radius: 8
-        color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+		MaterialIcon {
+			anchors.centerIn: parent
+			fill: 1
+			font.pointSize: Math.floor(info.implicitHeight / 2) || 1
+			grade: 200
+			text: "person"
+		}
 
-        MaterialIcon {
-            anchors.centerIn: parent
+		CachingImage {
+			id: pfp
 
-            text: "person"
-            fill: 1
-            grade: 200
-            font.pointSize: Math.floor(info.implicitHeight / 2) || 1
-        }
+			anchors.fill: parent
+			path: `${Paths.home}/.face`
+		}
+	}
 
-        CachingImage {
-            id: pfp
+	Column {
+		id: info
 
-            anchors.fill: parent
-            path: `${Paths.home}/.face`
-        }
-    }
+		anchors.verticalCenter: parent.verticalCenter
+		spacing: 12
 
-    Column {
-        id: info
+		Item {
+			id: line
 
-        anchors.verticalCenter: parent.verticalCenter
-        spacing: 12
+			implicitHeight: Math.max(icon.implicitHeight, text.implicitHeight)
+			implicitWidth: icon.implicitWidth + text.width + text.anchors.leftMargin
 
-        Item {
-            id: line
+			ColoredIcon {
+				id: icon
 
-            implicitWidth: icon.implicitWidth + text.width + text.anchors.leftMargin
-            implicitHeight: Math.max(icon.implicitHeight, text.implicitHeight)
+				anchors.left: parent.left
+				anchors.leftMargin: (Config.dashboard.sizes.infoIconSize - implicitWidth) / 2
+				color: DynamicColors.palette.m3primary
+				implicitSize: Math.floor(13 * 1.34)
+				source: SystemInfo.osLogo
+			}
 
-            ColoredIcon {
-                id: icon
+			CustomText {
+				id: text
 
-                anchors.left: parent.left
-                anchors.leftMargin: (Config.dashboard.sizes.infoIconSize - implicitWidth) / 2
+				anchors.left: icon.right
+				anchors.leftMargin: icon.anchors.leftMargin
+				anchors.verticalCenter: icon.verticalCenter
+				elide: Text.ElideRight
+				font.pointSize: 13
+				text: `:  ${SystemInfo.osPrettyName || SystemInfo.osName}`
+				width: Config.dashboard.sizes.infoWidth
+			}
+		}
 
-                source: SystemInfo.osLogo
-                implicitSize: Math.floor(13 * 1.34)
-                color: DynamicColors.palette.m3primary
-            }
+		InfoLine {
+			colour: DynamicColors.palette.m3secondary
+			icon: "select_window_2"
+			text: SystemInfo.wm
+		}
 
-            CustomText {
-                id: text
+		InfoLine {
+			id: uptime
 
-                anchors.verticalCenter: icon.verticalCenter
-                anchors.left: icon.right
-                anchors.leftMargin: icon.anchors.leftMargin
-                text: `:  ${SystemInfo.osPrettyName || SystemInfo.osName}`
-                font.pointSize: 13
+			colour: DynamicColors.palette.m3tertiary
+			icon: "timer"
+			text: qsTr("up %1").arg(SystemInfo.uptime)
+		}
+	}
 
-                width: Config.dashboard.sizes.infoWidth
-                elide: Text.ElideRight
-            }
-        }
+	component InfoLine: Item {
+		id: line
 
-        InfoLine {
-            icon: "select_window_2"
-            text: SystemInfo.wm
-            colour: DynamicColors.palette.m3secondary
-        }
+		required property color colour
+		required property string icon
+		required property string text
 
-        InfoLine {
-            id: uptime
+		implicitHeight: Math.max(icon.implicitHeight, text.implicitHeight)
+		implicitWidth: icon.implicitWidth + text.width + text.anchors.leftMargin
 
-            icon: "timer"
-            text: qsTr("up %1").arg(SystemInfo.uptime)
-            colour: DynamicColors.palette.m3tertiary
-        }
-    }
+		MaterialIcon {
+			id: icon
 
-    component InfoLine: Item {
-        id: line
+			anchors.left: parent.left
+			anchors.leftMargin: (Config.dashboard.sizes.infoIconSize - implicitWidth) / 2
+			color: line.colour
+			fill: 1
+			font.pointSize: 13
+			text: line.icon
+		}
 
-        required property string icon
-        required property string text
-        required property color colour
+		CustomText {
+			id: text
 
-        implicitWidth: icon.implicitWidth + text.width + text.anchors.leftMargin
-        implicitHeight: Math.max(icon.implicitHeight, text.implicitHeight)
-
-        MaterialIcon {
-            id: icon
-
-            anchors.left: parent.left
-            anchors.leftMargin: (Config.dashboard.sizes.infoIconSize - implicitWidth) / 2
-
-            fill: 1
-            text: line.icon
-            color: line.colour
-            font.pointSize: 13
-        }
-
-        CustomText {
-            id: text
-
-            anchors.verticalCenter: icon.verticalCenter
-            anchors.left: icon.right
-            anchors.leftMargin: icon.anchors.leftMargin
-            text: `:  ${line.text}`
-            font.pointSize: 13
-
-            width: Config.dashboard.sizes.infoWidth
-            elide: Text.ElideRight
-        }
-    }
+			anchors.left: icon.right
+			anchors.leftMargin: icon.anchors.leftMargin
+			anchors.verticalCenter: icon.verticalCenter
+			elide: Text.ElideRight
+			font.pointSize: 13
+			text: `:  ${line.text}`
+			width: Config.dashboard.sizes.infoWidth
+		}
+	}
 }

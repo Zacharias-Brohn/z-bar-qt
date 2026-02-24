@@ -4,95 +4,90 @@ import qs.Helpers
 import qs.Config
 
 Row {
-    id: root
+	id: root
 
-	anchors.top: parent.top
 	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	padding: Appearance.padding.large
+	spacing: Appearance.spacing.large
 
-    padding: Appearance.padding.large
-    spacing: Appearance.spacing.large
+	Ref {
+		service: SystemUsage
+	}
 
-    Ref {
-        service: SystemUsage
-    }
+	Resource {
+		color: DynamicColors.palette.m3primary
+		icon: "memory"
+		value: SystemUsage.cpuPerc
+	}
 
-    Resource {
-        icon: "memory"
-        value: SystemUsage.cpuPerc
-        color: DynamicColors.palette.m3primary
-    }
+	Resource {
+		color: DynamicColors.palette.m3secondary
+		icon: "memory_alt"
+		value: SystemUsage.memPerc
+	}
 
-    Resource {
-        icon: "memory_alt"
-        value: SystemUsage.memPerc
-        color: DynamicColors.palette.m3secondary
-    }
+	Resource {
+		color: DynamicColors.palette.m3tertiary
+		icon: "gamepad"
+		value: SystemUsage.gpuPerc
+	}
 
-    Resource {
-        icon: "gamepad"
-        value: SystemUsage.gpuPerc
-        color: DynamicColors.palette.m3tertiary
-    }
+	Resource {
+		color: DynamicColors.palette.m3primary
+		icon: "host"
+		value: SystemUsage.gpuMemUsed
+	}
 
-    Resource {
-        icon: "host"
-        value: SystemUsage.gpuMemUsed
-        color: DynamicColors.palette.m3primary
-    }
+	Resource {
+		color: DynamicColors.palette.m3secondary
+		icon: "hard_disk"
+		value: SystemUsage.storagePerc
+	}
 
-    Resource {
-        icon: "hard_disk"
-        value: SystemUsage.storagePerc
-        color: DynamicColors.palette.m3secondary
-    }
+	component Resource: Item {
+		id: res
 
-    component Resource: Item {
-        id: res
+		required property color color
+		required property string icon
+		required property real value
 
-        required property string icon
-        required property real value
-        required property color color
+		anchors.bottom: parent.bottom
+		anchors.margins: Appearance.padding.large
+		anchors.top: parent.top
+		implicitWidth: icon.implicitWidth
 
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.margins: Appearance.padding.large
-        implicitWidth: icon.implicitWidth
+		Behavior on value {
+			Anim {
+				duration: Appearance.anim.durations.large
+			}
+		}
 
-        CustomRect {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            anchors.bottom: icon.top
-            anchors.bottomMargin: Appearance.spacing.small
+		CustomRect {
+			anchors.bottom: icon.top
+			anchors.bottomMargin: Appearance.spacing.small
+			anchors.horizontalCenter: parent.horizontalCenter
+			anchors.top: parent.top
+			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+			implicitWidth: Config.dashboard.sizes.resourceProgessThickness
+			radius: Appearance.rounding.full
 
-            implicitWidth: Config.dashboard.sizes.resourceProgessThickness
+			CustomRect {
+				anchors.bottom: parent.bottom
+				anchors.left: parent.left
+				anchors.right: parent.right
+				color: res.color
+				implicitHeight: res.value * parent.height
+				radius: Appearance.rounding.full
+			}
+		}
 
-            color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
-            radius: Appearance.rounding.full
+		MaterialIcon {
+			id: icon
 
-            CustomRect {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                implicitHeight: res.value * parent.height
-
-                color: res.color
-                radius: Appearance.rounding.full
-            }
-        }
-
-        MaterialIcon {
-            id: icon
-
-            anchors.bottom: parent.bottom
-
-            text: res.icon
-            color: res.color
-        }
-
-        Behavior on value {
-            Anim {
-                duration: Appearance.anim.durations.large
-            }
-        }
-    }
+			anchors.bottom: parent.bottom
+			color: res.color
+			text: res.icon
+		}
+	}
 }

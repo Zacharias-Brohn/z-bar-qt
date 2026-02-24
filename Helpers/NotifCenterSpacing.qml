@@ -4,13 +4,13 @@ import Quickshell
 import Quickshell.Io
 
 Singleton {
-    id: root
+	id: root
 
-    property alias centerX: notifCenterSpacing.centerX
+	property alias centerX: notifCenterSpacing.centerX
 
-    JsonAdapter {
-        id: notifCenterSpacing
+	JsonAdapter {
+		id: notifCenterSpacing
 
-        property int centerX
-    }
+		property int centerX
+	}
 }

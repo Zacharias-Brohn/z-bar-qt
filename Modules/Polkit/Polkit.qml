@@ -19,53 +19,57 @@ Scope {
 	PanelWindow {
 		id: panelWindow
 
-		WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-		WlrLayershell.namespace: "ZShell-Auth"
-        WlrLayershell.layer: WlrLayer.Overlay
-		visible: false
-		color: "transparent"
 		property bool detailsOpen: false
+
+		WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+		WlrLayershell.layer: WlrLayer.Overlay
+		WlrLayershell.namespace: "ZShell-Auth"
+		color: "transparent"
+		visible: false
 
 		Connections {
 			target: root
 
 			onShouldShowChanged: {
-				if ( root.shouldShow ) {
-					panelWindow.visible = true
-					openAnim.start()
+				if (root.shouldShow) {
+					panelWindow.visible = true;
+					openAnim.start();
 				} else {
-					closeAnim.start()
+					closeAnim.start();
 				}
 			}
 		}
 
 		Anim {
 			id: openAnim
-			target: inputPanel
-			property: "opacity"
-			to: 1
+
 			duration: MaterialEasing.expressiveEffectsTime
+			property: "opacity"
+			target: inputPanel
+			to: 1
 		}
 
 		Anim {
 			id: closeAnim
-			target: inputPanel
-			property: "opacity"
-			to: 0
+
 			duration: MaterialEasing.expressiveEffectsTime
-			onStarted: {
-				panelWindow.detailsOpen = false
-			}
+			property: "opacity"
+			target: inputPanel
+			to: 0
+
 			onFinished: {
-				panelWindow.visible = false
+				panelWindow.visible = false;
+			}
+			onStarted: {
+				panelWindow.detailsOpen = false;
 			}
 		}
 
 		anchors {
+			bottom: true
 			left: true
 			right: true
 			top: true
-			bottom: true
 		}
 
 		// mask: Region { item: inputPanel }
@@ -73,106 +77,105 @@ Scope {
 		Rectangle {
 			id: inputPanel
 
-			color: DynamicColors.tPalette.m3surface
-			opacity: 0
-
 			anchors.centerIn: parent
+			color: DynamicColors.tPalette.m3surface
+			implicitHeight: layout.childrenRect.height + 28
+			implicitWidth: layout.childrenRect.width + 32
+			opacity: 0
 			radius: 24
 
-			implicitWidth: layout.childrenRect.width + 32
-			implicitHeight: layout.childrenRect.height + 28
 			ColumnLayout {
 				id: layout
+
 				anchors.centerIn: parent
 
 				RowLayout {
 					id: contentRow
+
 					spacing: 24
 
 					Item {
-						Layout.preferredWidth: icon.implicitSize
-						Layout.preferredHeight: icon.implicitSize
-						Layout.leftMargin: 16
 						Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+						Layout.leftMargin: 16
+						Layout.preferredHeight: icon.implicitSize
+						Layout.preferredWidth: icon.implicitSize
+
 						IconImage {
 							id: icon
 
 							anchors.fill: parent
-							visible: `${source}`.includes("://")
-
-							source: Quickshell.iconPath(polkitAgent.flow?.iconName, true) ?? ""
 							implicitSize: 64
 							mipmap: true
+							source: Quickshell.iconPath(polkitAgent.flow?.iconName, true) ?? ""
+							visible: `${source}`.includes("://")
 						}
 
 						MaterialIcon {
-							visible: !icon.visible
-
-							text: "security"
 							anchors.fill: parent
 							font.pointSize: 64
 							horizontalAlignment: Text.AlignHCenter
+							text: "security"
 							verticalAlignment: Text.AlignVCenter
+							visible: !icon.visible
 						}
 					}
 
 					ColumnLayout {
 						id: contentColumn
-						Layout.fillWidth: true
+
 						Layout.fillHeight: true
+						Layout.fillWidth: true
 
 						CustomText {
-							Layout.preferredWidth: Math.min(600, contentWidth)
 							Layout.alignment: Qt.AlignLeft
-
+							Layout.preferredWidth: Math.min(600, contentWidth)
+							font.bold: true
+							font.pointSize: 16
 							text: polkitAgent.flow?.message
 							wrapMode: Text.WordWrap
-							font.pointSize: 16
-							font.bold: true
 						}
 
 						CustomText {
-							Layout.preferredWidth: Math.min(600, contentWidth)
 							Layout.alignment: Qt.AlignLeft
-
-							text: polkitAgent.flow?.supplementaryMessage || "No Additional Information"
+							Layout.preferredWidth: Math.min(600, contentWidth)
 							color: DynamicColors.tPalette.m3onSurfaceVariant
-							wrapMode: Text.WordWrap
-							font.pointSize: 12
 							font.bold: true
+							font.pointSize: 12
+							text: polkitAgent.flow?.supplementaryMessage || "No Additional Information"
+							wrapMode: Text.WordWrap
 						}
 
 						TextField {
 							id: passInput
 
+							Layout.preferredHeight: 40
+							Layout.preferredWidth: contentColumn.implicitWidth
+							color: DynamicColors.palette.m3onSurfaceVariant
 							echoMode: polkitAgent.flow?.responseVisible ? TextInput.Normal : TextInput.Password
 							placeholderText: polkitAgent.flow?.failed ? " Incorrect Password" : " Input Password"
-							selectByMouse: true
-							onAccepted: okButton.clicked()
-
-							color: DynamicColors.palette.m3onSurfaceVariant
 							placeholderTextColor: polkitAgent.flow?.failed ? DynamicColors.palette.m3onError : DynamicColors.tPalette.m3onSurfaceVariant
-
-							Layout.preferredWidth: contentColumn.implicitWidth
-							Layout.preferredHeight: 40
+							selectByMouse: true
 
 							background: CustomRect {
-								radius: 8
+								color: (polkitAgent.flow?.failed && passInput.text === "") ? DynamicColors.palette.m3error : DynamicColors.tPalette.m3surfaceVariant
 								implicitHeight: 40
-								color: ( polkitAgent.flow?.failed && passInput.text === "" ) ? DynamicColors.palette.m3error : DynamicColors.tPalette.m3surfaceVariant
+								radius: 8
 							}
+
+							onAccepted: okButton.clicked()
 						}
 
 						CustomCheckbox {
 							id: showPassCheckbox
-							text: "Show Password"
-							checked: polkitAgent.flow?.responseVisible
-							onCheckedChanged: {
-								passInput.echoMode = checked ? TextInput.Normal : TextInput.Password
-								passInput.forceActiveFocus()
-							}
 
 							Layout.alignment: Qt.AlignLeft
+							checked: polkitAgent.flow?.responseVisible
+							text: "Show Password"
+
+							onCheckedChanged: {
+								passInput.echoMode = checked ? TextInput.Normal : TextInput.Password;
+								passInput.forceActiveFocus();
+							}
 						}
 					}
 				}
@@ -180,51 +183,49 @@ Scope {
 				CustomRect {
 					id: detailsPanel
 
-					visible: true
-					color: DynamicColors.tPalette.m3surfaceContainerLow
-					radius: 16
-					clip: true
-					implicitHeight: 0
+					property bool open: panelWindow.detailsOpen
+
 					Layout.fillWidth: true
 					Layout.preferredHeight: implicitHeight
-
-					property bool open: panelWindow.detailsOpen
+					clip: true
+					color: DynamicColors.tPalette.m3surfaceContainerLow
+					implicitHeight: 0
+					radius: 16
+					visible: true
 
 					Behavior on open {
 						ParallelAnimation {
 							Anim {
-								target: detailsPanel
-
+								duration: MaterialEasing.expressiveEffectsTime
 								property: "implicitHeight"
+								target: detailsPanel
 								to: !detailsPanel.open ? textDetailsColumn.childrenRect.height + 16 : 0
-								duration: MaterialEasing.expressiveEffectsTime
 							}
 
 							Anim {
-								target: textDetailsColumn
-
+								duration: MaterialEasing.expressiveEffectsTime
 								property: "opacity"
+								target: textDetailsColumn
 								to: !detailsPanel.open ? 1 : 0
-								duration: MaterialEasing.expressiveEffectsTime
 							}
 
 							Anim {
-								target: textDetailsColumn
-
-								property: "scale"
-								to: !detailsPanel.open ? 1 : 0.9
 								duration: MaterialEasing.expressiveEffectsTime
+								property: "scale"
+								target: textDetailsColumn
+								to: !detailsPanel.open ? 1 : 0.9
 							}
 						}
 					}
 
 					ColumnLayout {
 						id: textDetailsColumn
-						spacing: 8
+
 						anchors.fill: parent
 						anchors.margins: 8
 						opacity: 0
 						scale: 0.9
+						spacing: 8
 
 						CustomText {
 							text: `actionId: ${polkitAgent.flow?.actionId}`
@@ -239,64 +240,69 @@ Scope {
 				}
 
 				RowLayout {
-					spacing: 8
 					Layout.preferredWidth: contentRow.implicitWidth
+					spacing: 8
 
 					CustomButton {
 						id: detailsButton
-						text: "Details"
-						textColor: DynamicColors.palette.m3onSurface
+
+						Layout.alignment: Qt.AlignLeft
+						Layout.preferredHeight: 40
+						Layout.preferredWidth: 92
 						bgColor: DynamicColors.palette.m3surfaceContainer
 						enabled: true
 						radius: 1000
-
-						Layout.preferredWidth: 92
-						Layout.preferredHeight: 40
-						Layout.alignment: Qt.AlignLeft
+						text: "Details"
+						textColor: DynamicColors.palette.m3onSurface
 
 						onClicked: {
-							panelWindow.detailsOpen = !panelWindow.detailsOpen
-							console.log(panelWindow.detailsOpen)
+							panelWindow.detailsOpen = !panelWindow.detailsOpen;
+							console.log(panelWindow.detailsOpen);
 						}
 					}
 
 					Item {
 						id: spacer
+
 						Layout.fillWidth: true
 					}
 
 					CustomButton {
 						id: okButton
-						text: "OK"
-						textColor: DynamicColors.palette.m3onPrimary
+
+						Layout.alignment: Qt.AlignRight
+						Layout.preferredHeight: 40
+						Layout.preferredWidth: 76
 						bgColor: DynamicColors.palette.m3primary
 						enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
 						radius: 1000
-						Layout.preferredWidth: 76
-						Layout.preferredHeight: 40
-						Layout.alignment: Qt.AlignRight
+						text: "OK"
+						textColor: DynamicColors.palette.m3onPrimary
+
 						onClicked: {
-							polkitAgent.flow.submit(passInput.text)
-							passInput.text = ""
-							passInput.forceActiveFocus()
+							polkitAgent.flow.submit(passInput.text);
+							passInput.text = "";
+							passInput.forceActiveFocus();
 						}
 					}
 
 					CustomButton {
 						id: cancelButton
-						text: "Cancel"
-						textColor: DynamicColors.palette.m3onSurface
+
+						Layout.alignment: Qt.AlignRight
+						Layout.preferredHeight: 40
+						Layout.preferredWidth: 76
 						bgColor: DynamicColors.palette.m3surfaceContainer
 						enabled: passInput.text.length > 0 || !!polkitAgent.flow?.isResponseRequired
 						radius: 1000
-						Layout.preferredWidth: 76
-						Layout.preferredHeight: 40
-						Layout.alignment: Qt.AlignRight
+						text: "Cancel"
+						textColor: DynamicColors.palette.m3onSurface
+
 						onClicked: {
-							root.shouldShow = false
-							console.log(icon.source, icon.visible)
-							polkitAgent.flow.cancelAuthenticationRequest()
-							passInput.text = ""
+							root.shouldShow = false;
+							console.log(icon.source, icon.visible);
+							polkitAgent.flow.cancelAuthenticationRequest();
+							passInput.text = "";
 						}
 					}
 				}
@@ -304,48 +310,49 @@ Scope {
 		}
 
 		Connections {
-			target: polkitAgent.flow
-
 			function onIsResponseRequiredChanged() {
-				passInput.text = ""
-				if ( polkitAgent.flow?.isResponseRequired )
-					root.shouldShow = true
-					passInput.forceActiveFocus()
+				passInput.text = "";
+				if (polkitAgent.flow?.isResponseRequired)
+					root.shouldShow = true;
+				passInput.forceActiveFocus();
 			}
 
 			function onIsSuccessfulChanged() {
-				if ( polkitAgent.flow?.isSuccessful )
-					root.shouldShow = false
-					passInput.text = ""
+				if (polkitAgent.flow?.isSuccessful)
+					root.shouldShow = false;
+				passInput.text = "";
 			}
+
+			target: polkitAgent.flow
 		}
 	}
 
 	PolkitAgent {
 		id: polkitAgent
+
 	}
 
 	Variants {
 		model: Quickshell.screens
 
 		PanelWindow {
-
 			required property var modelData
 
 			color: root.shouldShow ? "#80000000" : "transparent"
-			screen: modelData
 			exclusionMode: ExclusionMode.Ignore
+			screen: modelData
 			visible: panelWindow.visible
 
 			Behavior on color {
-				CAnim {}
+				CAnim {
+				}
 			}
 
 			anchors {
+				bottom: true
 				left: true
 				right: true
 				top: true
-				bottom: true
 			}
 		}
 	}

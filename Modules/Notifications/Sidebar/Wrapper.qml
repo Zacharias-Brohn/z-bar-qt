@@ -5,64 +5,64 @@ import qs.Config
 import QtQuick
 
 Item {
-    id: root
+	id: root
 
-    required property var visibilities
-    required property var panels
-    readonly property Props props: Props {}
+	required property var panels
+	readonly property Props props: Props {
+	}
+	required property var visibilities
 
-    visible: width > 0
-    implicitWidth: 0
+	implicitWidth: 0
+	visible: width > 0
 
-    states: State {
-        name: "visible"
-        when: root.visibilities.sidebar
+	states: State {
+		name: "visible"
+		when: root.visibilities.sidebar
 
-        PropertyChanges {
-            root.implicitWidth: Config.sidebar.sizes.width
-        }
-    }
+		PropertyChanges {
+			root.implicitWidth: Config.sidebar.sizes.width
+		}
+	}
+	transitions: [
+		Transition {
+			from: ""
+			to: "visible"
 
-    transitions: [
-        Transition {
-            from: ""
-            to: "visible"
-
-            Anim {
-                target: root
-                property: "implicitWidth"
+			Anim {
 				duration: MaterialEasing.expressiveEffectsTime
 				easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        },
-        Transition {
-            from: "visible"
-            to: ""
+				property: "implicitWidth"
+				target: root
+			}
+		},
+		Transition {
+			from: "visible"
+			to: ""
 
-            Anim {
-                target: root
-                property: "implicitWidth"
+			Anim {
 				easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        }
-    ]
+				property: "implicitWidth"
+				target: root
+			}
+		}
+	]
 
-    Loader {
-        id: content
+	Loader {
+		id: content
 
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.margins: 8
-        anchors.bottomMargin: 0
+		active: true
+		anchors.bottom: parent.bottom
+		anchors.bottomMargin: 0
+		anchors.left: parent.left
+		anchors.margins: 8
+		anchors.top: parent.top
 
-        active: true
-        Component.onCompleted: active = Qt.binding(() => (root.visibilities.sidebar && Config.sidebar.enabled) || root.visible)
+		sourceComponent: Content {
+			implicitWidth: Config.sidebar.sizes.width - 8 * 2
+			props: root.props
+			visibilities: root.visibilities
+		}
 
-        sourceComponent: Content {
-            implicitWidth: Config.sidebar.sizes.width - 8 * 2
-            props: root.props
-            visibilities: root.visibilities
-        }
-    }
+		Component.onCompleted: active = Qt.binding(() => (root.visibilities.sidebar && Config.sidebar.enabled) || root.visible)
+	}
 }

@@ -3,142 +3,139 @@ import QtQuick.Templates
 import qs.Config
 
 Slider {
-    id: root
+	id: root
 
-    required property string icon
-    property real oldValue
-    property bool initialized
 	property color color: DynamicColors.palette.m3secondary
+	required property string icon
+	property bool initialized
+	property real oldValue
 
-    orientation: Qt.Vertical
+	orientation: Qt.Vertical
 
-    background: CustomRect {
-        color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainer, 2)
-        radius: Appearance.rounding.full
+	background: CustomRect {
+		color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainer, 2)
+		radius: Appearance.rounding.full
 
-        CustomRect {
-            anchors.left: parent.left
-            anchors.right: parent.right
+		CustomRect {
+			anchors.left: parent.left
+			anchors.right: parent.right
+			color: root.color
+			implicitHeight: parent.height - y
+			radius: parent.radius
+			y: root.handle.y
+		}
+	}
+	handle: Item {
+		id: handle
 
-            y: root.handle.y
-            implicitHeight: parent.height - y
+		property alias moving: icon.moving
 
-            color: root.color
-            radius: parent.radius
-        }
-    }
+		implicitHeight: root.width
+		implicitWidth: root.width
+		y: root.visualPosition * (root.availableHeight - height)
 
-    handle: Item {
-        id: handle
+		Elevation {
+			anchors.fill: parent
+			level: handleInteraction.containsMouse ? 2 : 1
+			radius: rect.radius
+		}
 
-        property alias moving: icon.moving
+		CustomRect {
+			id: rect
 
-        y: root.visualPosition * (root.availableHeight - height)
-        implicitWidth: root.width
-        implicitHeight: root.width
+			anchors.fill: parent
+			color: DynamicColors.palette.m3inverseSurface
+			radius: Appearance.rounding.full
 
-        Elevation {
-            anchors.fill: parent
-            radius: rect.radius
-            level: handleInteraction.containsMouse ? 2 : 1
-        }
+			MouseArea {
+				id: handleInteraction
 
-        CustomRect {
-            id: rect
+				acceptedButtons: Qt.NoButton
+				anchors.fill: parent
+				cursorShape: Qt.PointingHandCursor
+				hoverEnabled: true
+			}
 
-            anchors.fill: parent
+			MaterialIcon {
+				id: icon
 
-            color: DynamicColors.palette.m3inverseSurface
-            radius: Appearance.rounding.full
+				property bool moving
 
-            MouseArea {
-                id: handleInteraction
+				function update(): void {
+					animate = !moving;
+					binding.when = moving;
+					font.pointSize = moving ? Appearance.font.size.small : Appearance.font.size.larger;
+					font.family = moving ? Appearance.font.family.sans : Appearance.font.family.material;
+				}
 
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                acceptedButtons: Qt.NoButton
-            }
+				anchors.centerIn: parent
+				color: DynamicColors.palette.m3inverseOnSurface
+				text: root.icon
 
-            MaterialIcon {
-                id: icon
+				onMovingChanged: anim.restart()
 
-                property bool moving
+				Binding {
+					id: binding
 
-                function update(): void {
-                    animate = !moving;
-                    binding.when = moving;
-                    font.pointSize = moving ? Appearance.font.size.small : Appearance.font.size.larger;
-                    font.family = moving ? Appearance.font.family.sans : Appearance.font.family.material;
-                }
+					property: "text"
+					target: icon
+					value: Math.round(root.value * 100)
+					when: false
+				}
 
-                text: root.icon
-                color: DynamicColors.palette.m3inverseOnSurface
-                anchors.centerIn: parent
+				SequentialAnimation {
+					id: anim
 
-                onMovingChanged: anim.restart()
+					Anim {
+						duration: Appearance.anim.durations.normal / 2
+						easing.bezierCurve: Appearance.anim.curves.standardAccel
+						property: "scale"
+						target: icon
+						to: 0
+					}
 
-                Binding {
-                    id: binding
+					ScriptAction {
+						script: icon.update()
+					}
 
-                    target: icon
-                    property: "text"
-                    value: Math.round(root.value * 100)
-                    when: false
-                }
+					Anim {
+						duration: Appearance.anim.durations.normal / 2
+						easing.bezierCurve: Appearance.anim.curves.standardDecel
+						property: "scale"
+						target: icon
+						to: 1
+					}
+				}
+			}
+		}
+	}
+	Behavior on value {
+		Anim {
+			duration: Appearance.anim.durations.large
+		}
+	}
 
-                SequentialAnimation {
-                    id: anim
+	onPressedChanged: handle.moving = pressed
+	onValueChanged: {
+		if (!initialized) {
+			initialized = true;
+			return;
+		}
+		if (Math.abs(value - oldValue) < 0.01)
+			return;
+		oldValue = value;
+		handle.moving = true;
+		stateChangeDelay.restart();
+	}
 
-                    Anim {
-                        target: icon
-                        property: "scale"
-                        to: 0
-                        duration: Appearance.anim.durations.normal / 2
-                        easing.bezierCurve: Appearance.anim.curves.standardAccel
-                    }
-                    ScriptAction {
-                        script: icon.update()
-                    }
-                    Anim {
-                        target: icon
-                        property: "scale"
-                        to: 1
-                        duration: Appearance.anim.durations.normal / 2
-                        easing.bezierCurve: Appearance.anim.curves.standardDecel
-                    }
-                }
-            }
-        }
-    }
+	Timer {
+		id: stateChangeDelay
 
-    onPressedChanged: handle.moving = pressed
+		interval: 500
 
-    onValueChanged: {
-        if (!initialized) {
-            initialized = true;
-            return;
-        }
-        if (Math.abs(value - oldValue) < 0.01)
-            return;
-        oldValue = value;
-        handle.moving = true;
-        stateChangeDelay.restart();
-    }
-
-    Timer {
-        id: stateChangeDelay
-
-        interval: 500
-        onTriggered: {
-            if (!root.pressed)
-                handle.moving = false;
-        }
-    }
-
-    Behavior on value {
-        Anim {
-            duration: Appearance.anim.durations.large
-        }
-    }
+		onTriggered: {
+			if (!root.pressed)
+				handle.moving = false;
+		}
+	}
 }

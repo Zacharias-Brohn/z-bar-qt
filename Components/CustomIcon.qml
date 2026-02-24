@@ -4,7 +4,7 @@ import Quickshell.Widgets
 import QtQuick
 
 IconImage {
-    id: root
+	id: root
 
-    asynchronous: true
+	asynchronous: true
 }

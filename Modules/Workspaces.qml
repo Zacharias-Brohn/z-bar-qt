@@ -10,119 +10,119 @@ import qs.Config
 import qs.Components
 
 Item {
-    id: itemRoot
-    required property PanelWindow bar
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    implicitWidth: workspacesRow.implicitWidth + 10
+	id: itemRoot
 
-    Behavior on implicitWidth {
-        NumberAnimation {
-            duration: MaterialEasing.expressiveEffectsTime
-            easing.bezierCurve: MaterialEasing.expressiveEffects
-        }
-    }
+	required property PanelWindow bar
 
-    Rectangle {
-        id: root
+	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	implicitWidth: workspacesRow.implicitWidth + 10
 
-        property HyprlandMonitor monitor: Hyprland.monitorFor( itemRoot.bar?.screen )
+	Behavior on implicitWidth {
+		NumberAnimation {
+			duration: MaterialEasing.expressiveEffectsTime
+			easing.bezierCurve: MaterialEasing.expressiveEffects
+		}
+	}
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        implicitHeight: 22
+	Rectangle {
+		id: root
 
-        function shouldShow(monitor) {
-            Hyprland.refreshWorkspaces();
-            Hyprland.refreshMonitors();
-            if ( monitor === root.monitor ) {
-                return true;
-            } else {
-                return false;
-            }
-        }
+		property HyprlandMonitor monitor: Hyprland.monitorFor(itemRoot.bar?.screen)
 
-        color: DynamicColors.tPalette.m3surfaceContainer
-        radius: height / 2
+		function shouldShow(monitor) {
+			Hyprland.refreshWorkspaces();
+			Hyprland.refreshMonitors();
+			if (monitor === root.monitor) {
+				return true;
+			} else {
+				return false;
+			}
+		}
 
-        Behavior on color {
-            CAnim {}
-        }
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
+		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: 22
+		radius: height / 2
 
-        RowLayout {
-            id: workspacesRow
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 6
-            spacing: 8
+		Behavior on color {
+			CAnim {
+			}
+		}
 
-            Repeater {
-                model: Hyprland.workspaces
+		RowLayout {
+			id: workspacesRow
 
-                RowLayout {
-                    id: workspaceIndicator
-                    required property var modelData
-                    visible: root.shouldShow( workspaceIndicator.modelData.monitor )
-                    CustomText {
-                        text: workspaceIndicator.modelData.name
-                        font.pointSize: 12
-                        color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
-                        visible: true
-                    }
+			anchors.left: parent.left
+			anchors.leftMargin: 6
+			anchors.verticalCenter: parent.verticalCenter
+			spacing: 8
 
-                    Rectangle {
+			Repeater {
+				model: Hyprland.workspaces
 
-                        implicitWidth: 14
-                        implicitHeight: 14
-                        radius: height / 2
-                        border.width: 1
+				RowLayout {
+					id: workspaceIndicator
 
-                        color: "transparent"
-                        border.color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
+					required property var modelData
 
+					visible: root.shouldShow(workspaceIndicator.modelData.monitor)
 
-                        scale: 1.0
-                        opacity: 1.0
+					CustomText {
+						color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
+						font.pointSize: 12
+						text: workspaceIndicator.modelData.name
+						visible: true
+					}
 
-                        CustomRect {
-                            anchors.centerIn: parent
-                            implicitWidth: 8
-                            implicitHeight: 8
+					Rectangle {
+						border.color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
+						border.width: 1
+						color: "transparent"
+						implicitHeight: 14
+						implicitWidth: 14
+						opacity: 1.0
+						radius: height / 2
+						scale: 1.0
 
-                            radius: implicitHeight / 2
-                            color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : "transparent"
-                        }
+						Behavior on border.color {
+							ColorAnimation {
+								duration: 150
+								easing.type: Easing.InOutQuad
+							}
+						}
+						NumberAnimation on opacity {
+							duration: 200
+							from: 0.0
+							to: 1.0
+						}
+						NumberAnimation on scale {
+							duration: 300
+							easing.type: Easing.OutBack
+							from: 0.0
+							to: 1.0
+						}
 
-                        Behavior on border.color {
-                            ColorAnimation {
-                                duration: 150
-                                easing.type: Easing.InOutQuad
-                            }
-                        }
+						CustomRect {
+							anchors.centerIn: parent
+							color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : "transparent"
+							implicitHeight: 8
+							implicitWidth: 8
+							radius: implicitHeight / 2
+						}
 
-                        NumberAnimation on scale {
-                            from: 0.0
-                            to: 1.0
-                            duration: 300
-                            easing.type: Easing.OutBack
-                        }
-                        
-                        NumberAnimation on opacity {
-                            from: 0.0
-                            to: 1.0
-                            duration: 200
-                        }
+						MouseArea {
+							anchors.fill: parent
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                workspaceIndicator.modelData.activate();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+							onClicked: {
+								workspaceIndicator.modelData.activate();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

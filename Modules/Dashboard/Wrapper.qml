@@ -6,85 +6,83 @@ import qs.Components
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property PersistentProperties visibilities
-    readonly property PersistentProperties dashState: PersistentProperties {
-        property int currentTab
-        property date currentDate: new Date()
+	readonly property PersistentProperties dashState: PersistentProperties {
+		property date currentDate: new Date()
+		property int currentTab
 
-        reloadableId: "dashboardState"
-    }
+		reloadableId: "dashboardState"
+	}
+	readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+	required property PersistentProperties visibilities
 
-    readonly property real nonAnimHeight: state === "visible" ? (content.item?.nonAnimHeight ?? 0) : 0
+	implicitHeight: 0
+	implicitWidth: content.implicitWidth
+	visible: height > 0
 
-    visible: height > 0
-    implicitHeight: 0
-    implicitWidth: content.implicitWidth
+	states: State {
+		name: "visible"
+		when: root.visibilities.dashboard && Config.dashboard.enabled
 
-    onStateChanged: {
-        if (state === "visible" && timer.running) {
-            timer.triggered();
-            timer.stop();
-        }
-    }
+		PropertyChanges {
+			root.implicitHeight: content.implicitHeight
+		}
+	}
+	transitions: [
+		Transition {
+			from: ""
+			to: "visible"
 
-    states: State {
-        name: "visible"
-        when: root.visibilities.dashboard && Config.dashboard.enabled
+			Anim {
+				duration: MaterialEasing.expressiveEffectsTime
+				easing.bezierCurve: MaterialEasing.expressiveEffects
+				property: "implicitHeight"
+				target: root
+			}
+		},
+		Transition {
+			from: "visible"
+			to: ""
 
-        PropertyChanges {
-            root.implicitHeight: content.implicitHeight
-        }
-    }
+			Anim {
+				easing.bezierCurve: MaterialEasing.expressiveEffects
+				property: "implicitHeight"
+				target: root
+			}
+		}
+	]
 
-    transitions: [
-        Transition {
-            from: ""
-            to: "visible"
+	onStateChanged: {
+		if (state === "visible" && timer.running) {
+			timer.triggered();
+			timer.stop();
+		}
+	}
 
-            Anim {
-                target: root
-                property: "implicitHeight"
-                duration: MaterialEasing.expressiveEffectsTime
-                easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        },
-        Transition {
-            from: "visible"
-            to: ""
+	Timer {
+		id: timer
 
-            Anim {
-                target: root
-                property: "implicitHeight"
-                easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        }
-    ]
+		interval: Appearance.anim.durations.extraLarge
+		running: true
 
-    Timer {
-        id: timer
+		onTriggered: {
+			content.active = Qt.binding(() => (root.visibilities.dashboard && Config.dashboard.enabled) || root.visible);
+			content.visible = true;
+		}
+	}
 
-        running: true
-        interval: Appearance.anim.durations.extraLarge
-        onTriggered: {
-            content.active = Qt.binding(() => (root.visibilities.dashboard && Config.dashboard.enabled) || root.visible);
-            content.visible = true;
-        }
-    }
+	Loader {
+		id: content
 
-    Loader {
-        id: content
+		active: true
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		visible: false
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: parent.bottom
-
-        visible: false
-        active: true
-
-        sourceComponent: Content {
-            visibilities: root.visibilities
-            state: root.dashState
-        }
-    }
+		sourceComponent: Content {
+			state: root.dashState
+			visibilities: root.visibilities
+		}
+	}
 }

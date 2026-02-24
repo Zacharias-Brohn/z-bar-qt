@@ -26,12 +26,12 @@ Item {
 
 			CustomRadioButton {
 				id: network
-				visible: modelData.name !== "lo"
 
 				required property NetworkDevice modelData
 
 				checked: Helpers.Network.activeDevice?.name === modelData.name
 				text: modelData.description
+				visible: modelData.name !== "lo"
 			}
 		}
 	}

@@ -12,105 +12,105 @@ import qs.Helpers
 Item {
 	id: root
 
+	required property Item content
+
+	implicitHeight: clayout.contentHeight + Appearance.padding.smaller * 2
+	implicitWidth: clayout.contentWidth + Appearance.padding.smaller * 2
+
 	ListModel {
 		id: listModel
+
 		ListElement {
-			name: "General"
 			icon: "settings"
+			name: "General"
 		}
-		
+
 		ListElement {
-			name: "Wallpaper"
 			icon: "wallpaper"
+			name: "Wallpaper"
 		}
 
 		ListElement {
-			name: "Bar"
 			icon: "settop_component"
+			name: "Bar"
 		}
 
 		ListElement {
-			name: "Lockscreen"
 			icon: "lock"
+			name: "Lockscreen"
 		}
-		
+
 		ListElement {
-			name: "Services"
 			icon: "build_circle"
+			name: "Services"
 		}
 
 		ListElement {
-			name: "Notifications"
 			icon: "notifications"
+			name: "Notifications"
 		}
 
 		ListElement {
-			name: "Sidebar"
 			icon: "view_sidebar"
+			name: "Sidebar"
 		}
 
 		ListElement {
-			name: "Utilities"
 			icon: "handyman"
+			name: "Utilities"
 		}
 
 		ListElement {
-			name: "Dashboard"
 			icon: "dashboard"
+			name: "Dashboard"
 		}
 
 		ListElement {
+			icon: "colors"
 			name: "Appearance"
-			icon: "colors"
 		}
 
 		ListElement {
-			name: "On screen display"
 			icon: "display_settings"
+			name: "On screen display"
 		}
 
 		ListElement {
-			name: "Launcher"
 			icon: "rocket_launch"
+			name: "Launcher"
 		}
 
 		ListElement {
-			name: "Colors"
 			icon: "colors"
+			name: "Colors"
 		}
 	}
 
-	required property Item content
-
-	implicitWidth: clayout.contentWidth + Appearance.padding.smaller * 2
-	implicitHeight: clayout.contentHeight + Appearance.padding.smaller * 2
-
 	CustomRect {
-
 		anchors.fill: parent
-
 		color: DynamicColors.tPalette.m3surfaceContainer
 		radius: 4
 
 		CustomListView {
 			id: clayout
+
 			anchors.centerIn: parent
-			model: listModel
-
-			contentWidth: contentItem.childrenRect.width
 			contentHeight: contentItem.childrenRect.height
-			implicitWidth: contentItem.childrenRect.width
+			contentWidth: contentItem.childrenRect.width
+			highlightFollowsCurrentItem: false
 			implicitHeight: contentItem.childrenRect.height
-
+			implicitWidth: contentItem.childrenRect.width
+			model: listModel
 			spacing: 5
 
+			delegate: Category {
+			}
 			highlight: CustomRect {
 				color: DynamicColors.palette.m3primary
-				radius: 4
-
-				y: clayout.currentItem?.y ?? 0
-				implicitWidth: clayout.width
 				implicitHeight: clayout.currentItem?.implicitHeight ?? 0
+				implicitWidth: clayout.width
+				radius: 4
+				y: clayout.currentItem?.y ?? 0
 
 				Behavior on y {
 					Anim {
@@ -119,53 +119,49 @@ Item {
 					}
 				}
 			}
-
-			highlightFollowsCurrentItem: false
-
-			delegate: Category {}
 		}
 	}
 
 	component Category: CustomRect {
 		id: categoryItem
 
-		required property string name
 		required property string icon
 		required property int index
+		required property string name
 
-		implicitWidth: 200
 		implicitHeight: 42
+		implicitWidth: 200
 		radius: 4
 
 		RowLayout {
 			id: layout
 
 			anchors.left: parent.left
+			anchors.margins: Appearance.padding.smaller
 			anchors.right: parent.right
 			anchors.verticalCenter: parent.verticalCenter
-			anchors.margins: Appearance.padding.smaller
-			
+
 			MaterialIcon {
 				id: icon
 
-				text: categoryItem.icon
+				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+				Layout.fillHeight: true
+				Layout.preferredWidth: icon.contentWidth
 				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				font.pointSize: 22
-				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-				Layout.preferredWidth: icon.contentWidth
-				Layout.fillHeight: true
+				text: categoryItem.icon
 				verticalAlignment: Text.AlignVCenter
 			}
 
 			CustomText {
 				id: text
 
-				text: categoryItem.name
-				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-				Layout.fillWidth: true
 				Layout.fillHeight: true
+				Layout.fillWidth: true
 				Layout.leftMargin: Appearance.spacing.normal
+				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
+				text: categoryItem.name
 				verticalAlignment: Text.AlignVCenter
 			}
 		}

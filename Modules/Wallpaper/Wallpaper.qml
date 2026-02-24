@@ -4,28 +4,32 @@ import Quickshell.Wayland
 import qs.Config
 
 Loader {
-
-	asynchronous: true
 	active: Config.background.enabled
+	asynchronous: true
 
 	sourceComponent: Variants {
 		model: Quickshell.screens
+
 		PanelWindow {
 			id: root
+
 			required property var modelData
-			screen: modelData
-			WlrLayershell.namespace: "ZShell-Wallpaper"
+
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore
 			WlrLayershell.layer: WlrLayer.Bottom
+			WlrLayershell.namespace: "ZShell-Wallpaper"
 			color: "transparent"
+			screen: modelData
 
 			anchors {
-				top: true
+				bottom: true
 				left: true
 				right: true
-				bottom: true
+				top: true
 			}
-			WallBackground {}
+
+			WallBackground {
+			}
 		}
 	}
 }

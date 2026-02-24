@@ -11,16 +11,16 @@ import qs.Helpers
 Item {
 	id: root
 
-	required property Item wrapper
 	required property ShellScreen screen
+	required property Item wrapper
 
-	implicitWidth: layout.implicitWidth + 16
 	implicitHeight: layout.implicitHeight + 16
+	implicitWidth: layout.implicitWidth + 16
 
 	GridLayout {
 		id: layout
-		anchors.centerIn: parent
 
+		anchors.centerIn: parent
 		columnSpacing: 8
 		rowSpacing: 8
 
@@ -29,23 +29,21 @@ Item {
 
 			CustomRect {
 				id: workspacePreview
+
 				required property HyprlandWorkspace modelData
 
+				Layout.preferredHeight: 180 + 10
+				Layout.preferredWidth: 320 + 10
 				border.color: "white"
 				border.width: 1
 				radius: 8
-				Layout.preferredWidth: 320 + 10
-				Layout.preferredHeight: 180 + 10
 
 				Repeater {
 					model: workspacePreview.modelData.toplevels
 
 					Item {
 						id: preview
-						anchors.fill: parent
-						anchors.margins: 5
 
-						required property HyprlandToplevel modelData
 						property rect appPosition: {
 							let {
 								at: [cx, cy],
@@ -55,23 +53,26 @@ Item {
 							cx -= modelData.monitor.x;
 							cy -= modelData.monitor.y;
 
-							return Qt.rect( (cx / 8), (cy / 8), (cw / 8), (ch / 8) )
+							return Qt.rect((cx / 8), (cy / 8), (cw / 8), (ch / 8));
 						}
+						required property HyprlandToplevel modelData
+
+						anchors.fill: parent
+						anchors.margins: 5
 
 						CustomRect {
 							border.color: DynamicColors.tPalette.m3outline
 							border.width: 1
-							radius: 4
-							implicitWidth: preview.appPosition.width
 							implicitHeight: preview.appPosition.height
-
+							implicitWidth: preview.appPosition.width
+							radius: 4
 							x: preview.appPosition.x
 							y: preview.appPosition.y - 3.4
 
 							ScreencopyView {
 								id: previewCopy
-								anchors.fill: parent
 
+								anchors.fill: parent
 								captureSource: preview.modelData.wayland
 								live: true
 							}

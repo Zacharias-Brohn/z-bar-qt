@@ -2,28 +2,29 @@ import Quickshell.Io
 import Quickshell
 
 JsonObject {
+	property Apps apps: Apps {
+	}
+	property Color color: Color {
+	}
+	property Idle idle: Idle {
+	}
 	property string logo: ""
 	property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
-	property Color color: Color {}
-	property Apps apps: Apps {}
-    property Idle idle: Idle {}
 
-	component Color: JsonObject {
-		property bool wallust: false
-		property bool schemeGeneration: true
-		property string mode: "dark"
-		property int scheduleDarkStart: 0
-		property int scheduleDarkEnd: 0
-		property bool neovimColors: false
+	component Apps: JsonObject {
+		property list<string> audio: ["pavucontrol"]
+		property list<string> explorer: ["dolphin"]
+		property list<string> playback: ["mpv"]
+		property list<string> terminal: ["kitty"]
 	}
-
-    component Apps: JsonObject {
-        property list<string> terminal: ["kitty"]
-        property list<string> audio: ["pavucontrol"]
-        property list<string> playback: ["mpv"]
-        property list<string> explorer: ["dolphin"]
-    }
-
+	component Color: JsonObject {
+		property string mode: "dark"
+		property bool neovimColors: false
+		property int scheduleDarkEnd: 0
+		property int scheduleDarkStart: 0
+		property bool schemeGeneration: true
+		property bool wallust: false
+	}
 	component Idle: JsonObject {
 		property list<var> timeouts: [
 			{

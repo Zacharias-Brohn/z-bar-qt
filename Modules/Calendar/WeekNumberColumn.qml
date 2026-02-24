@@ -8,38 +8,38 @@ import qs.Config
 import qs.Helpers
 
 ColumnLayout {
-    id: root
+	id: root
 
-    spacing: 4
+	readonly property var weekNumbers: Calendar.getWeekNumbers(Calendar.displayMonth, Calendar.displayYear)
 
-    readonly property var weekNumbers: Calendar.getWeekNumbers(Calendar.displayMonth, Calendar.displayYear)
+	spacing: 4
 
-    Repeater {
-        model: ScriptModel {
+	Repeater {
+		model: ScriptModel {
 			values: root.weekNumbers
 		}
 
-        Item {
-            id: weekItem
-            Layout.preferredHeight: 40
-            Layout.preferredWidth: 20
-            Layout.alignment: Qt.AlignHCenter
+		Item {
+			id: weekItem
 
-            required property int index
-            required property var modelData
+			required property int index
+			required property var modelData
 
-            CustomText {
-                id: weekText
+			Layout.alignment: Qt.AlignHCenter
+			Layout.preferredHeight: 40
+			Layout.preferredWidth: 20
 
-                anchors.centerIn: parent
+			CustomText {
+				id: weekText
 
-                text: weekItem.modelData
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: DynamicColors.palette.m3onSurfaceVariant
-                opacity: 0.5
-                font.pointSize: 10
-            }
-        }
-    }
+				anchors.centerIn: parent
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 10
+				horizontalAlignment: Text.AlignHCenter
+				opacity: 0.5
+				text: weekItem.modelData
+				verticalAlignment: Text.AlignVCenter
+			}
+		}
+	}
 }

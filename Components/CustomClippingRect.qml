@@ -2,11 +2,12 @@ import Quickshell.Widgets
 import QtQuick
 
 ClippingRectangle {
-    id: root
+	id: root
 
-    color: "transparent"
+	color: "transparent"
 
-    Behavior on color {
-        CAnim {}
-    }
+	Behavior on color {
+		CAnim {
+		}
+	}
 }

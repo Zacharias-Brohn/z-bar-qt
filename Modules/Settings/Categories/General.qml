@@ -20,7 +20,6 @@ CustomRect {
 		}
 
 		Item {
-			
 		}
 	}
 
@@ -29,26 +28,26 @@ CustomRect {
 
 		required property string name
 
-		implicitWidth: 200
 		implicitHeight: 42
+		implicitWidth: 200
 		radius: 4
 
 		RowLayout {
 			id: layout
 
 			anchors.left: parent.left
+			anchors.margins: Appearance.padding.smaller
 			anchors.right: parent.right
 			anchors.verticalCenter: parent.verticalCenter
-			anchors.margins: Appearance.padding.smaller
 
 			CustomText {
 				id: text
 
-				text: settingsItem.name
 				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-				Layout.fillWidth: true
 				Layout.fillHeight: true
+				Layout.fillWidth: true
 				Layout.leftMargin: Appearance.spacing.normal
+				text: settingsItem.name
 				verticalAlignment: Text.AlignVCenter
 			}
 		}

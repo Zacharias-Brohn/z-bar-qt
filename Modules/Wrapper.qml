@@ -6,182 +6,177 @@ import qs.Components
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property ShellScreen screen
+	property list<real> animCurve: MaterialEasing.emphasized
+	property int animLength: MaterialEasing.emphasizedDecelTime
+	readonly property Item current: content.item?.current ?? null
+	property real currentCenter
+	property string currentName
+	property string detachedMode
+	property bool hasCurrent
+	readonly property bool isDetached: detachedMode.length > 0
+	readonly property real nonAnimHeight: hasCurrent ? children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight : 0
+	readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
+	property string queuedMode
+	required property ShellScreen screen
 
-    readonly property real nonAnimWidth: children.find(c => c.shouldBeActive)?.implicitWidth ?? content.implicitWidth
-    readonly property real nonAnimHeight: hasCurrent ? children.find(c => c.shouldBeActive)?.implicitHeight ?? content.implicitHeight : 0
-    readonly property Item current: content.item?.current ?? null
+	function close(): void {
+		hasCurrent = false;
+		animCurve = MaterialEasing.emphasizedDecel;
+		animLength = MaterialEasing.emphasizedDecelTime;
+		detachedMode = "";
+		animCurve = MaterialEasing.emphasized;
+	}
 
-    property string currentName
-    property real currentCenter
-    property bool hasCurrent
+	function detach(mode: string): void {
+		animLength = 600;
+		if (mode === "winfo") {
+			detachedMode = mode;
+		} else {
+			detachedMode = "any";
+			queuedMode = mode;
+		}
+		focus = true;
+	}
 
-    property string detachedMode
-    property string queuedMode
-    readonly property bool isDetached: detachedMode.length > 0
+	clip: true
+	implicitHeight: nonAnimHeight
+	implicitWidth: nonAnimWidth
+	visible: width > 0 && height > 0
 
-    property int animLength: MaterialEasing.emphasizedDecelTime
-    property list<real> animCurve: MaterialEasing.emphasized
+	Behavior on implicitHeight {
+		Anim {
+			duration: root.animLength
+			easing.bezierCurve: root.animCurve
+		}
+	}
+	Behavior on implicitWidth {
+		enabled: root.implicitHeight > 0
 
-    function detach(mode: string): void {
-        animLength = 600;
-        if (mode === "winfo") {
-            detachedMode = mode;
-        } else {
-            detachedMode = "any";
-            queuedMode = mode;
-        }
-        focus = true;
-    }
+		Anim {
+			duration: root.animLength
+			easing.bezierCurve: root.animCurve
+		}
+	}
 
-    function close(): void {
-        hasCurrent = false;
-        animCurve = MaterialEasing.emphasizedDecel;
-        animLength = MaterialEasing.emphasizedDecelTime;
-        detachedMode = "";
-        animCurve = MaterialEasing.emphasized;
-    }
+	// Comp {
+	//     shouldBeActive: root.detachedMode === "winfo"
+	//     asynchronous: true
+	//     anchors.centerIn: parent
+	//
+	//     sourceComponent: WindowInfo {
+	//         screen: root.screen
+	//         client: Hypr.activeToplevel
+	//     }
+	// }
 
-    visible: width > 0 && height > 0
-    clip: true
+	// Comp {
+	//     shouldBeActive: root.detachedMode === "any"
+	//     asynchronous: true
+	//     anchors.centerIn: parent
+	//
+	//     sourceComponent: ControlCenter {
+	//         screen: root.screen
+	//         active: root.queuedMode
+	//
+	//         function close(): void {
+	//             root.close();
+	//         }
+	//     }
+	// }
 
-    implicitWidth: nonAnimWidth
-    implicitHeight: nonAnimHeight
+	Behavior on x {
+		enabled: root.implicitHeight > 0
 
-    Keys.onEscapePressed: close()
+		Anim {
+			duration: root.animLength
+			easing.bezierCurve: root.animCurve
+		}
+	}
+	Behavior on y {
+		Anim {
+			duration: root.animLength
+			easing.bezierCurve: root.animCurve
+		}
+	}
 
-    HyprlandFocusGrab {
-        active: root.isDetached
-        windows: [QsWindow.window]
-        onCleared: root.close()
-    }
+	Keys.onEscapePressed: close()
 
-    Binding {
-        when: root.isDetached
+	HyprlandFocusGrab {
+		active: root.isDetached
+		windows: [QsWindow.window]
 
-        target: QsWindow.window
-        property: "WlrLayershell.keyboardFocus"
-        value: WlrKeyboardFocus.OnDemand
-    }
+		onCleared: root.close()
+	}
 
-    Comp {
-        id: content
+	Binding {
+		property: "WlrLayershell.keyboardFocus"
+		target: QsWindow.window
+		value: WlrKeyboardFocus.OnDemand
+		when: root.isDetached
+	}
 
-        shouldBeActive: root.hasCurrent
-        asynchronous: true
+	Comp {
+		id: content
 
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		asynchronous: true
+		shouldBeActive: root.hasCurrent
 
-        sourceComponent: Content {
-            wrapper: root
-        }
-    }
+		sourceComponent: Content {
+			wrapper: root
+		}
+	}
 
-    // Comp {
-    //     shouldBeActive: root.detachedMode === "winfo"
-    //     asynchronous: true
-    //     anchors.centerIn: parent
-    //
-    //     sourceComponent: WindowInfo {
-    //         screen: root.screen
-    //         client: Hypr.activeToplevel
-    //     }
-    // }
+	component Comp: Loader {
+		id: comp
 
-    // Comp {
-    //     shouldBeActive: root.detachedMode === "any"
-    //     asynchronous: true
-    //     anchors.centerIn: parent
-    //
-    //     sourceComponent: ControlCenter {
-    //         screen: root.screen
-    //         active: root.queuedMode
-    //
-    //         function close(): void {
-    //             root.close();
-    //         }
-    //     }
-    // }
+		property bool shouldBeActive
 
-    Behavior on x {
-        enabled: root.implicitHeight > 0
-        Anim {
-            duration: root.animLength
-            easing.bezierCurve: root.animCurve
-        }
-    }
+		active: false
+		asynchronous: true
+		opacity: 0
 
-    Behavior on y {
-        Anim {
-            duration: root.animLength
-            easing.bezierCurve: root.animCurve
-        }
-    }
+		states: State {
+			name: "active"
+			when: comp.shouldBeActive
 
-    Behavior on implicitWidth {
-        enabled: root.implicitHeight > 0
-        Anim {
-            duration: root.animLength
-            easing.bezierCurve: root.animCurve
-        }
-    }
+			PropertyChanges {
+				comp.active: true
+				comp.opacity: 1
+			}
+		}
+		transitions: [
+			Transition {
+				from: ""
+				to: "active"
 
-    Behavior on implicitHeight {
-        Anim {
-            duration: root.animLength
-            easing.bezierCurve: root.animCurve
-        }
-    }
+				SequentialAnimation {
+					PropertyAction {
+						property: "active"
+					}
 
-    component Comp: Loader {
-        id: comp
+					Anim {
+						property: "opacity"
+					}
+				}
+			},
+			Transition {
+				from: "active"
+				to: ""
 
-        property bool shouldBeActive
+				SequentialAnimation {
+					Anim {
+						property: "opacity"
+					}
 
-        asynchronous: true
-        active: false
-        opacity: 0
-
-        states: State {
-            name: "active"
-            when: comp.shouldBeActive
-
-            PropertyChanges {
-                comp.opacity: 1
-                comp.active: true
-            }
-        }
-
-        transitions: [
-            Transition {
-                from: ""
-                to: "active"
-
-                SequentialAnimation {
-                    PropertyAction {
-                        property: "active"
-                    }
-                    Anim {
-                        property: "opacity"
-                    }
-                }
-            },
-            Transition {
-                from: "active"
-                to: ""
-
-                SequentialAnimation {
-                    Anim {
-                        property: "opacity"
-                    }
-                    PropertyAction {
-                        property: "active"
-                    }
-                }
-            }
-        ]
-    }
+					PropertyAction {
+						property: "active"
+					}
+				}
+			}
+		]
+	}
 }

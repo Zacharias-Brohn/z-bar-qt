@@ -6,40 +6,42 @@ import qs.Helpers
 import qs.Components
 
 Item {
-    id: root
+	id: root
 
-	required property PersistentProperties visibilities
 	required property Wrapper popouts
+	required property PersistentProperties visibilities
 
-    implicitWidth: 25
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
+	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	implicitWidth: 25
 
 	CustomRect {
+		anchors.bottomMargin: 3
 		anchors.fill: parent
 		anchors.topMargin: 3
-		anchors.bottomMargin: 3
 		color: "transparent"
 		radius: 4
+
 		MaterialIcon {
 			id: notificationCenterIcon
 
-			anchors.centerIn: parent
-
 			property color iconColor: DynamicColors.palette.m3onSurface
 
-			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
+			anchors.centerIn: parent
+			color: iconColor
 			font.family: "Material Symbols Rounded"
 			font.pixelSize: 20
-			color: iconColor
+			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
 
 			Behavior on color {
-				CAnim {}
+				CAnim {
+				}
 			}
 		}
 
 		StateLayer {
 			cursorShape: Qt.PointingHandCursor
+
 			onClicked: {
 				root.visibilities.sidebar = !root.visibilities.sidebar;
 			}

@@ -8,128 +8,127 @@ import qs.Config
 import qs.Daemons
 
 Item {
-    id: root
+	id: root
 
-    required property ShellScreen screen
-    required property var visibilities
-    property bool hovered
-    readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(root.screen)
-    readonly property bool shouldBeActive: visibilities.osd && Config.osd.enabled && !(visibilities.utilities && Config.utilities.enabled)
+	property real brightness
+	property bool hovered
+	readonly property Brightness.Monitor monitor: Brightness.getMonitorForScreen(root.screen)
+	property bool muted
+	required property ShellScreen screen
+	readonly property bool shouldBeActive: visibilities.osd && Config.osd.enabled && !(visibilities.utilities && Config.utilities.enabled)
+	property bool sourceMuted
+	property real sourceVolume
+	required property var visibilities
+	property real volume
 
-    property real volume
-    property bool muted
-    property real sourceVolume
-    property bool sourceMuted
-    property real brightness
+	function show(): void {
+		visibilities.osd = true;
+		timer.restart();
+	}
 
-    function show(): void {
-        visibilities.osd = true;
-        timer.restart();
-    }
+	implicitHeight: content.implicitHeight
+	implicitWidth: 0
+	visible: width > 0
 
-    Component.onCompleted: {
-        volume = Audio.volume;
-        muted = Audio.muted;
-        sourceVolume = Audio.sourceVolume;
-        sourceMuted = Audio.sourceMuted;
-        brightness = root.monitor?.brightness ?? 0;
-    }
+	states: State {
+		name: "visible"
+		when: root.shouldBeActive
 
-    visible: width > 0
-    implicitWidth: 0
-    implicitHeight: content.implicitHeight
+		PropertyChanges {
+			root.implicitWidth: content.implicitWidth
+		}
+	}
+	transitions: [
+		Transition {
+			from: ""
+			to: "visible"
 
-    states: State {
-        name: "visible"
-        when: root.shouldBeActive
+			Anim {
+				easing.bezierCurve: MaterialEasing.expressiveEffects
+				property: "implicitWidth"
+				target: root
+			}
+		},
+		Transition {
+			from: "visible"
+			to: ""
 
-        PropertyChanges {
-            root.implicitWidth: content.implicitWidth
-        }
-    }
+			Anim {
+				easing.bezierCurve: MaterialEasing.expressiveEffects
+				property: "implicitWidth"
+				target: root
+			}
+		}
+	]
 
-    transitions: [
-        Transition {
-            from: ""
-            to: "visible"
+	Component.onCompleted: {
+		volume = Audio.volume;
+		muted = Audio.muted;
+		sourceVolume = Audio.sourceVolume;
+		sourceMuted = Audio.sourceMuted;
+		brightness = root.monitor?.brightness ?? 0;
+	}
 
-            Anim {
-                target: root
-                property: "implicitWidth"
-                easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        },
-        Transition {
-            from: "visible"
-            to: ""
+	Connections {
+		function onMutedChanged(): void {
+			root.show();
+			root.muted = Audio.muted;
+		}
 
-            Anim {
-                target: root
-                property: "implicitWidth"
-                easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        }
-    ]
+		function onSourceMutedChanged(): void {
+			root.show();
+			root.sourceMuted = Audio.sourceMuted;
+		}
 
-    Connections {
-        target: Audio
+		function onSourceVolumeChanged(): void {
+			root.show();
+			root.sourceVolume = Audio.sourceVolume;
+		}
 
-        function onMutedChanged(): void {
-            root.show();
-            root.muted = Audio.muted;
-        }
+		function onVolumeChanged(): void {
+			root.show();
+			root.volume = Audio.volume;
+		}
 
-        function onVolumeChanged(): void {
-            root.show();
-            root.volume = Audio.volume;
-        }
+		target: Audio
+	}
 
-        function onSourceMutedChanged(): void {
-            root.show();
-            root.sourceMuted = Audio.sourceMuted;
-        }
+	Connections {
+		function onBrightnessChanged(): void {
+			root.show();
+			root.brightness = root.monitor?.brightness ?? 0;
+		}
 
-        function onSourceVolumeChanged(): void {
-            root.show();
-            root.sourceVolume = Audio.sourceVolume;
-        }
-    }
+		target: root.monitor
+	}
 
-    Connections {
-        target: root.monitor
+	Timer {
+		id: timer
 
-        function onBrightnessChanged(): void {
-            root.show();
-            root.brightness = root.monitor?.brightness ?? 0;
-        }
-    }
+		interval: Config.osd.hideDelay
 
-    Timer {
-        id: timer
+		onTriggered: {
+			if (!root.hovered)
+				root.visibilities.osd = false;
+		}
+	}
 
-        interval: Config.osd.hideDelay
-        onTriggered: {
-            if (!root.hovered)
-                root.visibilities.osd = false;
-        }
-    }
+	Loader {
+		id: content
 
-    Loader {
-        id: content
+		anchors.left: parent.left
+		anchors.verticalCenter: parent.verticalCenter
 
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
+		sourceComponent: Content {
+			brightness: root.brightness
+			monitor: root.monitor
+			muted: root.muted
+			sourceMuted: root.sourceMuted
+			sourceVolume: root.sourceVolume
+			visibilities: root.visibilities
+			volume: root.volume
+		}
 
-        Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
-
-        sourceComponent: Content {
-            monitor: root.monitor
-            visibilities: root.visibilities
-            volume: root.volume
-            muted: root.muted
-            sourceVolume: root.sourceVolume
-            sourceMuted: root.sourceMuted
-            brightness: root.brightness
-        }
-    }
+		Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
+	}
 }

@@ -8,25 +8,28 @@ import qs.Helpers as Helpers
 Item {
 	id: root
 
-	implicitWidth: layout.childrenRect.width + 10 * 2
-	anchors.top: parent.top
 	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	implicitWidth: layout.childrenRect.width + 10 * 2
 
 	CustomRect {
+		anchors.bottomMargin: 4
 		anchors.fill: parent
 		anchors.topMargin: 4
-		anchors.bottomMargin: 4
 		color: DynamicColors.tPalette.m3surfaceContainer
 		radius: 1000
 	}
 
 	RowLayout {
 		id: layout
+
 		anchors.centerIn: parent
 
 		MaterialIcon {
-			animate: true
 			Layout.alignment: Qt.AlignVCenter
+			animate: true
+			color: !Helpers.UPower.onBattery || UPower.displayDevice.percentage > 0.2 ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3error
+			fill: 1
 			text: {
 				if (!Helpers.UPower.displayDevice.isLaptopBattery) {
 					if (PowerProfiles.profile === PowerProfile.PowerSaver)
@@ -45,8 +48,6 @@ Item {
 					level--;
 				return charging ? `battery_charging_${(level + 3) * 10}` : `battery_${level}_bar`;
 			}
-			color: !Helpers.UPower.onBattery || UPower.displayDevice.percentage > 0.2 ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3error
-			fill: 1
 		}
 
 		CustomText {

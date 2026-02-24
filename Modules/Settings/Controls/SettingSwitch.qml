@@ -1,37 +1,33 @@
-import Quickshell
-import Quickshell.Widgets
 import QtQuick
 import QtQuick.Layouts
 import qs.Components
-import qs.Modules as Modules
 import qs.Config
-import qs.Helpers
 
 RowLayout {
 	id: root
 
+	required property string name
 	required property var object
 	required property string setting
-	required property string name
-	
-	Layout.preferredHeight: 42
+
 	Layout.fillWidth: true
-	
+	Layout.preferredHeight: 42
+
 	CustomText {
 		id: text
-		
-		text: root.name
-		font.pointSize: 16
-		Layout.fillWidth: true
+
 		Layout.alignment: Qt.AlignLeft
+		Layout.fillWidth: true
+		font.pointSize: 16
+		text: root.name
 	}
 
 	CustomSwitch {
 		id: cswitch
 
 		Layout.alignment: Qt.AlignRight
-
 		checked: root.object[root.setting]
+
 		onToggled: {
 			root.object[root.setting] = checked;
 			Config.save();

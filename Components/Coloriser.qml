@@ -2,12 +2,13 @@ import QtQuick
 import QtQuick.Effects
 
 MultiEffect {
-    property color sourceColor: "black"
+	property color sourceColor: "black"
 
-    colorization: 1
-    brightness: 1 - sourceColor.hslLightness
+	brightness: 1 - sourceColor.hslLightness
+	colorization: 1
 
-    Behavior on colorizationColor {
-        CAnim {}
-    }
+	Behavior on colorizationColor {
+		CAnim {
+		}
+	}
 }

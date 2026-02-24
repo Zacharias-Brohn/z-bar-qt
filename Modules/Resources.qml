@@ -10,81 +10,87 @@ import qs.Effects
 import qs.Components
 
 Item {
-    id: root
-    implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
-    implicitHeight: 34
-    clip: true
+	id: root
 
-    Rectangle {
-        id: backgroundRect
-        anchors {
-            left: parent.left
-            right: parent.right
-            verticalCenter: parent.verticalCenter
-        }
-        implicitHeight: 22
-        color: DynamicColors.tPalette.m3surfaceContainer
-        radius: height / 2
-        Behavior on color {
-            CAnim {}
-        }
-        RowLayout {
-            id: rowLayout
+	clip: true
+	implicitHeight: 34
+	implicitWidth: rowLayout.implicitWidth + rowLayout.anchors.leftMargin + rowLayout.anchors.rightMargin
 
-            spacing: 6
-            anchors.fill: parent
-            anchors.leftMargin: 5
-            anchors.rightMargin: 5
+	Rectangle {
+		id: backgroundRect
 
-            MaterialIcon {
-                Layout.alignment: Qt.AlignVCenter
-                font.pixelSize: 18
-                text: "memory_alt"
-                color: DynamicColors.palette.m3onSurface
-            }
+		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: 22
+		radius: height / 2
 
-            Resource {
-                percentage: ResourceUsage.memoryUsedPercentage
-                warningThreshold: 95
-                mainColor: DynamicColors.palette.m3primary
-            }
+		Behavior on color {
+			CAnim {
+			}
+		}
 
-            MaterialIcon {
-                Layout.alignment: Qt.AlignVCenter
-                font.pixelSize: 18
-                text: "memory"
-                color: DynamicColors.palette.m3onSurface
-            }
+		anchors {
+			left: parent.left
+			right: parent.right
+			verticalCenter: parent.verticalCenter
+		}
 
-            Resource {
-                percentage: ResourceUsage.cpuUsage
-                warningThreshold: 80
-                mainColor: DynamicColors.palette.m3secondary
-            }
+		RowLayout {
+			id: rowLayout
 
-            MaterialIcon {
-                Layout.alignment: Qt.AlignVCenter
-                font.pixelSize: 18
-                text: "gamepad"
-                color: DynamicColors.palette.m3onSurface
-            }
+			anchors.fill: parent
+			anchors.leftMargin: 5
+			anchors.rightMargin: 5
+			spacing: 6
 
-            Resource {
-                percentage: ResourceUsage.gpuUsage
-                mainColor: DynamicColors.palette.m3tertiary
-            }
+			MaterialIcon {
+				Layout.alignment: Qt.AlignVCenter
+				color: DynamicColors.palette.m3onSurface
+				font.pixelSize: 18
+				text: "memory_alt"
+			}
 
-            MaterialIcon {
-                Layout.alignment: Qt.AlignVCenter
-                font.pixelSize: 18
-                text: "developer_board"
-                color: DynamicColors.palette.m3onSurface
-            }
+			Resource {
+				mainColor: DynamicColors.palette.m3primary
+				percentage: ResourceUsage.memoryUsedPercentage
+				warningThreshold: 95
+			}
 
-            Resource {
-                percentage: ResourceUsage.gpuMemUsage
-                mainColor: DynamicColors.palette.m3primary
-            }
-        }
-    }
+			MaterialIcon {
+				Layout.alignment: Qt.AlignVCenter
+				color: DynamicColors.palette.m3onSurface
+				font.pixelSize: 18
+				text: "memory"
+			}
+
+			Resource {
+				mainColor: DynamicColors.palette.m3secondary
+				percentage: ResourceUsage.cpuUsage
+				warningThreshold: 80
+			}
+
+			MaterialIcon {
+				Layout.alignment: Qt.AlignVCenter
+				color: DynamicColors.palette.m3onSurface
+				font.pixelSize: 18
+				text: "gamepad"
+			}
+
+			Resource {
+				mainColor: DynamicColors.palette.m3tertiary
+				percentage: ResourceUsage.gpuUsage
+			}
+
+			MaterialIcon {
+				Layout.alignment: Qt.AlignVCenter
+				color: DynamicColors.palette.m3onSurface
+				font.pixelSize: 18
+				text: "developer_board"
+			}
+
+			Resource {
+				mainColor: DynamicColors.palette.m3primary
+				percentage: ResourceUsage.gpuMemUsage
+			}
+		}
+	}
 }

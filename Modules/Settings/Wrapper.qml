@@ -7,56 +7,52 @@ import qs.Helpers
 Item {
 	id: root
 
-	required property PersistentProperties visibilities
 	required property var panels
+	required property PersistentProperties visibilities
 
-	implicitWidth: content.implicitWidth
 	implicitHeight: 0
-
+	implicitWidth: content.implicitWidth
 	visible: height > 0
 
 	states: State {
 		name: "visible"
-
 		when: root.visibilities.settings
 
 		PropertyChanges {
 			root.implicitHeight: content.implicitHeight
 		}
 	}
-
 	transitions: [
 		Transition {
 			from: ""
 			to: "visible"
 
 			Anim {
-				target: root
-				property: "implicitHeight"
 				duration: MaterialEasing.expressiveEffectsTime
 				easing.bezierCurve: MaterialEasing.expressiveEffects
+				property: "implicitHeight"
+				target: root
 			}
 		},
-
 		Transition {
 			from: "visible"
 			to: ""
 
 			Anim {
-				target: root
-				property: "implicitHeight"
 				easing.bezierCurve: MaterialEasing.expressiveEffects
+				property: "implicitHeight"
+				target: root
 			}
 		}
 	]
 
 	Loader {
 		id: content
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.bottom: parent.bottom
 
-		visible: true
 		active: true
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		visible: true
 
 		sourceComponent: Content {
 			visibilities: root.visibilities

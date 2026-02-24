@@ -6,32 +6,35 @@ import Quickshell
 import Quickshell.Services.SystemTray
 
 Row {
-    id: root
+	id: root
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-
-    required property PanelWindow bar
-	required property Wrapper popouts
+	required property PanelWindow bar
+	readonly property alias items: repeater
 	required property RowLayout loader
-    readonly property alias items: repeater
+	required property Wrapper popouts
 
-    spacing: 0
+	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	spacing: 0
 
-    Repeater {
-        id: repeater
-        model: SystemTray.items
-        TrayItem {
-            id: trayItem
-            required property SystemTrayItem modelData
+	Repeater {
+		id: repeater
+
+		model: SystemTray.items
+
+		TrayItem {
+			id: trayItem
+
 			required property int index
+			required property SystemTrayItem modelData
+
+			bar: root.bar
+			implicitHeight: 34
+			implicitWidth: 34
 			ind: index
-			popouts: root.popouts
+			item: modelData
 			loader: root.loader
-            implicitHeight: 34
-            implicitWidth: 34
-            item: modelData
-            bar: root.bar
-        }
-    }
+			popouts: root.popouts
+		}
+	}
 }

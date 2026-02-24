@@ -4,64 +4,65 @@ import qs.Components
 import qs.Config
 
 ShapePath {
-    id: root
+	id: root
 
-    required property Wrapper wrapper
-    required property bool invertBottomRounding
-    readonly property real rounding: 8
-    readonly property bool flatten: wrapper.height < rounding * 2
-    readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
-    property real ibr: invertBottomRounding ? -1 : 1
+	readonly property bool flatten: wrapper.height < rounding * 2
+	property real ibr: invertBottomRounding ? -1 : 1
+	required property bool invertBottomRounding
+	readonly property real rounding: 8
+	readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
+	required property Wrapper wrapper
 
-    strokeWidth: -1
-    fillColor: DynamicColors.palette.m3surface
+	fillColor: DynamicColors.palette.m3surface
+	strokeWidth: -1
 
-    PathArc {
-        relativeX: root.rounding
-        relativeY: root.roundingY
-        radiusX: root.rounding
-        radiusY: Math.min(root.rounding, root.wrapper.height)
-    }
+	Behavior on fillColor {
+		CAnim {
+		}
+	}
 
-    PathLine {
-        relativeX: 0
-        relativeY: root.wrapper.height - root.roundingY - root.roundingY * root.ibr
-    }
+	PathArc {
+		radiusX: root.rounding
+		radiusY: Math.min(root.rounding, root.wrapper.height)
+		relativeX: root.rounding
+		relativeY: root.roundingY
+	}
 
-    PathArc {
-        relativeX: root.rounding
-        relativeY: root.roundingY * root.ibr
-        radiusX: root.rounding
-        radiusY: Math.min(root.rounding, root.wrapper.height)
-        direction: root.invertBottomRounding ? PathArc.Clockwise : PathArc.Counterclockwise
-    }
+	PathLine {
+		relativeX: 0
+		relativeY: root.wrapper.height - root.roundingY - root.roundingY * root.ibr
+	}
 
-    PathLine {
-        relativeX: root.wrapper.width - root.rounding * 2
-        relativeY: 0
-    }
+	PathArc {
+		direction: root.invertBottomRounding ? PathArc.Clockwise : PathArc.Counterclockwise
+		radiusX: root.rounding
+		radiusY: Math.min(root.rounding, root.wrapper.height)
+		relativeX: root.rounding
+		relativeY: root.roundingY * root.ibr
+	}
 
-    PathArc {
-        relativeX: root.rounding
-        relativeY: -root.roundingY
-        radiusX: root.rounding
-        radiusY: Math.min(root.rounding, root.wrapper.height)
-        direction: PathArc.Counterclockwise
-    }
+	PathLine {
+		relativeX: root.wrapper.width - root.rounding * 2
+		relativeY: 0
+	}
 
-    PathLine {
-        relativeX: 0
-        relativeY: -( root.wrapper.height - root.roundingY * 2 )
-    }
+	PathArc {
+		direction: PathArc.Counterclockwise
+		radiusX: root.rounding
+		radiusY: Math.min(root.rounding, root.wrapper.height)
+		relativeX: root.rounding
+		relativeY: -root.roundingY
+	}
 
-    PathArc {
-        relativeX: root.rounding
-        relativeY: -root.roundingY
-        radiusX: root.rounding
-        radiusY: Math.min(root.rounding, root.wrapper.height)
-    }
+	PathLine {
+		relativeX: 0
+		relativeY: -(root.wrapper.height - root.roundingY * 2)
+	}
 
-    Behavior on fillColor {
-        CAnim {}
-    }
+	PathArc {
+		radiusX: root.rounding
+		radiusY: Math.min(root.rounding, root.wrapper.height)
+		relativeX: root.rounding
+		relativeY: -root.roundingY
+	}
 }

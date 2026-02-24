@@ -5,66 +5,61 @@ import qs.Helpers
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property var modelData
-    required property var list
+	required property var list
+	required property var modelData
 
-    implicitHeight: Config.launcher.sizes.itemHeight
+	anchors.left: parent?.left
+	anchors.right: parent?.right
+	implicitHeight: Config.launcher.sizes.itemHeight
 
-    anchors.left: parent?.left
-    anchors.right: parent?.right
+	StateLayer {
+		function onClicked(): void {
+			root.modelData?.onClicked(root.list);
+		}
 
-    StateLayer {
-        radius: Appearance.rounding.normal
+		radius: Appearance.rounding.normal
+	}
 
-        function onClicked(): void {
-            root.modelData?.onClicked(root.list);
-        }
-    }
+	Item {
+		anchors.fill: parent
+		anchors.leftMargin: Appearance.padding.larger
+		anchors.margins: Appearance.padding.smaller
+		anchors.rightMargin: Appearance.padding.larger
 
-    Item {
-        anchors.fill: parent
-        anchors.leftMargin: Appearance.padding.larger
-        anchors.rightMargin: Appearance.padding.larger
-        anchors.margins: Appearance.padding.smaller
+		MaterialIcon {
+			id: icon
 
-        MaterialIcon {
-            id: icon
+			anchors.verticalCenter: parent.verticalCenter
+			font.pointSize: Appearance.font.size.extraLarge
+			text: root.modelData?.icon ?? ""
+		}
 
-            text: root.modelData?.icon ?? ""
-            font.pointSize: Appearance.font.size.extraLarge
+		Item {
+			anchors.left: icon.right
+			anchors.leftMargin: Appearance.spacing.normal
+			anchors.verticalCenter: icon.verticalCenter
+			implicitHeight: name.implicitHeight + desc.implicitHeight
+			implicitWidth: parent.width - icon.width
 
-            anchors.verticalCenter: parent.verticalCenter
-        }
+			CustomText {
+				id: name
 
-        Item {
-            anchors.left: icon.right
-            anchors.leftMargin: Appearance.spacing.normal
-            anchors.verticalCenter: icon.verticalCenter
+				font.pointSize: Appearance.font.size.normal
+				text: root.modelData?.name ?? ""
+			}
 
-            implicitWidth: parent.width - icon.width
-            implicitHeight: name.implicitHeight + desc.implicitHeight
+			CustomText {
+				id: desc
 
-            CustomText {
-                id: name
-
-                text: root.modelData?.name ?? ""
-                font.pointSize: Appearance.font.size.normal
-            }
-
-            CustomText {
-                id: desc
-
-                text: root.modelData?.desc ?? ""
-                font.pointSize: Appearance.font.size.small
-                color: DynamicColors.palette.m3outline
-
-                elide: Text.ElideRight
-                width: root.width - icon.width - Appearance.rounding.normal * 2
-
-                anchors.top: name.bottom
-            }
-        }
-    }
+				anchors.top: name.bottom
+				color: DynamicColors.palette.m3outline
+				elide: Text.ElideRight
+				font.pointSize: Appearance.font.size.small
+				text: root.modelData?.desc ?? ""
+				width: root.width - icon.width - Appearance.rounding.normal * 2
+			}
+		}
+	}
 }

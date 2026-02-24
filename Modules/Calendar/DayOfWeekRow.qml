@@ -7,39 +7,36 @@ import qs.Config
 import qs.Helpers
 
 RowLayout {
-    id: root
+	id: root
 
-    required property var locale
+	required property var locale
 
-    spacing: 4
+	spacing: 4
 
-    Repeater {
-        model: 7
+	Repeater {
+		model: 7
 
-        Item {
-            required property int index
+		Item {
+			readonly property string dayName: {
+				// Get the day name for this column
+				const dayIndex = (index + Calendar.weekStartDay) % 7;
+				return root.locale.dayName(dayIndex, Locale.ShortFormat);
+			}
+			required property int index
 
-            Layout.fillWidth: true
-            Layout.preferredHeight: 30
+			Layout.fillWidth: true
+			Layout.preferredHeight: 30
 
-            readonly property string dayName: {
-                // Get the day name for this column
-                const dayIndex = (index + Calendar.weekStartDay) % 7;
-                return root.locale.dayName(dayIndex, Locale.ShortFormat);
-            }
-
-            CustomText {
-                anchors.centerIn: parent
-
-                text: parent.dayName
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: DynamicColors.palette.m3onSurfaceVariant
-                opacity: 0.8
-                font.weight: 500
-                font.pointSize: 11
-            }
-        }
-    }
+			CustomText {
+				anchors.centerIn: parent
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 11
+				font.weight: 500
+				horizontalAlignment: Text.AlignHCenter
+				opacity: 0.8
+				text: parent.dayName
+				verticalAlignment: Text.AlignVCenter
+			}
+		}
+	}
 }
-

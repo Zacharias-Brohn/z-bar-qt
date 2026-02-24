@@ -4,26 +4,27 @@ import QtQuick
 import QtQuick.Layouts
 
 Item {
-    id: root
+	id: root
 
-    required property var props
-    required property var visibilities
-    required property Item popouts
+	required property Item popouts
+	required property var props
+	required property var visibilities
 
-    implicitWidth: layout.implicitWidth
-    implicitHeight: layout.implicitHeight
+	implicitHeight: layout.implicitHeight
+	implicitWidth: layout.implicitWidth
 
-    ColumnLayout {
-        id: layout
+	ColumnLayout {
+		id: layout
 
-        anchors.fill: parent
-        spacing: 8
+		anchors.fill: parent
+		spacing: 8
 
-        IdleInhibit {}
+		IdleInhibit {
+		}
 
-        Toggles {
-            visibilities: root.visibilities
-            popouts: root.popouts
-        }
-    }
+		Toggles {
+			popouts: root.popouts
+			visibilities: root.visibilities
+		}
+	}
 }

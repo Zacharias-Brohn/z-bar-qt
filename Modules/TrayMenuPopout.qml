@@ -9,239 +9,238 @@ import QtQuick.Controls
 import QtQuick.Effects
 
 StackView {
-    id: root
+	id: root
 
-    required property Item popouts
-    required property QsMenuHandle trayItem
+	property int biggestWidth: 0
+	required property Item popouts
+	property int rootWidth: 0
+	required property QsMenuHandle trayItem
 
-    property int rootWidth: 0
-    property int biggestWidth: 0
+	implicitHeight: currentItem.implicitHeight
+	implicitWidth: currentItem.implicitWidth
 
-    implicitWidth: currentItem.implicitWidth
-    implicitHeight: currentItem.implicitHeight
+	initialItem: SubMenu {
+		handle: root.trayItem
+	}
+	popEnter: NoAnim {
+	}
+	popExit: NoAnim {
+	}
+	pushEnter: NoAnim {
+	}
+	pushExit: NoAnim {
+	}
 
-    initialItem: SubMenu {
-        handle: root.trayItem
-    }
+	Component {
+		id: subMenuComp
 
-    pushEnter: NoAnim {}
-    pushExit: NoAnim {}
-    popEnter: NoAnim {}
-    popExit: NoAnim {}
+		SubMenu {
+		}
+	}
 
-    component NoAnim: Transition {
-        NumberAnimation {
-            duration: 0
-        }
-    }
+	component NoAnim: Transition {
+		NumberAnimation {
+			duration: 0
+		}
+	}
+	component SubMenu: Column {
+		id: menu
 
-    component SubMenu: Column {
-        id: menu
+		required property QsMenuHandle handle
+		property bool isSubMenu
+		property bool shown
 
-        required property QsMenuHandle handle
-        property bool isSubMenu
-        property bool shown
+		opacity: shown ? 1 : 0
+		padding: 0
+		scale: shown ? 1 : 0.8
+		spacing: 4
 
-        padding: 0
-        spacing: 4
+		Behavior on opacity {
+			Anim {
+			}
+		}
+		Behavior on scale {
+			Anim {
+			}
+		}
 
-        opacity: shown ? 1 : 0
-        scale: shown ? 1 : 0.8
+		Component.onCompleted: shown = true
+		StackView.onActivating: shown = true
+		StackView.onDeactivating: shown = false
+		StackView.onRemoved: destroy()
 
-        Component.onCompleted: shown = true
-        StackView.onActivating: shown = true
-        StackView.onDeactivating: shown = false
-        StackView.onRemoved: destroy()
+		QsMenuOpener {
+			id: menuOpener
 
-        Behavior on opacity {
-            Anim {}
-        }
+			menu: menu.handle
+		}
 
-        Behavior on scale {
-            Anim {}
-        }
+		Repeater {
+			model: menuOpener.children
 
-        QsMenuOpener {
-            id: menuOpener
+			CustomRect {
+				id: item
 
-            menu: menu.handle
-        }
+				required property QsMenuEntry modelData
 
-        Repeater {
-            model: menuOpener.children
+				color: modelData.isSeparator ? DynamicColors.palette.m3outlineVariant : "transparent"
+				implicitHeight: modelData.isSeparator ? 1 : children.implicitHeight
+				implicitWidth: root.biggestWidth
+				radius: 4
 
-            CustomRect {
-                id: item
+				Loader {
+					id: children
 
-                required property QsMenuEntry modelData
+					active: !item.modelData.isSeparator
+					anchors.left: parent.left
+					anchors.right: parent.right
+					asynchronous: true
 
-                implicitWidth: root.biggestWidth
-                implicitHeight: modelData.isSeparator ? 1 : children.implicitHeight
+					sourceComponent: Item {
+						implicitHeight: 30
 
-                radius: 4
-                color: modelData.isSeparator ? DynamicColors.palette.m3outlineVariant : "transparent"
+						StateLayer {
+							function onClicked(): void {
+								const entry = item.modelData;
+								if (entry.hasChildren) {
+									root.rootWidth = root.biggestWidth;
+									root.biggestWidth = 0;
+									root.push(subMenuComp.createObject(null, {
+										handle: entry,
+										isSubMenu: true
+									}));
+								} else {
+									item.modelData.triggered();
+									root.popouts.hasCurrent = false;
+								}
+							}
 
-                Loader {
-                    id: children
+							disabled: !item.modelData.enabled
+							radius: item.radius
+						}
 
-                    anchors.left: parent.left
-                    anchors.right: parent.right
+						Loader {
+							id: icon
 
-                    active: !item.modelData.isSeparator
-                    asynchronous: true
+							active: item.modelData.icon !== ""
+							anchors.right: parent.right
+							anchors.rightMargin: 10
+							anchors.verticalCenter: parent.verticalCenter
+							asynchronous: true
 
-                    sourceComponent: Item {
-                        implicitHeight: 30
+							sourceComponent: Item {
+								implicitHeight: label.implicitHeight
+								implicitWidth: label.implicitHeight
 
-                        StateLayer {
-                            radius: item.radius
-                            disabled: !item.modelData.enabled
+								IconImage {
+									id: iconImage
 
-                            function onClicked(): void {
-                                const entry = item.modelData;
-                                if (entry.hasChildren) {
-                                    root.rootWidth = root.biggestWidth;
-                                    root.biggestWidth = 0;
-                                    root.push(subMenuComp.createObject(null, {
-                                        handle: entry,
-                                        isSubMenu: true
-                                    }));
-                                } else {
-                                    item.modelData.triggered();
-                                    root.popouts.hasCurrent = false;
-                                }
-                            }
-                        }
+									implicitSize: parent.implicitHeight
+									source: item.modelData.icon
+									visible: false
+								}
 
-                        Loader {
-                            id: icon
+								MultiEffect {
+									anchors.fill: iconImage
+									colorization: 1.0
+									colorizationColor: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
+									source: iconImage
+								}
+							}
+						}
 
-                            anchors.right: parent.right
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.rightMargin: 10
+						CustomText {
+							id: label
 
-                            active: item.modelData.icon !== ""
-                            asynchronous: true
+							anchors.left: parent.left
+							anchors.leftMargin: 10
+							anchors.verticalCenter: parent.verticalCenter
+							color: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
+							text: labelMetrics.elidedText
+						}
 
-                            sourceComponent: Item {
-                                implicitHeight: label.implicitHeight
-                                implicitWidth: label.implicitHeight
-                                IconImage {
-                                    id: iconImage
-                                    implicitSize: parent.implicitHeight
-                                    source: item.modelData.icon
-                                    visible: false
-                                }
+						TextMetrics {
+							id: labelMetrics
 
-                                MultiEffect {
-                                    anchors.fill: iconImage
-                                    source: iconImage
-                                    colorization: 1.0
-                                    colorizationColor: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
-                                }
-                            }
-                        }
+							font.family: label.font.family
+							font.pointSize: label.font.pointSize
+							text: item.modelData.text
 
-                        CustomText {
-                            id: label
+							Component.onCompleted: {
+								var biggestWidth = root.biggestWidth;
+								var currentWidth = labelMetrics.width + (item.modelData.icon ?? "" ? 30 : 0) + (item.modelData.hasChildren ? 30 : 0) + 20;
+								if (currentWidth > biggestWidth) {
+									root.biggestWidth = currentWidth;
+								}
+							}
+						}
 
-                            anchors.left: parent.left
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.leftMargin: 10
+						Loader {
+							id: expand
 
-                            text: labelMetrics.elidedText
-                            color: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
-                        }
+							active: item.modelData.hasChildren
+							anchors.right: parent.right
+							anchors.verticalCenter: parent.verticalCenter
+							asynchronous: true
 
-                        TextMetrics {
-                            id: labelMetrics
+							sourceComponent: MaterialIcon {
+								color: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
+								text: "chevron_right"
+							}
+						}
+					}
+				}
+			}
+		}
 
-                            text: item.modelData.text
-                            font.pointSize: label.font.pointSize
-                            font.family: label.font.family
+		Loader {
+			active: menu.isSubMenu
+			asynchronous: true
 
-                            Component.onCompleted: {
-                                var biggestWidth = root.biggestWidth;
-                                var currentWidth = labelMetrics.width + (item.modelData.icon ?? "" ? 30 : 0) + (item.modelData.hasChildren ? 30 : 0) + 20;
-                                if ( currentWidth > biggestWidth ) {
-                                    root.biggestWidth = currentWidth;
-                                }
-                            }
-                        }
+			sourceComponent: Item {
+				implicitHeight: back.implicitHeight + 2 / 2
+				implicitWidth: back.implicitWidth
 
-                        Loader {
-                            id: expand
+				Item {
+					anchors.bottom: parent.bottom
+					implicitHeight: back.implicitHeight
+					implicitWidth: back.implicitWidth + 10
 
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.right: parent.right
+					CustomRect {
+						anchors.fill: parent
+						color: DynamicColors.palette.m3secondaryContainer
+						radius: 4
 
-                            active: item.modelData.hasChildren
-                            asynchronous: true
+						StateLayer {
+							function onClicked(): void {
+								root.pop();
+								root.biggestWidth = root.rootWidth;
+							}
 
-                            sourceComponent: MaterialIcon {
-                                text: "chevron_right"
-                                color: item.modelData.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
-                            }
-                        }
-                    }
-                }
-            }
-        }
+							color: DynamicColors.palette.m3onSecondaryContainer
+							radius: parent.radius
+						}
+					}
 
-        Loader {
-            active: menu.isSubMenu
-            asynchronous: true
+					Row {
+						id: back
 
-            sourceComponent: Item {
-                implicitWidth: back.implicitWidth
-                implicitHeight: back.implicitHeight + 2 / 2
+						anchors.verticalCenter: parent.verticalCenter
 
-                Item {
-                    anchors.bottom: parent.bottom
-                    implicitWidth: back.implicitWidth + 10
-                    implicitHeight: back.implicitHeight
+						MaterialIcon {
+							anchors.verticalCenter: parent.verticalCenter
+							color: DynamicColors.palette.m3onSecondaryContainer
+							text: "chevron_left"
+						}
 
-                    CustomRect {
-                        anchors.fill: parent
-                        radius: 4
-                        color: DynamicColors.palette.m3secondaryContainer
-
-                        StateLayer {
-                            radius: parent.radius
-                            color: DynamicColors.palette.m3onSecondaryContainer
-
-                            function onClicked(): void {
-                                root.pop();
-                                root.biggestWidth = root.rootWidth;
-                            }
-                        }
-                    }
-
-                    Row {
-                        id: back
-
-                        anchors.verticalCenter: parent.verticalCenter
-
-                        MaterialIcon {
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "chevron_left"
-                            color: DynamicColors.palette.m3onSecondaryContainer
-                        }
-
-                        CustomText {
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: qsTr("Back")
-                            color: DynamicColors.palette.m3onSecondaryContainer
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    Component {
-        id: subMenuComp
-
-        SubMenu {}
-    }
+						CustomText {
+							anchors.verticalCenter: parent.verticalCenter
+							color: DynamicColors.palette.m3onSecondaryContainer
+							text: qsTr("Back")
+						}
+					}
+				}
+			}
+		}
+	}
 }

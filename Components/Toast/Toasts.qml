@@ -7,137 +7,136 @@ import qs.Components
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    readonly property int spacing: Appearance.spacing.small
-    property bool flag
+	property bool flag
+	readonly property int spacing: Appearance.spacing.small
 
-    implicitWidth: Config.utilities.sizes.toastWidth - Appearance.padding.normal * 2
-    implicitHeight: {
-        let h = -spacing;
-        for (let i = 0; i < repeater.count; i++) {
-            const item = repeater.itemAt(i) as ToastWrapper;
-            if (!item.modelData.closed && !item.previewHidden)
-                h += item.implicitHeight + spacing;
-        }
-        return h;
-    }
+	implicitHeight: {
+		let h = -spacing;
+		for (let i = 0; i < repeater.count; i++) {
+			const item = repeater.itemAt(i) as ToastWrapper;
+			if (!item.modelData.closed && !item.previewHidden)
+				h += item.implicitHeight + spacing;
+		}
+		return h;
+	}
+	implicitWidth: Config.utilities.sizes.toastWidth - Appearance.padding.normal * 2
 
-    Repeater {
-        id: repeater
+	Repeater {
+		id: repeater
 
-        model: ScriptModel {
-            values: {
-                const toasts = [];
-                let count = 0;
-                for (const toast of Toaster.toasts) {
-                    toasts.push(toast);
-                    if (!toast.closed) {
-                        count++;
-                        if (count > Config.utilities.maxToasts)
-                            break;
-                    }
-                }
-                return toasts;
-            }
-            onValuesChanged: root.flagChanged()
-        }
+		model: ScriptModel {
+			values: {
+				const toasts = [];
+				let count = 0;
+				for (const toast of Toaster.toasts) {
+					toasts.push(toast);
+					if (!toast.closed) {
+						count++;
+						if (count > Config.utilities.maxToasts)
+							break;
+					}
+				}
+				return toasts;
+			}
 
-        ToastWrapper {}
-    }
+			onValuesChanged: root.flagChanged()
+		}
 
-    component ToastWrapper: MouseArea {
-        id: toast
+		ToastWrapper {
+		}
+	}
 
-        required property int index
-        required property Toast modelData
+	component ToastWrapper: MouseArea {
+		id: toast
 
-        readonly property bool previewHidden: {
-            let extraHidden = 0;
-            for (let i = 0; i < index; i++)
-                if (Toaster.toasts[i].closed)
-                    extraHidden++;
-            return index >= Config.utilities.maxToasts + extraHidden;
-        }
+		required property int index
+		required property Toast modelData
+		readonly property bool previewHidden: {
+			let extraHidden = 0;
+			for (let i = 0; i < index; i++)
+				if (Toaster.toasts[i].closed)
+					extraHidden++;
+			return index >= Config.utilities.maxToasts + extraHidden;
+		}
 
-        onPreviewHiddenChanged: {
-            if (initAnim.running && previewHidden)
-                initAnim.stop();
-        }
+		acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
+		anchors.bottom: parent.bottom
+		anchors.bottomMargin: {
+			root.flag; // Force update
+			let y = 0;
+			for (let i = 0; i < index; i++) {
+				const item = repeater.itemAt(i) as ToastWrapper;
+				if (item && !item.modelData.closed && !item.previewHidden)
+					y += item.implicitHeight + root.spacing;
+			}
+			return y;
+		}
+		anchors.left: parent.left
+		anchors.right: parent.right
+		implicitHeight: toastInner.implicitHeight
+		opacity: modelData.closed || previewHidden ? 0 : 1
+		scale: modelData.closed || previewHidden ? 0.7 : 1
 
-        opacity: modelData.closed || previewHidden ? 0 : 1
-        scale: modelData.closed || previewHidden ? 0.7 : 1
+		Behavior on anchors.bottomMargin {
+			Anim {
+				duration: Appearance.anim.durations.expressiveDefaultSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+			}
+		}
+		Behavior on opacity {
+			Anim {
+			}
+		}
+		Behavior on scale {
+			Anim {
+			}
+		}
 
-        anchors.bottomMargin: {
-            root.flag; // Force update
-            let y = 0;
-            for (let i = 0; i < index; i++) {
-                const item = repeater.itemAt(i) as ToastWrapper;
-                if (item && !item.modelData.closed && !item.previewHidden)
-                    y += item.implicitHeight + root.spacing;
-            }
-            return y;
-        }
+		Component.onCompleted: modelData.lock(this)
+		onClicked: modelData.close()
+		onPreviewHiddenChanged: {
+			if (initAnim.running && previewHidden)
+				initAnim.stop();
+		}
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        implicitHeight: toastInner.implicitHeight
+		Anim {
+			id: initAnim
 
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton | Qt.RightButton
-        onClicked: modelData.close()
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+			from: 0
+			properties: "opacity,scale"
+			target: toast
+			to: 1
 
-        Component.onCompleted: modelData.lock(this)
+			Component.onCompleted: running = !toast.previewHidden
+		}
 
-        Anim {
-            id: initAnim
+		ParallelAnimation {
+			running: toast.modelData.closed
 
-            Component.onCompleted: running = !toast.previewHidden
+			onFinished: toast.modelData.unlock(toast)
+			onStarted: toast.anchors.bottomMargin = toast.anchors.bottomMargin
 
-            target: toast
-            properties: "opacity,scale"
-            from: 0
-            to: 1
-            duration: Appearance.anim.durations.expressiveDefaultSpatial
-            easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-        }
+			Anim {
+				property: "opacity"
+				target: toast
+				to: 0
+			}
 
-        ParallelAnimation {
-            running: toast.modelData.closed
-            onStarted: toast.anchors.bottomMargin = toast.anchors.bottomMargin
-            onFinished: toast.modelData.unlock(toast)
+			Anim {
+				property: "scale"
+				target: toast
+				to: 0.7
+			}
+		}
 
-            Anim {
-                target: toast
-                property: "opacity"
-                to: 0
-            }
-            Anim {
-                target: toast
-                property: "scale"
-                to: 0.7
-            }
-        }
+		ToastItem {
+			id: toastInner
 
-        ToastItem {
-            id: toastInner
-
-            modelData: toast.modelData
-        }
-
-        Behavior on opacity {
-            Anim {}
-        }
-
-        Behavior on scale {
-            Anim {}
-        }
-
-        Behavior on anchors.bottomMargin {
-            Anim {
-                duration: Appearance.anim.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-            }
-        }
-    }
+			modelData: toast.modelData
+		}
+	}
 }

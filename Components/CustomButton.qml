@@ -4,30 +4,28 @@ import QtQuick.Controls
 Button {
 	id: control
 
-	required property color textColor
 	required property color bgColor
 	property int radius: 4
+	required property color textColor
 
-	contentItem: CustomText {
-		text: control.text
-
+	background: CustomRect {
+		color: control.bgColor
 		opacity: control.enabled ? 1.0 : 0.5
+		radius: control.radius
+	}
+	contentItem: CustomText {
 		color: control.textColor
 		horizontalAlignment: Text.AlignHCenter
+		opacity: control.enabled ? 1.0 : 0.5
+		text: control.text
 		verticalAlignment: Text.AlignVCenter
 	}
 
-	background: CustomRect {
-		opacity: control.enabled ? 1.0 : 0.5
-
-		radius: control.radius
-		color: control.bgColor
-	}
-
 	StateLayer {
-		radius: control.radius
 		function onClicked(): void {
 			control.clicked();
 		}
+
+		radius: control.radius
 	}
 }

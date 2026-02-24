@@ -2,29 +2,32 @@ import QtQuick
 import QtQuick.Effects
 
 Item {
-    id: root
-    property real radius
+	id: root
 
-    Rectangle {
-        id: shadowRect
-        anchors.fill: root
-        radius: root.radius
-        layer.enabled: true
-        color: "black"
-        visible: false
-    }
+	property real radius
 
-    MultiEffect {
-        id: effects
-        source: shadowRect
-        anchors.fill: shadowRect
-        shadowBlur: 2.0
-        shadowEnabled: true
-        shadowOpacity: 1
-        shadowColor: "black"
-        maskSource: shadowRect
-        maskEnabled: true
-        maskInverted: true
-        autoPaddingEnabled: true
-    }
+	Rectangle {
+		id: shadowRect
+
+		anchors.fill: root
+		color: "black"
+		layer.enabled: true
+		radius: root.radius
+		visible: false
+	}
+
+	MultiEffect {
+		id: effects
+
+		anchors.fill: shadowRect
+		autoPaddingEnabled: true
+		maskEnabled: true
+		maskInverted: true
+		maskSource: shadowRect
+		shadowBlur: 2.0
+		shadowColor: "black"
+		shadowEnabled: true
+		shadowOpacity: 1
+		source: shadowRect
+	}
 }

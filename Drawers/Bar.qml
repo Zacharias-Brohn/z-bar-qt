@@ -15,86 +15,92 @@ import qs.Drawers
 
 Variants {
 	model: Quickshell.screens
+
 	Scope {
 		id: scope
+
 		required property var modelData
-        PanelWindow {
-            id: bar
-            property bool trayMenuVisible: false
-            screen: scope.modelData
-            color: "transparent"
-            property var root: Quickshell.shellDir
 
-			WlrLayershell.namespace: "ZShell-Bar"
-            WlrLayershell.exclusionMode: ExclusionMode.Ignore
+		PanelWindow {
+			id: bar
+
+			property var root: Quickshell.shellDir
+			property bool trayMenuVisible: false
+
+			WlrLayershell.exclusionMode: ExclusionMode.Ignore
 			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-			
+			WlrLayershell.namespace: "ZShell-Bar"
+			color: "transparent"
 			contentItem.focus: true
+			screen: scope.modelData
 
-            contentItem.Keys.onEscapePressed: {
-				if ( Config.barConfig.autoHide )
+			mask: Region {
+				id: region
+
+				property list<Region> nullRegions: []
+
+				height: bar.screen.height - backgroundRect.implicitHeight
+				intersection: Intersection.Xor
+				regions: popoutRegions.instances
+				width: bar.width
+				x: 0
+				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : 34
+			}
+
+			contentItem.Keys.onEscapePressed: {
+				if (Config.barConfig.autoHide)
 					visibilities.bar = false;
 				visibilities.sidebar = false;
 				visibilities.dashboard = false;
 				visibilities.osd = false;
 			}
 
-            PanelWindow {
-                id: exclusionZone
-				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
-                screen: bar.screen
-                WlrLayershell.layer: WlrLayer.Bottom
+			PanelWindow {
+				id: exclusionZone
+
 				WlrLayershell.exclusionMode: Config.barConfig.autoHide ? ExclusionMode.Ignore : ExclusionMode.Auto
-                anchors {
-                    left: true
-                    right: true
-                    top: true
-                }
-                color: "transparent"
-                implicitHeight: 34
-            }
+				WlrLayershell.layer: WlrLayer.Bottom
+				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
+				color: "transparent"
+				implicitHeight: 34
+				screen: bar.screen
 
-            anchors {
-                top: true
-                left: true
-                right: true
-                bottom: true
-            }
+				anchors {
+					left: true
+					right: true
+					top: true
+				}
+			}
 
-            mask: Region {
-				id: region
-                x: 0
-                y: Config.barConfig.autoHide && !visibilities.bar ? 4 : 34
+			anchors {
+				bottom: true
+				left: true
+				right: true
+				top: true
+			}
 
-				property list<Region> nullRegions: []
+			Variants {
+				id: popoutRegions
 
-                width: bar.width
-                height: bar.screen.height - backgroundRect.implicitHeight
-                intersection: Intersection.Xor
+				model: panels.children
 
-                regions: popoutRegions.instances
-            }
+				Region {
+					required property Item modelData
 
-            Variants {
-                id: popoutRegions
-                model: panels.children
-
-                Region {
-                    required property Item modelData
-
-                    x: modelData.x
-                    y: modelData.y + backgroundRect.implicitHeight
-                    width: modelData.width
-                    height: modelData.height
-                    intersection: Intersection.Subtract
-                }
-            }
+					height: modelData.height
+					intersection: Intersection.Subtract
+					width: modelData.width
+					x: modelData.x
+					y: modelData.y + backgroundRect.implicitHeight
+				}
+			}
 
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || ( panels.popouts.hasCurrent && panels.popouts.currentName.startsWith( "traymenu" ))
+				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
 				windows: [bar]
+
 				onCleared: {
 					visibilities.launcher = false;
 					visibilities.sidebar = false;
@@ -107,92 +113,98 @@ Variants {
 			PersistentProperties {
 				id: visibilities
 
-				property bool sidebar
-				property bool dashboard
 				property bool bar
-				property bool osd
+				property bool dashboard
 				property bool launcher
 				property bool notif: NotifServer.popups.length > 0
+				property bool osd
 				property bool settings
+				property bool sidebar
 
 				Component.onCompleted: Visibilities.load(scope.modelData, this)
 			}
 
 			Binding {
-				target: visibilities
 				property: "bar"
+				target: visibilities
 				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif
 				when: Config.barConfig.autoHide
 			}
 
-            Item {
-                anchors.fill: parent
-                opacity: Appearance.transparency.enabled ? DynamicColors.transparency.base : 1
-                layer.enabled: true
-                layer.effect: MultiEffect {
-                    shadowEnabled: true
-                    blurMax: 32
-                    shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 1)
-                }
+			Item {
+				anchors.fill: parent
+				layer.enabled: true
+				opacity: Appearance.transparency.enabled ? DynamicColors.transparency.base : 1
 
-                Border {
-                    bar: backgroundRect
+				layer.effect: MultiEffect {
+					blurMax: 32
+					shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 1)
+					shadowEnabled: true
+				}
+
+				Border {
+					bar: backgroundRect
 					visibilities: visibilities
-                }
+				}
 
-                Backgrounds {
+				Backgrounds {
+					bar: backgroundRect
+					panels: panels
 					visibilities: visibilities
-                    panels: panels
-                    bar: backgroundRect
-                }
-            }
+				}
+			}
 
-            Interactions {
+			Interactions {
 				id: mouseArea
-				screen: scope.modelData
-				popouts: panels.popouts
-				visibilities: visibilities
-				panels: panels
+
+				anchors.fill: parent
 				bar: barLoader
-                anchors.fill: parent
+				panels: panels
+				popouts: panels.popouts
+				screen: scope.modelData
+				visibilities: visibilities
 
-                Panels {
-                    id: panels
-                    screen: scope.modelData
-                    bar: backgroundRect
+				Panels {
+					id: panels
+
+					bar: backgroundRect
+					screen: scope.modelData
 					visibilities: visibilities
-                }
+				}
 
-                CustomRect {
-                    id: backgroundRect
-                    property Wrapper popouts: panels.popouts
+				CustomRect {
+					id: backgroundRect
+
+					property Wrapper popouts: panels.popouts
+
+					anchors.left: parent.left
+					anchors.right: parent.right
 					anchors.top: parent.top
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    implicitHeight: 34
 					anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? -30 : 0
-                    color: "transparent"
-                    radius: 0
-
-
-                    Behavior on color {
-                        CAnim {}
-                    }
+					color: "transparent"
+					implicitHeight: 34
+					radius: 0
 
 					Behavior on anchors.topMargin {
-						Anim {}
+						Anim {
+						}
+					}
+					Behavior on color {
+						CAnim {
+						}
 					}
 
-                    BarLoader {
-                        id: barLoader
-                        anchors.fill: parent
-                        popouts: panels.popouts
-                        bar: bar
-						visibilities: visibilities
+					BarLoader {
+						id: barLoader
+
+						anchors.fill: parent
+						bar: bar
+						popouts: panels.popouts
 						screen: scope.modelData
-                    }
-                }
-            }
-        }
-    }
+						visibilities: visibilities
+					}
+				}
+			}
+		}
+	}
 }

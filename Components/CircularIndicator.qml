@@ -4,103 +4,99 @@ import QtQuick
 import QtQuick.Templates
 
 BusyIndicator {
-    id: root
+	id: root
 
-    enum AnimType {
-        Advance = 0,
-        Retreat
-    }
+	enum AnimState {
+		Stopped,
+		Running,
+		Completing
+	}
+	enum AnimType {
+		Advance = 0,
+		Retreat
+	}
 
-    enum AnimState {
-        Stopped,
-        Running,
-        Completing
-    }
+	property int animState
+	property color bgColour: DynamicColors.palette.m3secondaryContainer
+	property color fgColour: DynamicColors.palette.m3primary
+	property real implicitSize: Appearance.font.size.normal * 3
+	property real internalStrokeWidth: strokeWidth
+	readonly property alias progress: manager.progress
+	property real strokeWidth: Appearance.padding.small * 0.8
+	property alias type: manager.indeterminateAnimationType
 
-    property real implicitSize: Appearance.font.size.normal * 3
-    property real strokeWidth: Appearance.padding.small * 0.8
-    property color fgColour: DynamicColors.palette.m3primary
-    property color bgColour: DynamicColors.palette.m3secondaryContainer
+	implicitHeight: implicitSize
+	implicitWidth: implicitSize
+	padding: 0
 
-    property alias type: manager.indeterminateAnimationType
-    readonly property alias progress: manager.progress
+	contentItem: CircularProgress {
+		anchors.fill: parent
+		bgColour: root.bgColour
+		fgColour: root.fgColour
+		padding: root.padding
+		rotation: manager.rotation
+		startAngle: manager.startFraction * 360
+		strokeWidth: root.internalStrokeWidth
+		value: manager.endFraction - manager.startFraction
+	}
+	states: State {
+		name: "stopped"
+		when: !root.running
 
-    property real internalStrokeWidth: strokeWidth
-    property int animState
+		PropertyChanges {
+			root.internalStrokeWidth: root.strokeWidth / 3
+			root.opacity: 0
+		}
+	}
+	transitions: Transition {
+		Anim {
+			duration: manager.completeEndDuration * Appearance.anim.durations.scale
+			properties: "opacity,internalStrokeWidth"
+		}
+	}
 
-    padding: 0
-    implicitWidth: implicitSize
-    implicitHeight: implicitSize
+	Component.onCompleted: {
+		if (running) {
+			running = false;
+			running = true;
+		}
+	}
+	onRunningChanged: {
+		if (running) {
+			manager.completeEndProgress = 0;
+			animState = CircularIndicator.Running;
+		} else {
+			if (animState == CircularIndicator.Running)
+				animState = CircularIndicator.Completing;
+		}
+	}
 
-    Component.onCompleted: {
-        if (running) {
-            running = false;
-            running = true;
-        }
-    }
+	CircularIndicatorManager {
+		id: manager
 
-    onRunningChanged: {
-        if (running) {
-            manager.completeEndProgress = 0;
-            animState = CircularIndicator.Running;
-        } else {
-            if (animState == CircularIndicator.Running)
-                animState = CircularIndicator.Completing;
-        }
-    }
+	}
 
-    states: State {
-        name: "stopped"
-        when: !root.running
+	NumberAnimation {
+		duration: manager.duration * Appearance.anim.durations.scale
+		from: 0
+		loops: Animation.Infinite
+		property: "progress"
+		running: root.animState !== CircularIndicator.Stopped
+		target: manager
+		to: 1
+	}
 
-        PropertyChanges {
-            root.opacity: 0
-            root.internalStrokeWidth: root.strokeWidth / 3
-        }
-    }
+	NumberAnimation {
+		duration: manager.completeEndDuration * Appearance.anim.durations.scale
+		from: 0
+		property: "completeEndProgress"
+		running: root.animState === CircularIndicator.Completing
+		target: manager
+		to: 1
 
-    transitions: Transition {
-        Anim {
-            properties: "opacity,internalStrokeWidth"
-            duration: manager.completeEndDuration * Appearance.anim.durations.scale
-        }
-    }
-
-    contentItem: CircularProgress {
-        anchors.fill: parent
-        strokeWidth: root.internalStrokeWidth
-        fgColour: root.fgColour
-        bgColour: root.bgColour
-        padding: root.padding
-        rotation: manager.rotation
-        startAngle: manager.startFraction * 360
-        value: manager.endFraction - manager.startFraction
-    }
-
-    CircularIndicatorManager {
-        id: manager
-    }
-
-    NumberAnimation {
-        running: root.animState !== CircularIndicator.Stopped
-        loops: Animation.Infinite
-        target: manager
-        property: "progress"
-        from: 0
-        to: 1
-        duration: manager.duration * Appearance.anim.durations.scale
-    }
-
-    NumberAnimation {
-        running: root.animState === CircularIndicator.Completing
-        target: manager
-        property: "completeEndProgress"
-        from: 0
-        to: 1
-        duration: manager.completeEndDuration * Appearance.anim.durations.scale
-        onFinished: {
-            if (root.animState === CircularIndicator.Completing)
-                root.animState = CircularIndicator.Stopped;
-        }
-    }
+		onFinished: {
+			if (root.animState === CircularIndicator.Completing)
+				root.animState = CircularIndicator.Stopped;
+		}
+	}
 }

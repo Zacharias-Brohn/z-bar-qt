@@ -5,70 +5,71 @@ import QtQuick.Controls
 import qs.Config
 
 TextField {
-    id: root
+	id: root
 
-    color: DynamicColors.palette.m3onSurface
-    placeholderTextColor: DynamicColors.palette.m3outline
-    font.family: Appearance.font.family.sans
-    font.pointSize: Appearance.font.size.smaller
-    renderType: echoMode === TextField.Password ? TextField.QtRendering : TextField.NativeRendering
-    cursorVisible: !readOnly
+	background: null
+	color: DynamicColors.palette.m3onSurface
+	cursorVisible: !readOnly
+	font.family: Appearance.font.family.sans
+	font.pointSize: Appearance.font.size.smaller
+	placeholderTextColor: DynamicColors.palette.m3outline
+	renderType: echoMode === TextField.Password ? TextField.QtRendering : TextField.NativeRendering
 
-    background: null
+	Behavior on color {
+		CAnim {
+		}
+	}
+	cursorDelegate: CustomRect {
+		id: cursor
 
-    cursorDelegate: CustomRect {
-        id: cursor
+		property bool disableBlink
 
-        property bool disableBlink
+		color: DynamicColors.palette.m3primary
+		implicitWidth: 2
+		radius: Appearance.rounding.normal
 
-        implicitWidth: 2
-        color: DynamicColors.palette.m3primary
-        radius: Appearance.rounding.normal
+		Behavior on opacity {
+			Anim {
+				duration: Appearance.anim.durations.small
+			}
+		}
 
-        Connections {
-            target: root
+		Connections {
+			function onCursorPositionChanged(): void {
+				if (root.activeFocus && root.cursorVisible) {
+					cursor.opacity = 1;
+					cursor.disableBlink = true;
+					enableBlink.restart();
+				}
+			}
 
-            function onCursorPositionChanged(): void {
-                if (root.activeFocus && root.cursorVisible) {
-                    cursor.opacity = 1;
-                    cursor.disableBlink = true;
-                    enableBlink.restart();
-                }
-            }
-        }
+			target: root
+		}
 
-        Timer {
-            id: enableBlink
+		Timer {
+			id: enableBlink
 
-            interval: 100
-            onTriggered: cursor.disableBlink = false
-        }
+			interval: 100
 
-        Timer {
-            running: root.activeFocus && root.cursorVisible && !cursor.disableBlink
-            repeat: true
-            triggeredOnStart: true
-            interval: 500
-            onTriggered: parent.opacity = parent.opacity === 1 ? 0 : 1
-        }
+			onTriggered: cursor.disableBlink = false
+		}
 
-        Binding {
-            when: !root.activeFocus || !root.cursorVisible
-            cursor.opacity: 0
-        }
+		Timer {
+			interval: 500
+			repeat: true
+			running: root.activeFocus && root.cursorVisible && !cursor.disableBlink
+			triggeredOnStart: true
 
-        Behavior on opacity {
-            Anim {
-                duration: Appearance.anim.durations.small
-            }
-        }
-    }
+			onTriggered: parent.opacity = parent.opacity === 1 ? 0 : 1
+		}
 
-    Behavior on color {
-        CAnim {}
-    }
-
-    Behavior on placeholderTextColor {
-        CAnim {}
-    }
+		Binding {
+			cursor.opacity: 0
+			when: !root.activeFocus || !root.cursorVisible
+		}
+	}
+	Behavior on placeholderTextColor {
+		CAnim {
+		}
+	}
 }

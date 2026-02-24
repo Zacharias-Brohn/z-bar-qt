@@ -2,94 +2,95 @@ import qs.Config
 import QtQuick
 
 MouseArea {
-    id: root
+	id: root
 
-    property bool disabled
-    property color color: DynamicColors.palette.m3onSurface
-    property real radius: parent?.radius ?? 0
-    property alias rect: hoverLayer
+	property color color: DynamicColors.palette.m3onSurface
+	property bool disabled
+	property real radius: parent?.radius ?? 0
+	property alias rect: hoverLayer
 
-    function onClicked(): void {
-    }
+	function onClicked(): void {
+	}
 
-    anchors.fill: parent
+	anchors.fill: parent
+	cursorShape: disabled ? undefined : Qt.PointingHandCursor
+	enabled: !disabled
+	hoverEnabled: true
 
-    enabled: !disabled
-    cursorShape: disabled ? undefined : Qt.PointingHandCursor
-    hoverEnabled: true
+	onClicked: event => !disabled && onClicked(event)
+	onPressed: event => {
+		if (disabled)
+			return;
 
-    onPressed: event => {
-        if (disabled)
-            return;
+		rippleAnim.x = event.x;
+		rippleAnim.y = event.y;
 
-        rippleAnim.x = event.x;
-        rippleAnim.y = event.y;
+		const dist = (ox, oy) => ox * ox + oy * oy;
+		rippleAnim.radius = Math.sqrt(Math.max(dist(event.x, event.y), dist(event.x, height - event.y), dist(width - event.x, event.y), dist(width - event.x, height - event.y)));
 
-        const dist = (ox, oy) => ox * ox + oy * oy;
-        rippleAnim.radius = Math.sqrt(Math.max(dist(event.x, event.y), dist(event.x, height - event.y), dist(width - event.x, event.y), dist(width - event.x, height - event.y)));
+		rippleAnim.restart();
+	}
 
-        rippleAnim.restart();
-    }
+	SequentialAnimation {
+		id: rippleAnim
 
-    onClicked: event => !disabled && onClicked(event)
+		property real radius
+		property real x
+		property real y
 
-    SequentialAnimation {
-        id: rippleAnim
+		PropertyAction {
+			property: "x"
+			target: ripple
+			value: rippleAnim.x
+		}
 
-        property real x
-        property real y
-        property real radius
+		PropertyAction {
+			property: "y"
+			target: ripple
+			value: rippleAnim.y
+		}
 
-        PropertyAction {
-            target: ripple
-            property: "x"
-            value: rippleAnim.x
-        }
-        PropertyAction {
-            target: ripple
-            property: "y"
-            value: rippleAnim.y
-        }
-        PropertyAction {
-            target: ripple
-            property: "opacity"
-            value: 0.08
-        }
-        Anim {
-            target: ripple
-            properties: "implicitWidth,implicitHeight"
-            from: 0
-            to: rippleAnim.radius * 2
-            easing.bezierCurve: MaterialEasing.standardDecel
-        }
-        Anim {
-            target: ripple
-            property: "opacity"
-            to: 0
-        }
-    }
+		PropertyAction {
+			property: "opacity"
+			target: ripple
+			value: 0.08
+		}
 
-    CustomClippingRect {
-        id: hoverLayer
+		Anim {
+			easing.bezierCurve: MaterialEasing.standardDecel
+			from: 0
+			properties: "implicitWidth,implicitHeight"
+			target: ripple
+			to: rippleAnim.radius * 2
+		}
 
-        anchors.fill: parent
+		Anim {
+			property: "opacity"
+			target: ripple
+			to: 0
+		}
+	}
+
+	CustomClippingRect {
+		id: hoverLayer
+
+		anchors.fill: parent
 		border.pixelAligned: false
+		color: Qt.alpha(root.color, root.disabled ? 0 : root.pressed ? 0.1 : root.containsMouse ? 0.08 : 0)
+		radius: root.radius
 
-        color: Qt.alpha(root.color, root.disabled ? 0 : root.pressed ? 0.1 : root.containsMouse ? 0.08 : 0)
-        radius: root.radius
+		CustomRect {
+			id: ripple
 
-        CustomRect {
-            id: ripple
-
-            radius: 1000
-            color: root.color
-            opacity: 0
 			border.pixelAligned: false
+			color: root.color
+			opacity: 0
+			radius: 1000
 
-            transform: Translate {
-                x: -ripple.width / 2
-                y: -ripple.height / 2
-            }
-        }
-    }
+			transform: Translate {
+				x: -ripple.width / 2
+				y: -ripple.height / 2
+			}
+		}
+	}
 }

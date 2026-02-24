@@ -3,15 +3,16 @@ import QtQuick
 import QtQuick.Effects
 
 RectangularShadow {
-    property int level
-    property real dp: [0, 1, 3, 6, 8, 12][level]
+	property real dp: [0, 1, 3, 6, 8, 12][level]
+	property int level
 
-    color: Qt.alpha(DynamicColors.palette.m3shadow, 0.7)
-    blur: (dp * 5) ** 0.7
-    spread: -dp * 0.3 + (dp * 0.1) ** 2
-    offset.y: dp / 2
+	blur: (dp * 5) ** 0.7
+	color: Qt.alpha(DynamicColors.palette.m3shadow, 0.7)
+	offset.y: dp / 2
+	spread: -dp * 0.3 + (dp * 0.1) ** 2
 
-    Behavior on dp {
-        Anim {}
-    }
+	Behavior on dp {
+		Anim {
+		}
+	}
 }

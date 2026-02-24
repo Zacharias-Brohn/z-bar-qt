@@ -8,75 +8,80 @@ import qs.Modules
 import qs.Daemons
 
 CustomRect {
-    id: root
+	id: root
 
-    required property var visibilities
-    required property Item popouts
+	required property Item popouts
+	required property var visibilities
 
-    Layout.fillWidth: true
-    implicitHeight: layout.implicitHeight + 18 * 2
+	Layout.fillWidth: true
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: layout.implicitHeight + 18 * 2
+	radius: 8
 
-    radius: 8
-    color: DynamicColors.tPalette.m3surfaceContainer
+	ColumnLayout {
+		id: layout
 
-    ColumnLayout {
-        id: layout
+		anchors.fill: parent
+		anchors.margins: 18
+		spacing: 10
 
-        anchors.fill: parent
-        anchors.margins: 18
-        spacing: 10
-
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 7
+		RowLayout {
+			Layout.alignment: Qt.AlignHCenter
+			spacing: 7
 
 			Toggle {
-				visible: QSNetwork.Networking.devices.values.length > 0
-				icon: Network.wifiEnabled ? "wifi" : "wifi_off"
 				checked: Network.wifiEnabled
+				icon: Network.wifiEnabled ? "wifi" : "wifi_off"
+				visible: QSNetwork.Networking.devices.values.length > 0
+
 				onClicked: Network.toggleWifi()
 			}
 
-            Toggle {
+			Toggle {
 				id: toggle
-                icon: NotifServer.dnd ? "notifications_off" : "notifications"
-                checked: !NotifServer.dnd
-                onClicked: NotifServer.dnd = !NotifServer.dnd
-            }
+
+				checked: !NotifServer.dnd
+				icon: NotifServer.dnd ? "notifications_off" : "notifications"
+
+				onClicked: NotifServer.dnd = !NotifServer.dnd
+			}
 
 			Toggle {
-				icon: Audio.sourceMuted ? "mic_off" : "mic"
 				checked: !Audio.sourceMuted
+				icon: Audio.sourceMuted ? "mic_off" : "mic"
+
 				onClicked: {
 					const audio = Audio.source?.audio;
-					if ( audio )
+					if (audio)
 						audio.muted = !audio.muted;
 				}
 			}
 
 			Toggle {
-				icon: Audio.muted ? "volume_off" : "volume_up"
 				checked: !Audio.muted
+				icon: Audio.muted ? "volume_off" : "volume_up"
+
 				onClicked: {
 					const audio = Audio.sink?.audio;
-					if ( audio )
+					if (audio)
 						audio.muted = !audio.muted;
 				}
 			}
 
 			Toggle {
-				visible: Bluetooth.defaultAdapter ?? false
-				icon: Bluetooth.defaultAdapter?.enabled ? "bluetooth" : "bluetooth_disabled"
 				checked: Bluetooth.defaultAdapter?.enabled ?? false
+				icon: Bluetooth.defaultAdapter?.enabled ? "bluetooth" : "bluetooth_disabled"
+				visible: Bluetooth.defaultAdapter ?? false
+
 				onClicked: {
 					// console.log(Bluetooth.defaultAdapter)
-					const adapter = Bluetooth.defaultAdapter
-					if ( adapter )
+					const adapter = Bluetooth.defaultAdapter;
+					if (adapter)
 						adapter.enabled = !adapter.enabled;
 				}
 			}
-        }
-    }
+		}
+	}
 
 	CustomShortcut {
 		name: "toggle-dnd"
@@ -86,20 +91,20 @@ CustomRect {
 		}
 	}
 
-    component Toggle: IconButton {
-        Layout.fillWidth: true
-        Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
-        radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
-        inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
-        toggle: true
-        radiusAnim.duration: MaterialEasing.expressiveEffectsTime
-        radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
+	component Toggle: IconButton {
+		Layout.fillWidth: true
+		Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
+		inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+		radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
+		radiusAnim.duration: MaterialEasing.expressiveEffectsTime
+		radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
+		toggle: true
 
-        Behavior on Layout.preferredWidth {
-            Anim {
+		Behavior on Layout.preferredWidth {
+			Anim {
 				duration: MaterialEasing.expressiveEffectsTime
 				easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        }
-    }
+			}
+		}
+	}
 }

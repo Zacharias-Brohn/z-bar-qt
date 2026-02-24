@@ -10,17 +10,17 @@ RowLayout {
 	spacing: 12
 
 	Rectangle {
-		Layout.preferredWidth: 40
 		Layout.preferredHeight: 40
+		Layout.preferredWidth: 40
 		color: "transparent"
 		radius: 1000
 
 		MaterialIcon {
 			anchors.centerIn: parent
-			text: "arrow_back_2"
+			color: DynamicColors.palette.m3onSurface
 			fill: 1
 			font.pointSize: 24
-			color: DynamicColors.palette.m3onSurface
+			text: "arrow_back_2"
 		}
 
 		StateLayer {
@@ -36,30 +36,27 @@ RowLayout {
 	}
 
 	CustomText {
-		text: new Date(Calendar.displayYear, Calendar.displayMonth, 1).toLocaleDateString(
-			Qt.locale(),
-			"MMMM yyyy"
-		)
-		font.weight: 600
-		font.pointSize: 14
-		color: DynamicColors.palette.m3onSurface
 		Layout.fillWidth: true
+		color: DynamicColors.palette.m3onSurface
+		font.pointSize: 14
+		font.weight: 600
 		horizontalAlignment: Text.AlignHCenter
+		text: new Date(Calendar.displayYear, Calendar.displayMonth, 1).toLocaleDateString(Qt.locale(), "MMMM yyyy")
 	}
 
 	Rectangle {
-		Layout.preferredWidth: 40
 		Layout.preferredHeight: 40
+		Layout.preferredWidth: 40
 		color: "transparent"
 		radius: 1000
 
 		MaterialIcon {
 			anchors.centerIn: parent
-			text: "arrow_back_2"
+			color: DynamicColors.palette.m3onSurface
 			fill: 1
 			font.pointSize: 24
 			rotation: 180
-			color: DynamicColors.palette.m3onSurface
+			text: "arrow_back_2"
 		}
 
 		StateLayer {
