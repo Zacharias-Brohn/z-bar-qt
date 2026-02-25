@@ -12,13 +12,15 @@ Item {
 	property int gap: 40
 	property alias horizontalAlignment: elideText.horizontalAlignment
 	property bool leftFadeEnabled: false
-	property real leftFadeStrength: overflowing && leftFadeEnabled ? fadeStrengthMoving : fadeStrengthIdle
+	property real leftFadeStrength: overflowing && leftFadeEnabled
+									? fadeStrengthMoving : fadeStrengthIdle
 	property int leftFadeWidth: 28
 	property bool marqueeEnabled: true
 	readonly property bool overflowing: metrics.width > root.width
 	property int pauseMs: 1200
 	property real pixelsPerSecond: 40
-	property real rightFadeStrength: overflowing ? fadeStrengthMoving : fadeStrengthIdle
+	property real rightFadeStrength: overflowing ? fadeStrengthMoving :
+												   fadeStrengthIdle
 	property int rightFadeWidth: 28
 	property bool sliding: false
 	property alias text: elideText.text
@@ -41,7 +43,7 @@ Item {
 
 	onTextChanged: strip.x = 0
 	onVisibleChanged: if (!visible)
-		strip.x = 0
+						  strip.x = 0
 	onWidthChanged: strip.x = 0
 
 	TextMetrics {
