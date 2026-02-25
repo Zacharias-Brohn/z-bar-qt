@@ -16,12 +16,34 @@ import qs.Config
 Singleton {
 	id: root
 
+	readonly property var appCooldownMap: new Map()
 	property alias dnd: props.dnd
 	property list<Notif> list: []
 	property bool loaded
 	readonly property list<Notif> notClosed: list.filter(n => !n.closed)
 	readonly property list<Notif> popups: list.filter(n => n.popup)
 	property alias server: server
+
+	function shouldThrottle(appName: string): bool {
+		if (props.dnd)
+			return false;
+
+		const key = (appName || "unknown").trim().toLowerCase();
+		const cooldownSec = Config.notifs.appNotifCooldown;
+		const cooldownMs = Math.max(0, cooldownSec * 1000);
+
+		if (cooldownMs <= 0)
+			return true;
+
+		const now = Date.now();
+		const until = appCooldownMap.get(key) ?? 0;
+
+		if (now < until)
+			return false;
+
+		appCooldownMap.set(key, now + cooldownMs);
+		return true;
+	}
 
 	onListChanged: {
 		if (loaded) {
@@ -77,8 +99,10 @@ Singleton {
 		onNotification: notif => {
 			notif.tracked = true;
 
+			const is_popup = root.shouldThrottle(notif.appName);
+
 			const comp = notifComp.createObject(root, {
-				popup: !props.dnd,
+				popup: is_popup,
 				notification: notif
 			});
 			root.list = [comp, ...root.list];

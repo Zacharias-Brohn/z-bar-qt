@@ -1,12 +1,10 @@
-import ZShell.Services
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Shapes
 import qs.Daemons
 import qs.Components
 import qs.Config
 import qs.Helpers
-import qs.Modules
-import qs.Paths
 
 Item {
 	id: root
@@ -15,10 +13,11 @@ Item {
 		const active = Players.active;
 		return active?.length ? active.position / active.length : 0;
 	}
+	property int rowHeight: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
-	implicitWidth: Config.dashboard.sizes.mediaWidth
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: cover.height + rowHeight * 2
 
 	Behavior on playerProgress {
 		Anim {
@@ -33,10 +32,6 @@ Item {
 		triggeredOnStart: true
 
 		onTriggered: Players.active?.positionChanged()
-	}
-
-	ServiceRef {
-		service: Audio.beatTracker
 	}
 
 	Shape {
@@ -85,114 +80,124 @@ Item {
 		}
 	}
 
-	CustomClippingRect {
-		id: cover
+	RowLayout {
+		id: layout
 
 		anchors.left: parent.left
-		anchors.margins: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
 		anchors.right: parent.right
-		anchors.top: parent.top
-		color: DynamicColors.tPalette.m3surfaceContainerHigh
-		implicitHeight: width
-		radius: Infinity
+		implicitHeight: root.implicitHeight
 
-		MaterialIcon {
-			anchors.centerIn: parent
-			color: DynamicColors.palette.m3onSurfaceVariant
-			font.pointSize: (parent.width * 0.4) || 1
-			grade: 200
-			text: "art_track"
-		}
+		CustomClippingRect {
+			id: cover
 
-		Image {
-			id: image
+			Layout.alignment: Qt.AlignLeft
+			Layout.bottomMargin: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			Layout.leftMargin: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			Layout.preferredHeight: Config.dashboard.sizes.mediaCoverArtSize
+			Layout.preferredWidth: Config.dashboard.sizes.mediaCoverArtSize
+			Layout.topMargin: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			color: DynamicColors.tPalette.m3surfaceContainerHigh
+			radius: Infinity
 
-			anchors.fill: parent
-			asynchronous: true
-			fillMode: Image.PreserveAspectCrop
-			source: Players.active?.trackArtUrl ?? ""
-			sourceSize.height: height
-			sourceSize.width: width
-		}
-	}
-
-	CustomText {
-		id: title
-
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: cover.bottom
-		anchors.topMargin: Appearance.spacing.normal
-		animate: true
-		color: DynamicColors.palette.m3primary
-		elide: Text.ElideRight
-		font.pointSize: Appearance.font.size.normal
-		horizontalAlignment: Text.AlignHCenter
-		text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
-		width: parent.implicitWidth - Appearance.padding.large * 2
-	}
-
-	CustomText {
-		id: album
-
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: title.bottom
-		anchors.topMargin: Appearance.spacing.small
-		animate: true
-		color: DynamicColors.palette.m3outline
-		elide: Text.ElideRight
-		font.pointSize: Appearance.font.size.small
-		horizontalAlignment: Text.AlignHCenter
-		text: (Players.active?.trackAlbum ?? qsTr("No media")) || qsTr("Unknown album")
-		width: parent.implicitWidth - Appearance.padding.large * 2
-	}
-
-	CustomText {
-		id: artist
-
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: album.bottom
-		anchors.topMargin: Appearance.spacing.small
-		animate: true
-		color: DynamicColors.palette.m3secondary
-		elide: Text.ElideRight
-		horizontalAlignment: Text.AlignHCenter
-		text: (Players.active?.trackArtist ?? qsTr("No media")) || qsTr("Unknown artist")
-		width: parent.implicitWidth - Appearance.padding.large * 2
-	}
-
-	Row {
-		id: controls
-
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: artist.bottom
-		anchors.topMargin: Appearance.spacing.smaller
-		spacing: Appearance.spacing.small
-
-		Control {
-			function onClicked(): void {
-				Players.active?.previous();
+			MaterialIcon {
+				anchors.centerIn: parent
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: (parent.width * 0.4) || 1
+				grade: 200
+				text: "art_track"
 			}
 
-			canUse: Players.active?.canGoPrevious ?? false
-			icon: "skip_previous"
+			Image {
+				id: image
+
+				anchors.fill: parent
+				asynchronous: true
+				fillMode: Image.PreserveAspectCrop
+				source: Players.active?.trackArtUrl ?? ""
+				sourceSize.height: Math.floor(height)
+				sourceSize.width: Math.floor(width)
+			}
 		}
 
-		Control {
-			function onClicked(): void {
-				Players.active?.togglePlaying();
+		CustomRect {
+			Layout.fillWidth: true
+			Layout.preferredHeight: childrenRect.height
+
+			MarqueeText {
+				id: title
+
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: parent.top
+				color: DynamicColors.palette.m3primary
+				font.pointSize: Appearance.font.size.normal
+				horizontalAlignment: Text.AlignHCenter
+				pauseMs: 4000
+				text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
+				width: parent.width - Appearance.padding.large * 4
 			}
 
-			canUse: Players.active?.canTogglePlaying ?? false
-			icon: Players.active?.isPlaying ? "pause" : "play_arrow"
-		}
+			CustomText {
+				id: album
 
-		Control {
-			function onClicked(): void {
-				Players.active?.next();
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: title.bottom
+				anchors.topMargin: Appearance.spacing.small
+				animate: true
+				color: DynamicColors.palette.m3outline
+				elide: Text.ElideRight
+				font.pointSize: Appearance.font.size.small
+				horizontalAlignment: Text.AlignHCenter
+				text: (Players.active?.trackAlbum ?? qsTr("No media")) || qsTr("Unknown album")
 			}
 
-			canUse: Players.active?.canGoNext ?? false
-			icon: "skip_next"
+			CustomText {
+				id: artist
+
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: album.bottom
+				anchors.topMargin: Appearance.spacing.small
+				animate: true
+				color: DynamicColors.palette.m3secondary
+				elide: Text.ElideRight
+				horizontalAlignment: Text.AlignHCenter
+				text: (Players.active?.trackArtist ?? qsTr("No media")) || qsTr("Unknown artist")
+			}
+
+			Row {
+				id: controls
+
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: artist.bottom
+				anchors.topMargin: Appearance.spacing.smaller
+				spacing: Appearance.spacing.small
+
+				Control {
+					function onClicked(): void {
+						Players.active?.previous();
+					}
+
+					canUse: Players.active?.canGoPrevious ?? false
+					icon: "skip_previous"
+				}
+
+				Control {
+					function onClicked(): void {
+						Players.active?.togglePlaying();
+					}
+
+					canUse: Players.active?.canTogglePlaying ?? false
+					icon: Players.active?.isPlaying ? "pause" : "play_arrow"
+				}
+
+				Control {
+					function onClicked(): void {
+						Players.active?.next();
+					}
+
+					canUse: Players.active?.canGoNext ?? false
+					icon: "skip_next"
+				}
+			}
 		}
 	}
 

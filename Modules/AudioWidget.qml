@@ -11,12 +11,11 @@ Item {
 	id: root
 
 	property color barColor: DynamicColors.palette.m3primary
-	property bool expanded: false
 	property color textColor: DynamicColors.palette.m3onSurface
 
 	anchors.bottom: parent.bottom
 	anchors.top: parent.top
-	implicitWidth: expanded ? 300 : 150
+	implicitWidth: 150
 
 	Behavior on implicitWidth {
 		NumberAnimation {
@@ -49,16 +48,18 @@ Item {
 		}
 
 		RowLayout {
-			anchors {
-				fill: parent
-				leftMargin: 10
-				rightMargin: 15
-			}
+			id: layout
+
+			anchors.left: parent.left
+			anchors.leftMargin: Appearance.padding.small
+			anchors.right: parent.right
+			anchors.rightMargin: Appearance.padding.small * 2
+			anchors.verticalCenter: parent.verticalCenter
 
 			MaterialIcon {
 				Layout.alignment: Qt.AlignVCenter
 				color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
-				font.pixelSize: 18
+				font.pointSize: 14
 				text: Audio.muted ? "volume_off" : "volume_up"
 			}
 
@@ -91,7 +92,7 @@ Item {
 			MaterialIcon {
 				Layout.alignment: Qt.AlignVCenter
 				color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor
-				font.pixelSize: 18
+				font.pointSize: 14
 				text: Audio.sourceMuted ? "mic_off" : "mic"
 			}
 

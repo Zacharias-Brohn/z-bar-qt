@@ -2,6 +2,7 @@ import Quickshell.Io
 
 JsonObject {
 	property bool actionOnClick: false
+	property int appNotifCooldown: 0
 	property real clearThreshold: 0.3
 	property int defaultExpireTimeout: 5000
 	property int expandThreshold: 20

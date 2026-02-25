@@ -12,62 +12,40 @@ Item {
 
 	anchors.bottom: parent.bottom
 	anchors.top: parent.top
-	implicitWidth: textMetrics.width + contentRow.spacing + 30
+	implicitWidth: contentRow.childrenRect.width + Appearance.spacing.smaller
 
-	Rectangle {
+	CustomRect {
 		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		color: DynamicColors.tPalette.m3surfaceContainer
 		implicitHeight: 22
 		radius: height / 2
-
-		Behavior on color {
-			CAnim {
-			}
-		}
 	}
 
 	RowLayout {
 		id: contentRow
 
-		spacing: 10
+		anchors.centerIn: parent
+		implicitHeight: 22
+		spacing: Appearance.spacing.small
 
-		anchors {
-			fill: parent
-			leftMargin: 5
-			rightMargin: 5
-		}
-
-		Text {
-			Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
-			color: root.textColor
-			font.family: "Material Symbols Rounded"
-			font.pixelSize: 18
-			text: "\uf569"
-
-			Behavior on color {
-				CAnim {
-				}
-			}
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			font.pointSize: 14
+			text: "package_2"
 		}
 
 		TextMetrics {
 			id: textMetrics
 
-			font.pixelSize: 16
 			text: root.countUpdates
 		}
 
-		Text {
-			Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+		CustomText {
 			color: root.textColor
+			font.pointSize: 12
 			text: textMetrics.text
-
-			Behavior on color {
-				CAnim {
-				}
-			}
 		}
 	}
 }

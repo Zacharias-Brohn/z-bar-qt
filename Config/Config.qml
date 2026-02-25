@@ -205,6 +205,7 @@ Singleton {
 		return {
 			expire: notifs.expire,
 			defaultExpireTimeout: notifs.defaultExpireTimeout,
+			appNotifCooldown: notifs.appNotifCooldown,
 			clearThreshold: notifs.clearThreshold,
 			expandThreshold: notifs.expandThreshold,
 			actionOnClick: notifs.actionOnClick,
@@ -306,7 +307,8 @@ Singleton {
 
 				fileView.setText(JSON.stringify(config, null, 4));
 			} catch (e) {
-				Toaster.toast(qsTr("Failed to serialize config"), e.message, "settings_alert", Toast.Error);
+				Toaster.toast(qsTr("Failed to serialize config"), e.message,
+							  "settings_alert", Toast.Error);
 			}
 		}
 	}
@@ -337,7 +339,8 @@ Singleton {
 		}
 		onLoadFailed: err => {
 			if (err !== FileViewError.FileNotFound)
-				Toaster.toast(qsTr("Failed to read config"), FileViewError.toString(err), "settings_alert", Toast.Warning);
+			Toaster.toast(qsTr("Failed to read config"), FileViewError.toString(err),
+						  "settings_alert", Toast.Warning);
 		}
 		onLoaded: {
 			ModeScheduler.checkStartup();
@@ -346,15 +349,19 @@ Singleton {
 				const elapsed = timer.elapsedMs();
 
 				if (adapter.utilities.toasts.configLoaded && !root.recentlySaved) {
-					Toaster.toast(qsTr("Config loaded"), qsTr("Config loaded in %1ms").arg(elapsed), "rule_settings");
+					Toaster.toast(qsTr("Config loaded"), qsTr("Config loaded in %1ms").arg(
+									  elapsed), "rule_settings");
 				} else if (adapter.utilities.toasts.configLoaded && root.recentlySaved) {
-					Toaster.toast(qsTr("Config saved"), qsTr("Config reloaded in %1ms").arg(elapsed), "settings_alert");
+					Toaster.toast(qsTr("Config saved"), qsTr("Config reloaded in %1ms").arg(
+									  elapsed), "settings_alert");
 				}
 			} catch (e) {
-				Toaster.toast(qsTr("Failed to load config"), e.message, "settings_alert", Toast.Error);
+				Toaster.toast(qsTr("Failed to load config"), e.message, "settings_alert",
+							  Toast.Error);
 			}
 		}
-		onSaveFailed: err => Toaster.toast(qsTr("Failed to save config"), FileViewError.toString(err), "settings_alert", Toast.Error)
+		onSaveFailed: err => Toaster.toast(qsTr("Failed to save config"),
+										   FileViewError.toString(err), "settings_alert", Toast.Error)
 
 		JsonAdapter {
 			id: adapter
