@@ -1,15 +1,16 @@
 pragma Singleton
 
-import qs.Config
 import ZShell.Services
 import ZShell
 import Quickshell
 import Quickshell.Services.Pipewire
 import QtQuick
+import qs.Config
 
 Singleton {
 	id: root
 
+	readonly property alias cava: cava
 	readonly property bool muted: !!sink?.audio?.muted
 	readonly property var nodes: Pipewire.nodes.values.reduce((acc, node) => {
 		if (!node.isStream) {
@@ -129,6 +130,12 @@ Singleton {
 			Toaster.toast(qsTr("Audio input changed"), qsTr("Now using: %1").arg(newSourceName), "mic");
 
 		previousSourceName = newSourceName;
+	}
+
+	CavaProvider {
+		id: cava
+
+		bars: Config.services.visualizerBars
 	}
 
 	PwObjectTracker {

@@ -240,7 +240,6 @@ CustomMouseArea {
 			if (root.visibilities.osd) {
 				// OSD became visible, immediately check if this should be shortcut mode
 				const inOsdArea = root.inRightPanel(root.panels.osd, root.mouseX, root.mouseY);
-				console.log(inOsdArea);
 				if (!inOsdArea) {
 					root.osdShortcutActive = true;
 				}

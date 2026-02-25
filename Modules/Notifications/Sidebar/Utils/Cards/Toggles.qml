@@ -74,7 +74,6 @@ CustomRect {
 				visible: Bluetooth.defaultAdapter ?? false
 
 				onClicked: {
-					// console.log(Bluetooth.defaultAdapter)
 					const adapter = Bluetooth.defaultAdapter;
 					if (adapter)
 						adapter.enabled = !adapter.enabled;

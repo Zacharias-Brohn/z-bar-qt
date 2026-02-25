@@ -51,10 +51,6 @@ Slider {
 			implicitWidth: root.implicitWidth - root.handle.x - root.handle.implicitWidth - root.implicitHeight
 			radius: 1000
 			topLeftRadius: root.implicitHeight / 15
-
-			Component.onCompleted: {
-				console.log(root.handle.x, implicitWidth);
-			}
 		}
 	}
 	handle: CustomRect {

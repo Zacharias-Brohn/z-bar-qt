@@ -34,7 +34,6 @@ Item {
 
 	StateLayer {
 		function onClicked(): void {
-			console.log(root.modelData.path);
 			Wallpapers.setWallpaper(root.modelData.path);
 			root.visibilities.launcher = false;
 		}
