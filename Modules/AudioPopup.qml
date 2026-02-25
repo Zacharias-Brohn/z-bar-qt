@@ -213,6 +213,7 @@ Item {
 					radius: 1000
 
 					MaterialIcon {
+						anchors.alignWhenCentered: false
 						anchors.centerIn: parent
 						color: DynamicColors.palette.m3onPrimary
 						font.pointSize: 22

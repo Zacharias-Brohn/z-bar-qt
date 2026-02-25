@@ -1,3 +1,6 @@
+pragma ComponentBehavior: Bound
+
+import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
@@ -32,6 +35,55 @@ Item {
 		triggeredOnStart: true
 
 		onTriggered: Players.active?.positionChanged()
+	}
+
+	Shape {
+		id: visualizer
+
+		readonly property real centerX: width / 2
+		readonly property real centerY: height / 2
+		property color colour: DynamicColors.palette.m3primary
+		readonly property real innerX: cover.implicitWidth / 2 + Appearance.spacing.small
+		readonly property real innerY: cover.implicitHeight / 2 + Appearance.spacing.small
+
+		anchors.fill: cover
+		anchors.margins: -Config.dashboard.sizes.mediaVisualiserSize
+		asynchronous: true
+		data: visualizerBars.instances
+		preferredRendererType: Shape.CurveRenderer
+	}
+
+	Variants {
+		id: visualizerBars
+
+		model: Array.from({
+			length: Config.services.visualizerBars
+		}, (_, i) => i)
+
+		ShapePath {
+			id: visualizerBar
+
+			readonly property real angle: modelData * 2 * Math.PI / Config.services.visualizerBars
+			readonly property real cos: Math.cos(angle)
+			readonly property real magnitude: value * Config.dashboard.sizes.mediaVisualiserSize
+			required property int modelData
+			readonly property real sin: Math.sin(angle)
+			readonly property real value: Math.max(1e-3, Math.min(1, Audio.cava.values[modelData]))
+
+			capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+			startX: visualizer.centerX + (visualizer.innerX + strokeWidth / 2) * cos
+			strokeColor: DynamicColors.palette.m3primary
+			strokeWidth: 360 / Config.services.visualizerBars - Appearance.spacing.small / 4
+
+			startY: PathLine {
+				x: visualizer.centerX + (visualizer.innerX + visualizerBar.strokeWidth / 2 + visualizerBar.magnitude) * visualizerBar.cos
+				y: visualizer.centerY + (visualizer.innerY + visualizerBar.strokeWidth / 2 + visualizerBar.magnitude) * visualizerBar.sin
+			}
+			Behavior on strokeColor {
+				CAnim {
+				}
+			}
+		}
 	}
 
 	Shape {
@@ -136,31 +188,31 @@ Item {
 				width: parent.width - Appearance.padding.large * 4
 			}
 
-			CustomText {
+			MarqueeText {
 				id: album
 
 				anchors.horizontalCenter: parent.horizontalCenter
 				anchors.top: title.bottom
 				anchors.topMargin: Appearance.spacing.small
-				animate: true
 				color: DynamicColors.palette.m3outline
-				elide: Text.ElideRight
 				font.pointSize: Appearance.font.size.small
 				horizontalAlignment: Text.AlignHCenter
+				pauseMs: 4000
 				text: (Players.active?.trackAlbum ?? qsTr("No media")) || qsTr("Unknown album")
+				width: parent.width - Appearance.padding.large * 4
 			}
 
-			CustomText {
+			MarqueeText {
 				id: artist
 
 				anchors.horizontalCenter: parent.horizontalCenter
 				anchors.top: album.bottom
 				anchors.topMargin: Appearance.spacing.small
-				animate: true
 				color: DynamicColors.palette.m3secondary
-				elide: Text.ElideRight
 				horizontalAlignment: Text.AlignHCenter
+				pauseMs: 4000
 				text: (Players.active?.trackArtist ?? qsTr("No media")) || qsTr("Unknown artist")
+				width: parent.width - Appearance.padding.large * 4
 			}
 
 			Row {

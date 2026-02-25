@@ -10,8 +10,6 @@ Singleton {
 		let activeClass = Hypr.activeToplevel.lastIpcObject.class.toString();
 		let regex = new RegExp(activeClass, "i");
 
-		console.log("ActiveWindow", activeWindow, "ActiveClass", activeClass, "Regex", regex);
-
 		const evalTitle = activeWindow.match(regex);
 		callback(evalTitle);
 	}

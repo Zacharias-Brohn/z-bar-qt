@@ -257,7 +257,6 @@ Scope {
 
 						onClicked: {
 							panelWindow.detailsOpen = !panelWindow.detailsOpen;
-							console.log(panelWindow.detailsOpen);
 						}
 					}
 
@@ -300,7 +299,6 @@ Scope {
 
 						onClicked: {
 							root.shouldShow = false;
-							console.log(icon.source, icon.visible);
 							polkitAgent.flow.cancelAuthenticationRequest();
 							passInput.text = "";
 						}

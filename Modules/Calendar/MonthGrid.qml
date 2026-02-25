@@ -71,7 +71,6 @@ GridLayout {
 			Layout.preferredWidth: 40
 			color: {
 				if (modelData.isToday) {
-					console.log(width);
 					return DynamicColors.palette.m3primaryContainer;
 				}
 				return "transparent";
@@ -106,14 +105,6 @@ GridLayout {
 					NumberAnimation {
 						duration: 200
 					}
-				}
-			}
-
-			StateLayer {
-				color: DynamicColors.palette.m3onSurface
-
-				onClicked: {
-					console.log(`Selected date: ${parent.modelData.day}/${parent.modelData.month + 1}/${parent.modelData.year}`);
 				}
 			}
 		}

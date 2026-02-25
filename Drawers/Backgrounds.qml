@@ -23,9 +23,6 @@ Shape {
 	anchors.topMargin: bar.implicitHeight
 	preferredRendererType: Shape.CurveRenderer
 
-	Component.onCompleted: console.log(root.bar.implicitHeight,
-									   root.bar.anchors.topMargin)
-
 	Osd.Background {
 		startX: root.width - root.panels.sidebar.width
 		startY: (root.height - wrapper.height) / 2 - rounding

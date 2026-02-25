@@ -14,7 +14,6 @@ Item {
 	anchors.fill: parent
 
 	Component.onCompleted: {
-		console.log(root.source);
 		if (source)
 			Qt.callLater(() => one.update());
 	}

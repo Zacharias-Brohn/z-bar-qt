@@ -15,5 +15,6 @@ JsonObject {
 	]
 	property bool useFahrenheit: false
 	property bool useTwelveHourClock: Qt.locale().timeFormat(Locale.ShortFormat).toLowerCase().includes("a")
+	property int visualizerBars: 30
 	property string weatherLocation: ""
 }

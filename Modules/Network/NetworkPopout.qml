@@ -14,8 +14,6 @@ Item {
 
 	required property var wrapper
 
-	Component.onCompleted: console.log(Networking.backend.toString())
-
 	ColumnLayout {
 		id: layout
 
