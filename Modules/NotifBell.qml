@@ -13,7 +13,7 @@ Item {
 
 	anchors.bottom: parent.bottom
 	anchors.top: parent.top
-	implicitWidth: 25
+	implicitWidth: 30
 
 	CustomRect {
 		anchors.bottomMargin: 3
@@ -30,7 +30,7 @@ Item {
 			anchors.centerIn: parent
 			color: iconColor
 			font.family: "Material Symbols Rounded"
-			font.pixelSize: 20
+			font.pointSize: 16
 			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
 
 			Behavior on color {
