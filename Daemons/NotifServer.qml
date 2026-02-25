@@ -16,6 +16,7 @@ import qs.Config
 Singleton {
 	id: root
 
+	readonly property var appCooldownMap: new Map()
 	property alias dnd: props.dnd
 	property list<Notif> list: []
 	property bool loaded
@@ -23,26 +24,24 @@ Singleton {
 	readonly property list<Notif> popups: list.filter(n => n.popup)
 	property alias server: server
 
-	readonly property var appCooldownMap: new Map()
-
 	function shouldThrottle(appName: string): bool {
-		if ( props.dnd )
+		if (props.dnd)
 			return false;
 
-		const key = ( appName || "unknown" ).trim().toLowerCase();
+		const key = (appName || "unknown").trim().toLowerCase();
 		const cooldownSec = Config.notifs.appNotifCooldown;
 		const cooldownMs = Math.max(0, cooldownSec * 1000);
 
-		if ( cooldownMs <= 0 )
+		if (cooldownMs <= 0)
 			return true;
 
 		const now = Date.now();
-		const until = appCooldownMap.get( key ) ?? 0;
+		const until = appCooldownMap.get(key) ?? 0;
 
-		if ( now < until )
+		if (now < until)
 			return false;
 
-		appCooldownMap.set( key, now + cooldownMs )
+		appCooldownMap.set(key, now + cooldownMs);
 		return true;
 	}
 
