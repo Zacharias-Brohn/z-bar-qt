@@ -3,7 +3,6 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Helpers
 import qs.Components
-import qs.Paths
 import qs.Modules
 import qs.Config
 import qs.Modules.Dashboard.Dash
@@ -86,18 +85,6 @@ GridLayout {
 		}
 	}
 
-	// Rect {
-	//     Layout.row: 1
-	//     Layout.preferredWidth: dateTime.implicitWidth
-	//     Layout.fillHeight: true
-	//
-	//     radius: root.radius
-	//
-	//     DateTime {
-	//         id: dateTime
-	//     }
-	// }
-
 	Rect {
 		Layout.column: 0
 		Layout.columnSpan: 3
@@ -128,11 +115,11 @@ GridLayout {
 	}
 
 	Rect {
-		Layout.column: 5
-		Layout.fillHeight: true
-		Layout.preferredWidth: media.implicitWidth
-		Layout.row: 0
-		Layout.rowSpan: 2
+		Layout.column: 0
+		Layout.columnSpan: 5
+		Layout.fillWidth: true
+		Layout.preferredHeight: media.implicitHeight
+		Layout.row: 2
 		radius: root.radius
 
 		Media {

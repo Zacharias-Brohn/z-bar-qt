@@ -28,7 +28,7 @@ Variants {
 			property bool trayMenuVisible: false
 
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 			WlrLayershell.namespace: "ZShell-Bar"
 			color: "transparent"
 			contentItem.focus: true
@@ -36,8 +36,6 @@ Variants {
 
 			mask: Region {
 				id: region
-
-				property list<Region> nullRegions: []
 
 				height: bar.screen.height - backgroundRect.implicitHeight
 				intersection: Intersection.Xor
@@ -53,6 +51,7 @@ Variants {
 				visibilities.sidebar = false;
 				visibilities.dashboard = false;
 				visibilities.osd = false;
+				visibilities.settings = false;
 			}
 
 			PanelWindow {
@@ -98,7 +97,7 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
+				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
 				windows: [bar]
 
 				onCleared: {
@@ -106,6 +105,7 @@ Variants {
 					visibilities.sidebar = false;
 					visibilities.dashboard = false;
 					visibilities.osd = false;
+					visibilities.settings = false;
 					panels.popouts.hasCurrent = false;
 				}
 			}
