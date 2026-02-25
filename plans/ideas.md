@@ -9,3 +9,11 @@
 - [x] Maybe already possible; have keybinds to show certain menus. I do not want to touch my mouse to see notifications for example. Not everything in the bar needs this, but some would be good to have.
 - [x] Pressing ESC or some obvious button to close nc.
 - [x] Another branch for development, hold off big changes so that a working bar or if there are big config changes.
+
+# Stupid idea's from Daivin
+
+- [ ] An on screen pencil to draw on your screen :).
+- [ ] Audio module + cava / audio wave ;) ( Don't make it into minecraft blocks
+      but aan actual wave)
+- [ ] Update module: When there is 1 package it still looks extremely off
+- [ ] Bluetooth device battery view
