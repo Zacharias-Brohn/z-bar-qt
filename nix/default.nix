@@ -1,4 +1,6 @@
 {
+  fftw,
+  libcava,
   rev,
   lib,
   stdenv,
@@ -74,6 +76,8 @@
       libqalculate
       pipewire
       aubio
+      libcava
+      fftw
     ];
 
     dontWrapQtApps = true;
