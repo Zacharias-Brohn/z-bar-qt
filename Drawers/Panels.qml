@@ -9,7 +9,7 @@ import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
-import qs.Modules.Settings as Settings
+// import qs.Modules.Settings as Settings
 import qs.Config
 
 Item {
@@ -22,7 +22,7 @@ Item {
 	readonly property alias osd: osd
 	readonly property alias popouts: popouts
 	required property ShellScreen screen
-	readonly property alias settings: settings
+	// readonly property alias settings: settings
 	readonly property alias sidebar: sidebar
 	readonly property alias toasts: toasts
 	readonly property alias utilities: utilities
@@ -30,7 +30,8 @@ Item {
 
 	anchors.fill: parent
 	// anchors.margins: 8
-	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
+	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 :
+																		bar.implicitHeight
 
 	Behavior on anchors.topMargin {
 		Anim {
@@ -117,12 +118,12 @@ Item {
 		visibilities: root.visibilities
 	}
 
-	Settings.Wrapper {
-		id: settings
-
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.top: parent.top
-		panels: root
-		visibilities: root.visibilities
-	}
+	// Settings.Wrapper {
+	// 	id: settings
+	//
+	// 	anchors.horizontalCenter: parent.horizontalCenter
+	// 	anchors.top: parent.top
+	// 	panels: root
+	// 	visibilities: root.visibilities
+	// }
 }

@@ -8,7 +8,8 @@ import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
-import qs.Modules.Settings as Settings
+
+// import qs.Modules.Settings as Settings
 
 Shape {
 	id: root
@@ -22,7 +23,8 @@ Shape {
 	anchors.topMargin: bar.implicitHeight
 	preferredRendererType: Shape.CurveRenderer
 
-	Component.onCompleted: console.log(root.bar.implicitHeight, root.bar.anchors.topMargin)
+	Component.onCompleted: console.log(root.bar.implicitHeight,
+									   root.bar.anchors.topMargin)
 
 	Osd.Background {
 		startX: root.width - root.panels.sidebar.width
@@ -72,11 +74,11 @@ Shape {
 		wrapper: root.panels.sidebar
 	}
 
-	Settings.Background {
-		id: settings
-
-		startX: (root.width - wrapper.width) / 2 - rounding
-		startY: 0
-		wrapper: root.panels.settings
-	}
+	// Settings.Background {
+	// 	id: settings
+	//
+	// 	startX: (root.width - wrapper.width) / 2 - rounding
+	// 	startY: 0
+	// 	wrapper: root.panels.settings
+	// }
 }
