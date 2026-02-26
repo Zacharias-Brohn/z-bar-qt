@@ -95,7 +95,7 @@ void CavaProcessor::initCava() {
 		return;
 	}
 
-	m_plan = cava_init(m_bars, ac::SAMPLE_RATE, 1, 1, 0.85, 50, 10000);
+	m_plan = cava_init(m_bars, ac::SAMPLE_RATE, 1, 0, 0.55, 50, 10000);
 	m_out = new double[static_cast<size_t>(m_bars)];
 }
 
