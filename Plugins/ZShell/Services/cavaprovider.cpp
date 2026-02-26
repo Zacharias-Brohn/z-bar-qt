@@ -41,35 +41,35 @@ void CavaProcessor::process() {
 	}
 
 	// --- spectral contrast (removes the "everything rises together" effect)
-	QVector<double> tmp = values;
-	auto* b = tmp.data();
-	auto* e = b + tmp.size();
-
-	auto pct = [&](double p) -> double {
-			   const qsizetype n = tmp.size();
-			   if (n <= 0) return 0.0;
-
-			   // p in [0,1] -> index in [0, n-1]
-			   const double pos = p * double(n - 1);
-			   qsizetype k = static_cast<qsizetype>(std::llround(pos));
-			   k = std::clamp<qsizetype>(k, 0, n - 1);
-
-			   auto first = tmp.begin();
-			   auto nth   = first + k;
-			   std::nth_element(first, nth, tmp.end());
-			   return *nth;
-		   };
-
-	const double floor = pct(0.25);
-	const double ceil  = pct(0.95);
-	const double range = std::max(1e-6, ceil - floor);
-
-	const double gamma = 1.6; // 1.3..2.2 range; higher = more contrast
-	for (int i = 0; i < m_bars; ++i) {
-		double x = (values[i] - floor) / range;
-		x = std::clamp(x, 0.0, 1.0);
-		values[i] = std::pow(x, gamma);
-	}
+	// QVector<double> tmp = values;
+	// auto* b = tmp.data();
+	// auto* e = b + tmp.size();
+	//
+	// auto pct = [&](double p) -> double {
+	// 		   const qsizetype n = tmp.size();
+	// 		   if (n <= 0) return 0.0;
+	//
+	// 		   // p in [0,1] -> index in [0, n-1]
+	// 		   const double pos = p * double(n - 1);
+	// 		   qsizetype k = static_cast<qsizetype>(std::llround(pos));
+	// 		   k = std::clamp<qsizetype>(k, 0, n - 1);
+	//
+	// 		   auto first = tmp.begin();
+	// 		   auto nth   = first + k;
+	// 		   std::nth_element(first, nth, tmp.end());
+	// 		   return *nth;
+	// 	   };
+	//
+	// const double floor = pct(0.25);
+	// const double ceil  = pct(0.95);
+	// const double range = std::max(1e-6, ceil - floor);
+	//
+	// const double gamma = 1.6; // 1.3..2.2 range; higher = more contrast
+	// for (int i = 0; i < m_bars; ++i) {
+	// 	double x = (values[i] - floor) / range;
+	// 	x = std::clamp(x, 0.0, 1.0);
+	// 	values[i] = std::pow(x, gamma);
+	// }
 
 	// Update values
 	if (values != m_values) {
@@ -112,7 +112,7 @@ void CavaProcessor::initCava() {
 		return;
 	}
 
-	m_plan = cava_init(m_bars, ac::SAMPLE_RATE, 1, 0, 0.55, 50, 10000);
+	m_plan = cava_init(m_bars, ac::SAMPLE_RATE, 1, 1, 0.55, 50, 10000);
 	m_out = new double[static_cast<size_t>(m_bars)];
 }
 
