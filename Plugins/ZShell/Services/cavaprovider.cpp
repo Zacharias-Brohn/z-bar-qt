@@ -2,6 +2,7 @@
 
 #include "audiocollector.hpp"
 #include "audioprovider.hpp"
+#include <algorithm>
 #include <cava/cavacore.h>
 #include <cstddef>
 #include <qdebug.h>
@@ -32,9 +33,13 @@ void CavaProcessor::process() {
 	cava_execute(m_in, count, m_out, m_plan);
 
 	// Apply monstercat filter
-	// QVector<double> values(m_bars);
-	//
-	// // Left to right pass
+	QVector<double> values(m_bars);
+
+	for(int i = 0; i < m_bars; ++i) {
+		values[i] = std::clamp(m_out[i], 0.0, 1.0);
+	}
+
+	// Left to right pass
 	// const double inv = 1.0 / 1.5;
 	// double carry = 0.0;
 	// for (int i = 0; i < m_bars; ++i) {
@@ -48,12 +53,12 @@ void CavaProcessor::process() {
 	// 	carry = std::max(m_out[i], carry * inv);
 	// 	values[i] = std::max(values[i], carry);
 	// }
-	//
-	// // Update values
-	// if (values != m_values) {
-	// 	m_values = std::move(values);
-	// 	emit valuesChanged(m_values);
-	// }
+
+	// Update values
+	if (values != m_values) {
+		m_values = std::move(values);
+		emit valuesChanged(m_values);
+	}
 }
 
 void CavaProcessor::setBars(int bars) {
