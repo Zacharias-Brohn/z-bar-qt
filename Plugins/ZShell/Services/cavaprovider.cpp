@@ -4,6 +4,7 @@
 #include "audioprovider.hpp"
 #include <algorithm>
 #include <cava/cavacore.h>
+#include <cmath>
 #include <cstddef>
 #include <qdebug.h>
 
@@ -37,6 +38,28 @@ void CavaProcessor::process() {
 
 	for(int i = 0; i < m_bars; ++i) {
 		values[i] = std::clamp(m_out[i], 0.0, 1.0);
+	}
+
+	// --- spectral contrast (removes the "everything rises together" effect)
+	QVector<double> tmp = values;
+	auto* b = tmp.data();
+	auto* e = b + tmp.size();
+
+	auto pct = [&](double p) {
+			   const int k = std::clamp(int(std::chrono::round(p * (tmp.size() - 1))), 0, tmp.size() - 1);
+			   std::nth_element(b, b + k, e);
+			   return b[k];
+		   };
+
+	const double floor = pct(0.25);
+	const double ceil  = pct(0.95);
+	const double range = std::max(1e-6, ceil - floor);
+
+	const double gamma = 1.6; // 1.3..2.2 range; higher = more contrast
+	for (int i = 0; i < m_bars; ++i) {
+		double x = (values[i] - floor) / range;
+		x = std::clamp(x, 0.0, 1.0);
+		values[i] = std::pow(x, gamma);
 	}
 
 	// Left to right pass
