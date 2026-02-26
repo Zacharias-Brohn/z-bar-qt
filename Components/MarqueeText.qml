@@ -4,6 +4,7 @@ import qs.Config
 Item {
 	id: root
 
+	property bool animate: false
 	property color color: DynamicColors.palette.m3onSurface
 	property int fadeStrengthAnimMs: 180
 	property real fadeStrengthIdle: 0.0
@@ -27,6 +28,19 @@ Item {
 		return Math.max(1, Math.round(Math.abs(px) / root.pixelsPerSecond * 1000));
 	}
 
+	function resetMarquee() {
+		// stop + reset all state immediately
+		marqueeAnim.stop();
+		strip.x = 0;
+		root.sliding = false;
+		root.leftFadeEnabled = false;
+
+		// restart after bindings/layout settle
+		if (root.marqueeEnabled && root.overflowing && root.visible) {
+			marqueeAnim.restart();
+		}
+	}
+
 	clip: true
 	implicitHeight: elideText.implicitHeight
 
@@ -39,10 +53,10 @@ Item {
 		}
 	}
 
-	onTextChanged: strip.x = 0
+	onTextChanged: resetMarquee()
 	onVisibleChanged: if (!visible)
-		strip.x = 0
-	onWidthChanged: strip.x = 0
+		resetMarquee()
+	onWidthChanged: resetMarquee()
 
 	TextMetrics {
 		id: metrics
@@ -55,8 +69,10 @@ Item {
 		id: elideText
 
 		anchors.verticalCenter: parent.verticalCenter
+		animate: root.animate
+		animateProp: "scale,opacity"
 		color: root.color
-		elide: Text.ElideRight
+		elide: Text.ElideNone
 		visible: !root.overflowing
 		width: root.width
 	}
@@ -84,6 +100,8 @@ Item {
 			CustomText {
 				id: t1
 
+				animate: root.animate
+				animateProp: "opacity"
 				color: root.color
 				text: elideText.text
 			}
@@ -91,6 +109,8 @@ Item {
 			CustomText {
 				id: t2
 
+				animate: root.animate
+				animateProp: "opacity"
 				color: root.color
 				text: t1.text
 				x: t1.width + root.gap

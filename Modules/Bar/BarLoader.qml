@@ -206,14 +206,15 @@ RowLayout {
 					}
 				}
 			}
-			// DelegateChoice {
-			// 	roleValue: "dash"
-			// 	delegate: WrappedLoader {
-			// 		sourceComponent: DashWidget {
-			// 			visibilities: root.visibilities
-			// 		}
-			// 	}
-			// }
+
+			DelegateChoice {
+				roleValue: "media"
+
+				delegate: WrappedLoader {
+					sourceComponent: MediaWidget {
+					}
+				}
+			}
 		}
 	}
 

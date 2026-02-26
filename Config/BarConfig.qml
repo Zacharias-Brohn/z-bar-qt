@@ -12,6 +12,10 @@ JsonObject {
 			enabled: true
 		},
 		{
+			id: "media",
+			enabled: true
+		},
+		{
 			id: "resources",
 			enabled: true
 		},

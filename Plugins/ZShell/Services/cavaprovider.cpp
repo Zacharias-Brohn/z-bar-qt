@@ -4,7 +4,6 @@
 #include "audioprovider.hpp"
 #include <algorithm>
 #include <cava/cavacore.h>
-#include <cmath>
 #include <cstddef>
 #include <qdebug.h>
 
@@ -40,35 +39,19 @@ void CavaProcessor::process() {
 		values[i] = std::clamp(m_out[i], 0.0, 1.0);
 	}
 
-	// --- spectral contrast (removes the "everything rises together" effect)
-	// QVector<double> tmp = values;
-	// auto* b = tmp.data();
-	// auto* e = b + tmp.size();
-	//
-	// auto pct = [&](double p) -> double {
-	// 		   const qsizetype n = tmp.size();
-	// 		   if (n <= 0) return 0.0;
-	//
-	// 		   // p in [0,1] -> index in [0, n-1]
-	// 		   const double pos = p * double(n - 1);
-	// 		   qsizetype k = static_cast<qsizetype>(std::llround(pos));
-	// 		   k = std::clamp<qsizetype>(k, 0, n - 1);
-	//
-	// 		   auto first = tmp.begin();
-	// 		   auto nth   = first + k;
-	// 		   std::nth_element(first, nth, tmp.end());
-	// 		   return *nth;
-	// 	   };
-	//
-	// const double floor = pct(0.25);
-	// const double ceil  = pct(0.95);
-	// const double range = std::max(1e-6, ceil - floor);
-	//
-	// const double gamma = 1.6; // 1.3..2.2 range; higher = more contrast
+	// Left to right pass
+	// const double inv = 1.0 / 1.5;
+	// double carry = 0.0;
 	// for (int i = 0; i < m_bars; ++i) {
-	// 	double x = (values[i] - floor) / range;
-	// 	x = std::clamp(x, 0.0, 1.0);
-	// 	values[i] = std::pow(x, gamma);
+	// 	carry = std::max(m_out[i], carry * inv);
+	// 	values[i] = carry;
+	// }
+	//
+	// // Right to left pass and combine
+	// carry = 0.0;
+	// for (int i = m_bars - 1; i >= 0; --i) {
+	// 	carry = std::max(m_out[i], carry * inv);
+	// 	values[i] = std::max(values[i], carry);
 	// }
 
 	// Update values

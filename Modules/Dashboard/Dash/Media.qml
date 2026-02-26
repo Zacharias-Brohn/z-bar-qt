@@ -217,7 +217,7 @@ Item {
 				width: parent.width - Appearance.padding.large * 4
 			}
 
-			Row {
+			RowLayout {
 				id: controls
 
 				anchors.horizontalCenter: parent.horizontalCenter
@@ -260,20 +260,48 @@ Item {
 
 		required property bool canUse
 		required property string icon
+		property int level: 1
+		property string set_color: "Secondary"
 
 		function onClicked(): void {
 		}
 
+		Layout.preferredWidth: implicitWidth + (controlState.pressed ? Appearance.padding.normal * 2 : 0)
+		color: canUse ? DynamicColors.palette[`m3${set_color.toLowerCase()}`] : DynamicColors.palette[`m3${set_color.toLowerCase()}Container`]
 		implicitHeight: implicitWidth
 		implicitWidth: Math.max(icon.implicitHeight, icon.implicitHeight) + Appearance.padding.small
+		radius: Appearance.rounding.full
+
+		Behavior on Layout.preferredWidth {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+		Behavior on radius {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+
+		Elevation {
+			anchors.fill: parent
+			level: controlState.containsMouse && !controlState.pressed ? control.level + 1 : control.level
+			radius: parent.radius
+			z: -1
+		}
 
 		StateLayer {
+			id: controlState
+
 			function onClicked(): void {
 				control.onClicked();
 			}
 
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
 			disabled: !control.canUse
-			radius: Appearance.rounding.full
+			// radius: Appearance.rounding.full
 		}
 
 		MaterialIcon {
@@ -282,7 +310,8 @@ Item {
 			anchors.centerIn: parent
 			anchors.verticalCenterOffset: font.pointSize * 0.05
 			animate: true
-			color: control.canUse ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
+			fill: control.canUse ? 1 : 0
 			font.pointSize: Appearance.font.size.large
 			text: control.icon
 		}

@@ -27,25 +27,17 @@ Item {
 		id: contentRow
 
 		anchors.centerIn: parent
-		implicitHeight: 22
 		spacing: Appearance.spacing.small
 
 		MaterialIcon {
-			Layout.alignment: Qt.AlignVCenter
 			font.pointSize: 14
 			text: "package_2"
-		}
-
-		TextMetrics {
-			id: textMetrics
-
-			text: root.countUpdates
 		}
 
 		CustomText {
 			color: root.textColor
 			font.pointSize: 12
-			text: textMetrics.text
+			text: root.countUpdates
 		}
 	}
 }
