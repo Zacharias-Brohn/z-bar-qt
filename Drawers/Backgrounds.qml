@@ -1,6 +1,8 @@
 import Quickshell
 import QtQuick
 import QtQuick.Shapes
+import qs.Components
+import qs.Config
 import qs.Modules as Modules
 import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
@@ -20,8 +22,13 @@ Shape {
 
 	anchors.fill: parent
 	// anchors.margins: 8
-	anchors.topMargin: bar.implicitHeight
+	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 	preferredRendererType: Shape.CurveRenderer
+
+	Behavior on anchors.topMargin {
+		Anim {
+		}
+	}
 
 	Osd.Background {
 		startX: root.width - root.panels.sidebar.width

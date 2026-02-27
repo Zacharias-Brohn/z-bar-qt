@@ -236,6 +236,7 @@ Singleton {
 		return {
 			weatherLocation: services.weatherLocation,
 			useFahrenheit: services.useFahrenheit,
+			ddcutilService: services.ddcutilService,
 			useTwelveHourClock: services.useTwelveHourClock,
 			gpuType: services.gpuType,
 			audioIncrement: services.audioIncrement,

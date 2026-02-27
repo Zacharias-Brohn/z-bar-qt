@@ -12,6 +12,7 @@ Singleton {
 
 	property bool appleDisplayPresent: false
 	property list<var> ddcMonitors: []
+	property list<var> ddcServiceMon: []
 	readonly property list<Monitor> monitors: variants.instances
 
 	function decreaseBrightness(): void {
@@ -55,6 +56,8 @@ Singleton {
 
 	onMonitorsChanged: {
 		ddcMonitors = [];
+		ddcServiceMon = [];
+		ddcServiceProc.running = true;
 		ddcProc.running = true;
 	}
 
@@ -68,7 +71,7 @@ Singleton {
 	}
 
 	Process {
-		command: ["sh", "-c", "asdbctl get"] // To avoid warnings if asdbctl is not installed
+		command: ["sh", "-c", "asdbctl get"]
 		running: true
 
 		stdout: StdioCollector {
@@ -86,6 +89,26 @@ Singleton {
 						busNum: d.match(/I2C bus:[ ]*\/dev\/i2c-([0-9]+)/)[1],
 						connector: d.match(/DRM connector:\s+(.*)/)[1].replace(/^card\d+-/, "") // strip "card1-"
 					}))
+		}
+	}
+
+	Process {
+		id: ddcServiceProc
+
+		command: ["ddcutil-client", "detect"]
+
+		// running: true
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const t = text.replace(/\r\n/g, "\n").trim();
+
+				const output = ("\n" + t).split(/\n(?=display:\s*\d+\s*\n)/).filter(b => b.startsWith("display:")).map(b => ({
+							display: Number(b.match(/^display:\s*(\d+)/m)?.[1] ?? -1),
+							name: (b.match(/^\s*product_name:\s*(.*)$/m)?.[1] ?? "").trim()
+						})).filter(d => d.display > 0);
+				root.ddcServiceMon = output;
+			}
 		}
 	}
 
@@ -161,10 +184,15 @@ Singleton {
 
 		property real brightness
 		readonly property string busNum: root.ddcMonitors.find(m => m.connector === modelData.name)?.busNum ?? ""
+		readonly property string displayNum: root.ddcServiceMon.find(m => m.name === modelData.model)?.display ?? ""
 		readonly property Process initProc: Process {
 			stdout: StdioCollector {
 				onStreamFinished: {
-					if (monitor.isAppleDisplay) {
+					if (monitor.isDdcService) {
+						const output = text.split("\n").filter(o => o.startsWith("vcp_current_value:"))[0].split(":")[1];
+						const val = parseInt(output.trim());
+						monitor.brightness = val / 100;
+					} else if (monitor.isAppleDisplay) {
 						const val = parseInt(text.trim());
 						monitor.brightness = val / 101;
 					} else {
@@ -176,6 +204,7 @@ Singleton {
 		}
 		readonly property bool isAppleDisplay: root.appleDisplayPresent && modelData.model.startsWith("StudioDisplay")
 		readonly property bool isDdc: root.ddcMonitors.some(m => m.connector === modelData.name)
+		readonly property bool isDdcService: Config.services.ddcutilService
 		required property ShellScreen modelData
 		property real queuedBrightness: NaN
 		readonly property Timer timer: Timer {
@@ -190,7 +219,9 @@ Singleton {
 		}
 
 		function initBrightness(): void {
-			if (isAppleDisplay)
+			if (isDdcService)
+				initProc.command = ["ddcutil-client", "-d", displayNum, "getvcp", "10"];
+			else if (isAppleDisplay)
 				initProc.command = ["asdbctl", "get"];
 			else if (isDdc)
 				initProc.command = ["ddcutil", "-b", busNum, "getvcp", "10", "--brief"];
@@ -206,25 +237,28 @@ Singleton {
 			if (Math.round(brightness * 100) === rounded)
 				return;
 
-			if (isDdc && timer.running) {
+			if ((isDdc || isDdcService) && timer.running) {
 				queuedBrightness = value;
 				return;
 			}
 
 			brightness = value;
 
-			if (isAppleDisplay)
+			if (isDdcService)
+				Quickshell.execDetached(["ddcutil-client", "-d", displayNum, "setvcp", "10", rounded]);
+			else if (isAppleDisplay)
 				Quickshell.execDetached(["asdbctl", "set", rounded]);
 			else if (isDdc)
 				Quickshell.execDetached(["ddcutil", "--disable-dynamic-sleep", "--sleep-multiplier", ".1", "--skip-ddc-checks", "-b", busNum, "setvcp", "10", rounded]);
 			else
 				Quickshell.execDetached(["brightnessctl", "s", `${rounded}%`]);
 
-			if (isDdc)
+			if (isDdc || isDdcService)
 				timer.restart();
 		}
 
 		Component.onCompleted: initBrightness()
 		onBusNumChanged: initBrightness()
+		onDisplayNumChanged: initBrightness()
 	}
 }

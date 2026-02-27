@@ -43,6 +43,7 @@ Item {
 
 		MaterialIcon {
 			Layout.alignment: Qt.AlignVCenter
+			animate: true
 			color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
 			font.pointSize: 14
 			text: Audio.muted ? "volume_off" : "volume_up"
@@ -71,6 +72,7 @@ Item {
 
 		MaterialIcon {
 			Layout.alignment: Qt.AlignVCenter
+			animate: true
 			color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor
 			font.pointSize: 14
 			text: Audio.sourceMuted ? "mic_off" : "mic"
