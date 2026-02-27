@@ -4,6 +4,7 @@ import qs.Config
 Item {
 	id: root
 
+	property alias anim: marqueeAnim
 	property bool animate: false
 	property color color: DynamicColors.palette.m3onSurface
 	property int fadeStrengthAnimMs: 180
@@ -29,13 +30,11 @@ Item {
 	}
 
 	function resetMarquee() {
-		// stop + reset all state immediately
 		marqueeAnim.stop();
 		strip.x = 0;
 		root.sliding = false;
 		root.leftFadeEnabled = false;
 
-		// restart after bindings/layout settle
 		if (root.marqueeEnabled && root.overflowing && root.visible) {
 			marqueeAnim.restart();
 		}
@@ -120,20 +119,9 @@ Item {
 		SequentialAnimation {
 			id: marqueeAnim
 
-			loops: Animation.Infinite
-			running: root.marqueeEnabled && root.overflowing && root.visible
+			running: false
 
-			ScriptAction {
-				script: {
-					strip.x = 0;
-					root.sliding = false;
-					root.leftFadeEnabled = false;
-				}
-			}
-
-			PauseAnimation {
-				duration: root.pauseMs
-			}
+			onFinished: pauseTimer.restart()
 
 			ScriptAction {
 				script: {
@@ -173,6 +161,19 @@ Item {
 					root.sliding = false;
 					strip.x = 0;
 				}
+			}
+		}
+
+		Timer {
+			id: pauseTimer
+
+			interval: root.pauseMs
+			repeat: false
+			running: true
+
+			onTriggered: {
+				if (root.marqueeEnabled)
+					marqueeAnim.start();
 			}
 		}
 	}

@@ -65,9 +65,24 @@ Item {
 			color: Players.active?.isPlaying ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
 			font.pointSize: Appearance.font.size.normal
 			horizontalAlignment: Text.AlignHCenter
+			marqueeEnabled: false
 			pauseMs: 4000
 			text: root.currentMedia
 			width: root.textWidth
+
+			CustomMouseArea {
+				anchors.fill: parent
+				hoverEnabled: true
+
+				onContainsMouseChanged: {
+					if (!containsMouse) {
+						mediatext.marqueeEnabled = false;
+					} else {
+						mediatext.marqueeEnabled = true;
+						mediatext.anim.start();
+					}
+				}
+			}
 		}
 	}
 }
