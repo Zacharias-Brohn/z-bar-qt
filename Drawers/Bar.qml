@@ -52,7 +52,7 @@ Variants {
 				visibilities.dashboard = false;
 				visibilities.osd = false;
 				visibilities.settings = false;
-				visibilities.resources;
+				visibilities.resources = false;
 			}
 
 			PanelWindow {
