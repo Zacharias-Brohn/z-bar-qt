@@ -11,7 +11,7 @@ PathView {
 	id: root
 
 	required property var content
-	readonly property int itemWidth: Config.launcher.sizes.wallpaperWidth * 0.8 + Appearance.padding.larger * 2
+	readonly property int itemWidth: Config.launcher.sizes.wallpaperWidth * 0.9 + Appearance.padding.larger * 2
 	readonly property int numItems: {
 		const screen = QsWindow.window?.screen;
 		if (!screen)
@@ -20,8 +20,6 @@ PathView {
 		// Screen width - 4x outer rounding - 2x max side thickness (cause centered)
 		const barMargins = panels.bar.implicitWidth;
 		let outerMargins = 0;
-		if (panels.popouts.hasCurrent && panels.popouts.currentCenter + panels.popouts.nonAnimHeight / 2 > screen.height - content.implicitHeight)
-			outerMargins = panels.popouts.nonAnimWidth;
 		if ((visibilities.utilities || visibilities.sidebar) && panels.utilities.implicitWidth > outerMargins)
 			outerMargins = panels.utilities.implicitWidth;
 		const maxWidth = screen.width - Config.barConfig.rounding * 4 - (barMargins + outerMargins) * 2;

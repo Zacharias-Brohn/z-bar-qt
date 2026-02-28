@@ -60,7 +60,7 @@ Item {
 		color: DynamicColors.tPalette.m3surfaceContainer
 		implicitHeight: implicitWidth / 16 * 9
 		implicitWidth: Config.launcher.sizes.wallpaperWidth
-		radius: Appearance.rounding.normal
+		radius: Appearance.rounding.small
 		y: Appearance.padding.large
 
 		MaterialIcon {

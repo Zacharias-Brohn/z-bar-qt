@@ -10,6 +10,7 @@ import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
+import qs.Modules.Resources as Resources
 
 // import qs.Modules.Settings as Settings
 
@@ -28,6 +29,12 @@ Shape {
 	Behavior on anchors.topMargin {
 		Anim {
 		}
+	}
+
+	Resources.Background {
+		startX: 0 - rounding
+		startY: 0
+		wrapper: root.panels.resources
 	}
 
 	Osd.Background {

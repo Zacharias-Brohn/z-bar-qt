@@ -12,6 +12,8 @@ import qs.Components
 Item {
 	id: root
 
+	required property PersistentProperties visibilities
+
 	clip: true
 	implicitHeight: 34
 	implicitWidth: rowLayout.implicitWidth + Appearance.padding.small * 2
@@ -27,6 +29,10 @@ Item {
 			left: parent.left
 			right: parent.right
 			verticalCenter: parent.verticalCenter
+		}
+
+		StateLayer {
+			onClicked: root.visibilities.resources = !root.visibilities.resources
 		}
 	}
 

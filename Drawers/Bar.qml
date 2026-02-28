@@ -28,7 +28,7 @@ Variants {
 			property bool trayMenuVisible: false
 
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 			WlrLayershell.namespace: "ZShell-Bar"
 			color: "transparent"
 			contentItem.focus: true
@@ -52,6 +52,7 @@ Variants {
 				visibilities.dashboard = false;
 				visibilities.osd = false;
 				visibilities.settings = false;
+				visibilities.resources;
 			}
 
 			PanelWindow {
@@ -97,7 +98,7 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
+				active: visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
 				windows: [bar]
 
 				onCleared: {
@@ -106,6 +107,7 @@ Variants {
 					visibilities.dashboard = false;
 					visibilities.osd = false;
 					visibilities.settings = false;
+					visibilities.resources = false;
 					panels.popouts.hasCurrent = false;
 				}
 			}
@@ -118,6 +120,7 @@ Variants {
 				property bool launcher
 				property bool notif: NotifServer.popups.length > 0
 				property bool osd
+				property bool resources
 				property bool settings
 				property bool sidebar
 
@@ -127,7 +130,7 @@ Variants {
 			Binding {
 				property: "bar"
 				target: visibilities
-				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif
+				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif || visibilities.resources
 				when: Config.barConfig.autoHide
 			}
 

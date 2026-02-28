@@ -9,10 +9,15 @@ Singleton {
 	id: root
 
 	property string autoGpuType: "NONE"
+	property string cpuName: ""
 	property real cpuPerc
 	property real cpuTemp
+
+	// Individual disks: Array of { mount, used, total, free, perc }
+	property var disks: []
 	property real gpuMemTotal: 0
 	property real gpuMemUsed
+	property string gpuName: ""
 	property real gpuPerc
 	property real gpuTemp
 	readonly property string gpuType: Config.services.gpuType.toUpperCase() || autoGpuType
@@ -22,9 +27,23 @@ Singleton {
 	property real memTotal
 	property real memUsed
 	property int refCount
-	property real storagePerc: storageTotal > 0 ? storageUsed / storageTotal : 0
-	property real storageTotal
-	property real storageUsed
+	readonly property real storagePerc: {
+		let totalUsed = 0;
+		let totalSize = 0;
+		for (const disk of disks) {
+			totalUsed += disk.used;
+			totalSize += disk.total;
+		}
+		return totalSize > 0 ? totalUsed / totalSize : 0;
+	}
+
+	function cleanCpuName(name: string): string {
+		return name.replace(/\(R\)/gi, "").replace(/\(TM\)/gi, "").replace(/CPU/gi, "").replace(/\d+th Gen /gi, "").replace(/\d+nd Gen /gi, "").replace(/\d+rd Gen /gi, "").replace(/\d+st Gen /gi, "").replace(/Core /gi, "").replace(/Processor/gi, "").replace(/\s+/g, " ").trim();
+	}
+
+	function cleanGpuName(name: string): string {
+		return name.replace(/NVIDIA GeForce /gi, "").replace(/NVIDIA /gi, "").replace(/AMD Radeon /gi, "").replace(/AMD /gi, "").replace(/Intel /gi, "").replace(/\(R\)/gi, "").replace(/\(TM\)/gi, "").replace(/Graphics/gi, "").replace(/\s+/g, " ").trim();
+	}
 
 	function formatKib(kib: real): var {
 		const mib = 1024;
@@ -53,7 +72,7 @@ Singleton {
 	}
 
 	Timer {
-		interval: 3000
+		interval: Config.dashboard.resourceUpdateInterval
 		repeat: true
 		running: root.refCount > 0
 		triggeredOnStart: true
@@ -64,6 +83,18 @@ Singleton {
 			storage.running = true;
 			gpuUsage.running = true;
 			sensors.running = true;
+		}
+	}
+
+	FileView {
+		id: cpuinfoInit
+
+		path: "/proc/cpuinfo"
+
+		onLoaded: {
+			const nameMatch = text().match(/model name\s*:\s*(.+)/);
+			if (nameMatch)
+				root.cpuName = root.cleanCpuName(nameMatch[1]);
 		}
 	}
 
@@ -104,42 +135,116 @@ Singleton {
 	Process {
 		id: storage
 
-		command: ["sh", "-c", "df | grep '^/dev/' | awk '{print $1, $3, $4}'"]
+		command: ["lsblk", "-b", "-o", "NAME,SIZE,TYPE,FSUSED,FSSIZE", "-P"]
 
 		stdout: StdioCollector {
 			onStreamFinished: {
-				const deviceMap = new Map();
+				const diskMap = {};  // Map disk name -> { name, totalSize, used, fsTotal }
+				const lines = text.trim().split("\n");
 
-				for (const line of text.trim().split("\n")) {
+				for (const line of lines) {
 					if (line.trim() === "")
 						continue;
+					const nameMatch = line.match(/NAME="([^"]+)"/);
+					const sizeMatch = line.match(/SIZE="([^"]+)"/);
+					const typeMatch = line.match(/TYPE="([^"]+)"/);
+					const fsusedMatch = line.match(/FSUSED="([^"]*)"/);
+					const fssizeMatch = line.match(/FSSIZE="([^"]*)"/);
 
-					const parts = line.trim().split(/\s+/);
-					if (parts.length >= 3) {
-						const device = parts[0];
-						const used = parseInt(parts[1], 10) || 0;
-						const avail = parseInt(parts[2], 10) || 0;
+					if (!nameMatch || !typeMatch)
+						continue;
 
-						// Only keep the entry with the largest total space for each device
-						if (!deviceMap.has(device) || (used + avail) > (deviceMap.get(device).used + deviceMap.get(device).avail)) {
-							deviceMap.set(device, {
-								used: used,
-								avail: avail
-							});
+					const name = nameMatch[1];
+					const type = typeMatch[1];
+					const size = parseInt(sizeMatch?.[1] || "0", 10);
+					const fsused = parseInt(fsusedMatch?.[1] || "0", 10);
+					const fssize = parseInt(fssizeMatch?.[1] || "0", 10);
+
+					if (type === "disk") {
+						// Skip zram (swap) devices
+						if (name.startsWith("zram"))
+							continue;
+
+						// Initialize disk entry
+						if (!diskMap[name]) {
+							diskMap[name] = {
+								name: name,
+								totalSize: size,
+								used: 0,
+								fsTotal: 0
+							};
+						}
+					} else if (type === "part") {
+						// Find parent disk (remove trailing numbers/p+numbers)
+						let parentDisk = name.replace(/p?\d+$/, "");
+						// For nvme devices like nvme0n1p1, parent is nvme0n1
+						if (name.match(/nvme\d+n\d+p\d+/))
+							parentDisk = name.replace(/p\d+$/, "");
+
+						// Aggregate partition usage to parent disk
+						if (diskMap[parentDisk]) {
+							diskMap[parentDisk].used += fsused;
+							diskMap[parentDisk].fsTotal += fssize;
 						}
 					}
 				}
 
+				const diskList = [];
 				let totalUsed = 0;
-				let totalAvail = 0;
+				let totalSize = 0;
 
-				for (const [device, stats] of deviceMap) {
-					totalUsed += stats.used;
-					totalAvail += stats.avail;
+				for (const diskName of Object.keys(diskMap).sort()) {
+					const disk = diskMap[diskName];
+					// Use filesystem total if available, otherwise use disk size
+					const total = disk.fsTotal > 0 ? disk.fsTotal : disk.totalSize;
+					const used = disk.used;
+					const perc = total > 0 ? used / total : 0;
+
+					// Convert bytes to KiB for consistency with formatKib
+					diskList.push({
+						mount: disk.name  // Using 'mount' property for compatibility
+						,
+						used: used / 1024,
+						total: total / 1024,
+						free: (total - used) / 1024,
+						perc: perc
+					});
+
+					totalUsed += used;
+					totalSize += total;
 				}
 
-				root.storageUsed = totalUsed;
-				root.storageTotal = totalUsed + totalAvail;
+				root.disks = diskList;
+			}
+		}
+	}
+
+	Process {
+		id: gpuNameDetect
+
+		command: ["sh", "-c", "nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null || lspci 2>/dev/null | grep -i 'vga\\|3d\\|display' | head -1"]
+		running: true
+
+		stdout: StdioCollector {
+			onStreamFinished: {
+				const output = text.trim();
+				if (!output)
+					return;
+
+				// Check if it's from nvidia-smi (clean GPU name)
+				if (output.toLowerCase().includes("nvidia") || output.toLowerCase().includes("geforce") || output.toLowerCase().includes("rtx") || output.toLowerCase().includes("gtx")) {
+					root.gpuName = root.cleanGpuName(output);
+				} else {
+					// Parse lspci output: extract name from brackets or after colon
+					const bracketMatch = output.match(/\[([^\]]+)\]/);
+					if (bracketMatch) {
+						root.gpuName = root.cleanGpuName(bracketMatch[1]);
+					} else {
+						const colonMatch = output.match(/:\s*(.+)/);
+						if (colonMatch)
+							root.gpuName = root.cleanGpuName(colonMatch[1]);
+					}
+				}
 			}
 		}
 	}

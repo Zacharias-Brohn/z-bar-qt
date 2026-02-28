@@ -33,14 +33,6 @@ Item {
 			}
 		}
 
-		Popout {
-			name: "resources"
-
-			sourceComponent: ResourcePopout {
-				wrapper: root.wrapper
-			}
-		}
-
 		Repeater {
 			model: ScriptModel {
 				values: [...SystemTray.items.values]
