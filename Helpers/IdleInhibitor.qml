@@ -28,6 +28,7 @@ Singleton {
 		enabled: props.enabled
 
 		window: PanelWindow {
+			WlrLayershell.namespace: "ZShell-IdleInhibitor"
 			color: "transparent"
 			implicitHeight: 0
 			implicitWidth: 0
