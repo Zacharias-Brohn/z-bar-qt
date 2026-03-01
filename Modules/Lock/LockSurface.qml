@@ -164,6 +164,21 @@ WlSessionLockSurface {
 		implicitWidth: size
 		scale: 0
 
+		// MultiEffect {
+		// 	anchors.fill: lockBg
+		// 	autoPaddingEnabled: false
+		// 	blur: 1
+		// 	blurEnabled: true
+		// 	blurMax: 64
+		// 	maskEnabled: true
+		// 	maskSource: lockBg
+		//
+		// 	source: ShaderEffectSource {
+		// 		sourceItem: background
+		// 		sourceRect: Qt.rect(lockBg.x, lockBg.y, lockBg.width, lockBg, height)
+		// 	}
+		// }
+
 		CustomRect {
 			id: lockBg
 

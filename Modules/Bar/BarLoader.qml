@@ -73,6 +73,7 @@ RowLayout {
 	Repeater {
 		id: repeater
 
+		// model: Config.barConfig.entries.filted(n => n.index > 50).sort(n => n.index)
 		model: Config.barConfig.entries
 
 		DelegateChooser {

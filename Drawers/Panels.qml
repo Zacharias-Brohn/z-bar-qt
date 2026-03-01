@@ -10,7 +10,7 @@ import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
-// import qs.Modules.Settings as Settings
+import qs.Modules.Settings as Settings
 import qs.Config
 
 Item {
@@ -24,7 +24,7 @@ Item {
 	readonly property alias popouts: popouts
 	readonly property alias resources: resources
 	required property ShellScreen screen
-	// readonly property alias settings: settings
+	readonly property alias settings: settings
 	readonly property alias sidebar: sidebar
 	readonly property alias toasts: toasts
 	readonly property alias utilities: utilities
@@ -127,12 +127,12 @@ Item {
 		visibilities: root.visibilities
 	}
 
-	// Settings.Wrapper {
-	// 	id: settings
-	//
-	// 	anchors.horizontalCenter: parent.horizontalCenter
-	// 	anchors.top: parent.top
-	// 	panels: root
-	// 	visibilities: root.visibilities
-	// }
+	Settings.Wrapper {
+		id: settings
+
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		panels: root
+		visibilities: root.visibilities
+	}
 }

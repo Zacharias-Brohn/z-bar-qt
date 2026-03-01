@@ -49,12 +49,12 @@ ShapePath {
 		radiusX: root.rounding
 		radiusY: Math.min(root.rounding, root.wrapper.height)
 		relativeX: root.rounding
-		relativeY: -root.roundingY
+		relativeY: root.roundingY
 	}
 
 	PathLine {
 		relativeX: 0
-		relativeY: -(root.wrapper.height - root.roundingY * 2)
+		relativeY: -(root.wrapper.height)
 	}
 
 	PathArc {

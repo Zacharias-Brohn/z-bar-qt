@@ -12,7 +12,7 @@ import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
 
-// import qs.Modules.Settings as Settings
+import qs.Modules.Settings as Settings
 
 Shape {
 	id: root
@@ -85,11 +85,11 @@ Shape {
 		wrapper: root.panels.sidebar
 	}
 
-	// Settings.Background {
-	// 	id: settings
-	//
-	// 	startX: (root.width - wrapper.width) / 2 - rounding
-	// 	startY: 0
-	// 	wrapper: root.panels.settings
-	// }
+	Settings.Background {
+		id: settings
+
+		startX: (root.width - wrapper.width) / 2 - rounding
+		startY: 0
+		wrapper: root.panels.settings
+	}
 }
