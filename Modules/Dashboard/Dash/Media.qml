@@ -4,6 +4,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Shapes
+import ZShell.Services
 import qs.Daemons
 import qs.Components
 import qs.Config
@@ -37,54 +38,55 @@ Item {
 		onTriggered: Players.active?.positionChanged()
 	}
 
-	// Shape {
-	// 	id: visualizer
-	//
-	// 	readonly property real centerX: width / 2
-	// 	readonly property real centerY: height / 2
-	// 	property color colour: DynamicColors.palette.m3primary
-	// 	readonly property real innerX: cover.implicitWidth / 2 + Appearance.spacing.small
-	// 	readonly property real innerY: cover.implicitHeight / 2 + Appearance.spacing.small
-	//
-	// 	anchors.fill: cover
-	// 	anchors.margins: -Config.dashboard.sizes.mediaVisualiserSize
-	// 	asynchronous: true
-	// 	data: visualizerBars.instances
-	// 	preferredRendererType: Shape.CurveRenderer
-	// }
-	//
-	// Variants {
-	// 	id: visualizerBars
-	//
-	// 	model: Array.from({
-	// 		length: Config.services.visualizerBars
-	// 	}, (_, i) => i)
-	//
-	// 	ShapePath {
-	// 		id: visualizerBar
-	//
-	// 		readonly property real angle: modelData * 2 * Math.PI / Config.services.visualizerBars
-	// 		readonly property real cos: Math.cos(angle)
-	// 		readonly property real magnitude: value * Config.dashboard.sizes.mediaVisualiserSize
-	// 		required property int modelData
-	// 		readonly property real sin: Math.sin(angle)
-	// 		readonly property real value: Math.max(1e-3, Math.min(1, Audio.cava.values[modelData]))
-	//
-	// 		capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
-	// 		startX: visualizer.centerX + (visualizer.innerX + strokeWidth / 2) * cos
-	// 		strokeColor: DynamicColors.palette.m3primary
-	// 		strokeWidth: 360 / Config.services.visualizerBars - Appearance.spacing.small / 4
-	//
-	// 		startY: PathLine {
-	// 			x: visualizer.centerX + (visualizer.innerX + visualizerBar.strokeWidth / 2 + visualizerBar.magnitude) * visualizerBar.cos
-	// 			y: visualizer.centerY + (visualizer.innerY + visualizerBar.strokeWidth / 2 + visualizerBar.magnitude) * visualizerBar.sin
-	// 		}
-	// 		Behavior on strokeColor {
-	// 			CAnim {
-	// 			}
-	// 		}
-	// 	}
-	// }
+	ServiceRef {
+		service: Audio.cava
+	}
+
+	Shape {
+		id: visualizer
+
+		readonly property real barW: Math.max(0, (width - gap * (bars - 1)) / bars)
+		readonly property int bars: Config.services.visualizerBars
+		property color color: DynamicColors.palette.m3primary
+		readonly property real gap: Appearance.spacing.small
+
+		anchors.fill: layout
+		asynchronous: true
+		data: visualizerBars.instances
+		preferredRendererType: Shape.CurveRenderer
+	}
+
+	Variants {
+		id: visualizerBars
+
+		model: Array.from({
+			length: Config.services.visualizerBars
+		}, (_, i) => i)
+
+		ShapePath {
+			id: visualizerBar
+
+			readonly property real magnitude: value * Config.dashboard.sizes.mediaVisualiserSize
+			required property int modelData
+			readonly property real value: Math.max(1e-3, Audio.cava.values[modelData])
+
+			capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+			startX: (visualizer.barW / 2) + modelData * (visualizer.barW + visualizer.gap)
+			startY: layout.y + layout.height
+			strokeColor: visualizer.color
+			strokeWidth: visualizer.barW
+
+			Behavior on strokeColor {
+				CAnim {
+				}
+			}
+
+			PathLine {
+				relativeX: 0
+				relativeY: -visualizerBar.magnitude
+			}
+		}
+	}
 
 	Shape {
 		preferredRendererType: Shape.CurveRenderer
@@ -215,7 +217,7 @@ Item {
 				width: parent.width - Appearance.padding.large * 4
 			}
 
-			Row {
+			RowLayout {
 				id: controls
 
 				anchors.horizontalCenter: parent.horizontalCenter
@@ -258,20 +260,48 @@ Item {
 
 		required property bool canUse
 		required property string icon
+		property int level: 1
+		property string set_color: "Secondary"
 
 		function onClicked(): void {
 		}
 
+		Layout.preferredWidth: implicitWidth + (controlState.pressed ? Appearance.padding.normal * 2 : 0)
+		color: canUse ? DynamicColors.palette[`m3${set_color.toLowerCase()}`] : DynamicColors.palette[`m3${set_color.toLowerCase()}Container`]
 		implicitHeight: implicitWidth
 		implicitWidth: Math.max(icon.implicitHeight, icon.implicitHeight) + Appearance.padding.small
+		radius: Appearance.rounding.full
+
+		Behavior on Layout.preferredWidth {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+		Behavior on radius {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+
+		Elevation {
+			anchors.fill: parent
+			level: controlState.containsMouse && !controlState.pressed ? control.level + 1 : control.level
+			radius: parent.radius
+			z: -1
+		}
 
 		StateLayer {
+			id: controlState
+
 			function onClicked(): void {
 				control.onClicked();
 			}
 
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
 			disabled: !control.canUse
-			radius: Appearance.rounding.full
+			// radius: Appearance.rounding.full
 		}
 
 		MaterialIcon {
@@ -280,7 +310,8 @@ Item {
 			anchors.centerIn: parent
 			anchors.verticalCenterOffset: font.pointSize * 0.05
 			animate: true
-			color: control.canUse ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
+			fill: control.canUse ? 1 : 0
 			font.pointSize: Appearance.font.size.large
 			text: control.icon
 		}

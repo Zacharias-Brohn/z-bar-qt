@@ -13,11 +13,11 @@ Elevation {
 
 	signal itemSelected(item: MenuItem)
 
-	implicitHeight: root.expanded ? column.implicitHeight : 0
+	implicitHeight: root.expanded ? column.implicitHeight + Appearance.padding.small * 2 : 0
 	implicitWidth: Math.max(200, column.implicitWidth)
 	level: 2
 	opacity: root.expanded ? 1 : 0
-	radius: Appearance.rounding.small / 2
+	radius: Appearance.rounding.normal
 
 	Behavior on implicitHeight {
 		Anim {
@@ -41,7 +41,8 @@ Elevation {
 
 			anchors.left: parent.left
 			anchors.right: parent.right
-			spacing: 0
+			anchors.verticalCenter: parent.verticalCenter
+			spacing: 5
 
 			Repeater {
 				model: root.items
@@ -54,19 +55,26 @@ Elevation {
 					required property MenuItem modelData
 
 					Layout.fillWidth: true
-					color: Qt.alpha(DynamicColors.palette.m3secondaryContainer, active ? 1 : 0)
 					implicitHeight: menuOptionRow.implicitHeight + Appearance.padding.normal * 2
 					implicitWidth: menuOptionRow.implicitWidth + Appearance.padding.normal * 2
 
-					StateLayer {
-						function onClicked(): void {
-							root.itemSelected(item.modelData);
-							root.active = item.modelData;
-							root.expanded = false;
-						}
+					CustomRect {
+						anchors.fill: parent
+						anchors.leftMargin: Appearance.padding.small
+						anchors.rightMargin: Appearance.padding.small
+						color: Qt.alpha(DynamicColors.palette.m3secondaryContainer, active ? 1 : 0)
+						radius: Appearance.rounding.normal - Appearance.padding.small
 
-						color: item.active ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
-						disabled: !root.expanded
+						StateLayer {
+							function onClicked(): void {
+								root.itemSelected(item.modelData);
+								root.active = item.modelData;
+								root.expanded = false;
+							}
+
+							color: item.active ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
+							disabled: !root.expanded
+						}
 					}
 
 					RowLayout {

@@ -23,13 +23,13 @@ RowLayout {
 	function checkPopout(x: real): void {
 		const ch = childAt(x, 2) as WrappedLoader;
 
-		if (!ch) {
-			if (!popouts.currentName.includes("traymenu"))
+		if (!ch || ch?.id === "spacer") {
+			if (!popouts.currentName.startsWith("traymenu"))
 				popouts.hasCurrent = false;
 			return;
 		}
 
-		if (visibilities.sidebar || visibilities.dashboard)
+		if (visibilities.sidebar || visibilities.dashboard || visibilities.resources)
 			return;
 
 		const id = ch.id;
@@ -41,26 +41,6 @@ RowLayout {
 			popouts.currentName = "audio";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
 			popouts.hasCurrent = true;
-		} else if (id === "resources" && Config.barConfig.popouts.resources) {
-			popouts.currentName = "resources";
-			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
-			popouts.hasCurrent = true;
-		} else if (id === "tray" && Config.barConfig.popouts.tray) {
-			const index = Math.floor(((x - top) / item.implicitWidth) * item.items.count);
-			const trayItem = item.items.itemAt(index);
-			if (trayItem) {
-				// popouts.currentName = `traymenu${ index }`;
-				// popouts.currentCenter = Qt.binding( () => trayItem.mapToItem( root, trayItem.implicitWidth / 2, 0 ).x );
-				// popouts.hasCurrent = true;
-			} else {
-				// popouts.hasCurrent = false;
-			}
-		} else if (id === "clock" && Config.barConfig.popouts.clock) {
-			// Calendar.displayYear = new Date().getFullYear();
-			// Calendar.displayMonth = new Date().getMonth();
-			// popouts.currentName = "calendar";
-			// popouts.currentCenter = Qt.binding( () => item.mapToItem( root, itemWidth / 2, 0 ).x );
-			// popouts.hasCurrent = true;
 		} else if (id === "network" && Config.barConfig.popouts.network) {
 			popouts.currentName = "network";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
@@ -93,6 +73,7 @@ RowLayout {
 	Repeater {
 		id: repeater
 
+		// model: Config.barConfig.entries.filted(n => n.index > 50).sort(n => n.index)
 		model: Config.barConfig.entries
 
 		DelegateChooser {
@@ -142,6 +123,7 @@ RowLayout {
 
 				delegate: WrappedLoader {
 					sourceComponent: Resources {
+						visibilities: root.visibilities
 					}
 				}
 			}
@@ -206,14 +188,15 @@ RowLayout {
 					}
 				}
 			}
-			// DelegateChoice {
-			// 	roleValue: "dash"
-			// 	delegate: WrappedLoader {
-			// 		sourceComponent: DashWidget {
-			// 			visibilities: root.visibilities
-			// 		}
-			// 	}
-			// }
+
+			DelegateChoice {
+				roleValue: "media"
+
+				delegate: WrappedLoader {
+					sourceComponent: MediaWidget {
+					}
+				}
+			}
 		}
 	}
 

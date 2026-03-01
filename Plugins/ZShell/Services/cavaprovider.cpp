@@ -2,6 +2,7 @@
 
 #include "audiocollector.hpp"
 #include "audioprovider.hpp"
+#include <algorithm>
 #include <cava/cavacore.h>
 #include <cstddef>
 #include <qdebug.h>
@@ -34,20 +35,24 @@ void CavaProcessor::process() {
 	// Apply monstercat filter
 	QVector<double> values(m_bars);
 
-	// Left to right pass
-	const double inv = 1.0 / 1.5;
-	double carry = 0.0;
-	for (int i = 0; i < m_bars; ++i) {
-		carry = std::max(m_out[i], carry * inv);
-		values[i] = carry;
+	for(int i = 0; i < m_bars; ++i) {
+		values[i] = std::clamp(m_out[i], 0.0, 1.0);
 	}
 
-	// Right to left pass and combine
-	carry = 0.0;
-	for (int i = m_bars - 1; i >= 0; --i) {
-		carry = std::max(m_out[i], carry * inv);
-		values[i] = std::max(values[i], carry);
-	}
+	// Left to right pass
+	// const double inv = 1.0 / 1.5;
+	// double carry = 0.0;
+	// for (int i = 0; i < m_bars; ++i) {
+	// 	carry = std::max(m_out[i], carry * inv);
+	// 	values[i] = carry;
+	// }
+	//
+	// // Right to left pass and combine
+	// carry = 0.0;
+	// for (int i = m_bars - 1; i >= 0; --i) {
+	// 	carry = std::max(m_out[i], carry * inv);
+	// 	values[i] = std::max(values[i], carry);
+	// }
 
 	// Update values
 	if (values != m_values) {
@@ -90,7 +95,7 @@ void CavaProcessor::initCava() {
 		return;
 	}
 
-	m_plan = cava_init(m_bars, ac::SAMPLE_RATE, 1, 1, 0.85, 50, 10000);
+	m_plan = cava_init(m_bars, ac::SAMPLE_RATE, 1, 1, 0.55, 50, 10000);
 	m_out = new double[static_cast<size_t>(m_bars)];
 }
 

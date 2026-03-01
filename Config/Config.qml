@@ -121,7 +121,16 @@ Singleton {
 		return {
 			enabled: dashboard.enabled,
 			mediaUpdateInterval: dashboard.mediaUpdateInterval,
+			resourceUpdateInterval: dashboard.resourceUpdateInterval,
 			dragThreshold: dashboard.dragThreshold,
+			performance: {
+				showBattery: dashboard.performance.showBattery,
+				showGpu: dashboard.performance.showGpu,
+				showCpu: dashboard.performance.showCpu,
+				showMemory: dashboard.performance.showMemory,
+				showStorage: dashboard.performance.showStorage,
+				showNetwork: dashboard.performance.showNetwork
+			},
 			sizes: {
 				tabIndicatorHeight: dashboard.sizes.tabIndicatorHeight,
 				tabIndicatorSpacing: dashboard.sizes.tabIndicatorSpacing,
@@ -236,6 +245,7 @@ Singleton {
 		return {
 			weatherLocation: services.weatherLocation,
 			useFahrenheit: services.useFahrenheit,
+			ddcutilService: services.ddcutilService,
 			useTwelveHourClock: services.useTwelveHourClock,
 			gpuType: services.gpuType,
 			audioIncrement: services.audioIncrement,

@@ -4,9 +4,20 @@ JsonObject {
 	property int dragThreshold: 50
 	property bool enabled: true
 	property int mediaUpdateInterval: 500
+	property Performance performance: Performance {
+	}
+	property int resourceUpdateInterval: 1000
 	property Sizes sizes: Sizes {
 	}
 
+	component Performance: JsonObject {
+		property bool showBattery: true
+		property bool showCpu: true
+		property bool showGpu: true
+		property bool showMemory: true
+		property bool showNetwork: true
+		property bool showStorage: true
+	}
 	component Sizes: JsonObject {
 		readonly property int dateTimeWidth: 110
 		readonly property int infoIconSize: 25

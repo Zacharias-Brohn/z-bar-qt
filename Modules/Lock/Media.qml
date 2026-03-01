@@ -121,9 +121,9 @@ Item {
 
 				active: Players.active?.isPlaying ?? false
 				animate: true
-				colour: "Primary"
 				icon: active ? "pause" : "play_arrow"
 				level: active ? 2 : 1
+				set_color: "Primary"
 			}
 
 			PlayerControl {
@@ -142,15 +142,15 @@ Item {
 
 		property bool active
 		property alias animate: controlIcon.animate
-		property string colour: "Secondary"
 		property alias icon: controlIcon.text
 		property int level: 1
+		property string set_color: "Secondary"
 
 		function onClicked(): void {
 		}
 
 		Layout.preferredWidth: implicitWidth + (controlState.pressed ? Appearance.padding.normal * 2 : active ? Appearance.padding.small * 2 : 0)
-		color: active ? DynamicColors.palette[`m3${colour.toLowerCase()}`] : DynamicColors.palette[`m3${colour.toLowerCase()}Container`]
+		color: active ? DynamicColors.palette[`m3${set_color.toLowerCase()}`] : DynamicColors.palette[`m3${set_color.toLowerCase()}Container`]
 		implicitHeight: controlIcon.implicitHeight + Appearance.padding.normal * 2
 		implicitWidth: controlIcon.implicitWidth + Appearance.padding.large * 2
 		radius: active || controlState.pressed ? Appearance.rounding.small : Appearance.rounding.normal

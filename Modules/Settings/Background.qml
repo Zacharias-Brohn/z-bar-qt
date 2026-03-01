@@ -1,7 +1,7 @@
-import qs.Components
-import qs.Config
 import QtQuick
 import QtQuick.Shapes
+import qs.Components
+import qs.Config
 
 ShapePath {
 	id: root
@@ -21,7 +21,7 @@ ShapePath {
 
 	PathArc {
 		radiusX: root.rounding
-		radiusY: Math.min(root.rounding, root.wrapper.height)
+		radiusY: Math.min(root.roundingY, root.wrapper.height)
 		relativeX: root.rounding
 		relativeY: root.roundingY
 	}
@@ -49,12 +49,12 @@ ShapePath {
 		radiusX: root.rounding
 		radiusY: Math.min(root.rounding, root.wrapper.height)
 		relativeX: root.rounding
-		relativeY: root.roundingY
+		relativeY: -root.roundingY
 	}
 
 	PathLine {
 		relativeX: 0
-		relativeY: -(root.wrapper.height)
+		relativeY: -(root.wrapper.height - root.roundingY * 2)
 	}
 
 	PathArc {

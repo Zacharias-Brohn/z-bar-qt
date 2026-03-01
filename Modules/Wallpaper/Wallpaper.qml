@@ -16,7 +16,7 @@ Loader {
 			required property var modelData
 
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.layer: WlrLayer.Bottom
+			WlrLayershell.layer: WlrLayer.Background
 			WlrLayershell.namespace: "ZShell-Wallpaper"
 			color: "transparent"
 			screen: modelData

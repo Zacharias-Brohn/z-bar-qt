@@ -7,7 +7,7 @@ ShapePath {
 	id: root
 
 	readonly property bool flatten: wrapper.height < rounding * 2
-	readonly property real rounding: 8
+	readonly property real rounding: Appearance.rounding.normal
 	readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 	required property Wrapper wrapper
 
@@ -28,15 +28,14 @@ ShapePath {
 
 	PathLine {
 		relativeX: 0
-		relativeY: root.wrapper.height - root.roundingY * 2
+		relativeY: root.wrapper.height
 	}
 
 	PathArc {
-		direction: PathArc.Counterclockwise
 		radiusX: root.rounding
 		radiusY: Math.min(root.rounding, root.wrapper.height)
 		relativeX: root.rounding
-		relativeY: root.roundingY
+		relativeY: -root.roundingY
 	}
 
 	PathLine {
@@ -49,12 +48,12 @@ ShapePath {
 		radiusX: root.rounding
 		radiusY: Math.min(root.rounding, root.wrapper.height)
 		relativeX: root.rounding
-		relativeY: root.roundingY
+		relativeY: -root.roundingY
 	}
 
 	PathLine {
 		relativeX: 0
-		relativeY: -(root.wrapper.height)
+		relativeY: -(root.wrapper.height - root.roundingY * 2)
 	}
 
 	PathArc {

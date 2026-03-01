@@ -10,6 +10,7 @@ import qs.Config
 Singleton {
 	id: root
 
+	readonly property alias beatTracker: beatTracker
 	readonly property alias cava: cava
 	readonly property bool muted: !!sink?.audio?.muted
 	readonly property var nodes: Pipewire.nodes.values.reduce((acc, node) => {
@@ -136,6 +137,11 @@ Singleton {
 		id: cava
 
 		bars: Config.services.visualizerBars
+	}
+
+	BeatTracker {
+		id: beatTracker
+
 	}
 
 	PwObjectTracker {

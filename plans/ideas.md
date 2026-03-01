@@ -5,8 +5,6 @@
 # Stupid idea's from Daivin
 
 - [ ] An on screen pencil to draw on your screen :).
-- [ ] Audio module + cava / audio wave ;) ( Don't make it into minecraft blocks
-      but aan actual wave) -- Probably not planned
 - [ ] Bluetooth device battery view -- Not planned ( Don't have a bluetooth
       receiver )
 
@@ -21,3 +19,5 @@
 - [x] Battery icon for Laptops. Broken?
 - [x] Quick toggle for BT, WiFi (modules in the tray do this too)
 - [x] Update module: When there is 1 package it still looks extremely off
+- [x] Audio module + cava / audio wave ;) ( Don't make it into minecraft blocks
+      but aan actual wave) -- Probably not planned

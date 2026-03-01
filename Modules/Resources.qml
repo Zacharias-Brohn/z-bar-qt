@@ -12,21 +12,18 @@ import qs.Components
 Item {
 	id: root
 
+	required property PersistentProperties visibilities
+
 	clip: true
 	implicitHeight: 34
 	implicitWidth: rowLayout.implicitWidth + Appearance.padding.small * 2
 
-	Rectangle {
+	CustomRect {
 		id: backgroundRect
 
 		color: DynamicColors.tPalette.m3surfaceContainer
 		implicitHeight: 22
 		radius: height / 2
-
-		Behavior on color {
-			CAnim {
-			}
-		}
 
 		anchors {
 			left: parent.left
@@ -34,62 +31,66 @@ Item {
 			verticalCenter: parent.verticalCenter
 		}
 
-		RowLayout {
-			id: rowLayout
+		StateLayer {
+			onClicked: root.visibilities.resources = !root.visibilities.resources
+		}
+	}
 
-			anchors.centerIn: parent
-			spacing: 6
+	RowLayout {
+		id: rowLayout
 
-			MaterialIcon {
-				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.palette.m3onSurface
-				font.pointSize: 14
-				text: "memory_alt"
-			}
+		anchors.centerIn: parent
+		spacing: 6
 
-			Resource {
-				Layout.alignment: Qt.AlignVCenter
-				mainColor: DynamicColors.palette.m3primary
-				percentage: ResourceUsage.memoryUsedPercentage
-				warningThreshold: 95
-			}
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			color: DynamicColors.palette.m3onSurface
+			font.pointSize: 14
+			text: "memory_alt"
+		}
 
-			MaterialIcon {
-				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.palette.m3onSurface
-				font.pointSize: 14
-				text: "memory"
-			}
+		Resource {
+			Layout.alignment: Qt.AlignVCenter
+			mainColor: DynamicColors.palette.m3primary
+			percentage: ResourceUsage.memoryUsedPercentage
+			warningThreshold: 95
+		}
 
-			Resource {
-				mainColor: DynamicColors.palette.m3secondary
-				percentage: ResourceUsage.cpuUsage
-				warningThreshold: 80
-			}
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			color: DynamicColors.palette.m3onSurface
+			font.pointSize: 14
+			text: "memory"
+		}
 
-			MaterialIcon {
-				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.palette.m3onSurface
-				font.pointSize: 14
-				text: "gamepad"
-			}
+		Resource {
+			mainColor: DynamicColors.palette.m3secondary
+			percentage: ResourceUsage.cpuUsage
+			warningThreshold: 80
+		}
 
-			Resource {
-				mainColor: DynamicColors.palette.m3tertiary
-				percentage: ResourceUsage.gpuUsage
-			}
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			color: DynamicColors.palette.m3onSurface
+			font.pointSize: 14
+			text: "gamepad"
+		}
 
-			MaterialIcon {
-				Layout.alignment: Qt.AlignVCenter
-				color: DynamicColors.palette.m3onSurface
-				font.pointSize: 14
-				text: "developer_board"
-			}
+		Resource {
+			mainColor: DynamicColors.palette.m3tertiary
+			percentage: ResourceUsage.gpuUsage
+		}
 
-			Resource {
-				mainColor: DynamicColors.palette.m3primary
-				percentage: ResourceUsage.gpuMemUsage
-			}
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			color: DynamicColors.palette.m3onSurface
+			font.pointSize: 14
+			text: "developer_board"
+		}
+
+		Resource {
+			mainColor: DynamicColors.palette.m3primary
+			percentage: ResourceUsage.gpuMemUsage
 		}
 	}
 }

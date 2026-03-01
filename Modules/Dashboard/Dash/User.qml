@@ -82,7 +82,7 @@ Row {
 
 			colour: DynamicColors.palette.m3tertiary
 			icon: "timer"
-			text: qsTr("up %1").arg(SystemInfo.uptime)
+			text: qsTr("%1").arg(SystemInfo.uptime)
 		}
 	}
 
@@ -113,7 +113,7 @@ Row {
 			anchors.left: icon.right
 			anchors.leftMargin: icon.anchors.leftMargin
 			anchors.verticalCenter: icon.verticalCenter
-			elide: Text.ElideRight
+			elide: Text.ElideNone
 			font.pointSize: 13
 			text: `:  ${line.text}`
 			width: Config.dashboard.sizes.infoWidth

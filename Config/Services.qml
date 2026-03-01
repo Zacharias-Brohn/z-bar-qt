@@ -4,6 +4,7 @@ import QtQuick
 JsonObject {
 	property real audioIncrement: 0.1
 	property real brightnessIncrement: 0.1
+	property bool ddcutilService: false
 	property string defaultPlayer: "Spotify"
 	property string gpuType: ""
 	property real maxVolume: 1.0

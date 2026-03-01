@@ -1,6 +1,8 @@
 import Quickshell
 import QtQuick
 import QtQuick.Shapes
+import qs.Components
+import qs.Config
 import qs.Modules as Modules
 import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
@@ -8,8 +10,9 @@ import qs.Modules.Notifications.Sidebar.Utils as Utils
 import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
+import qs.Modules.Resources as Resources
 
-// import qs.Modules.Settings as Settings
+import qs.Modules.Settings as Settings
 
 Shape {
 	id: root
@@ -20,8 +23,19 @@ Shape {
 
 	anchors.fill: parent
 	// anchors.margins: 8
-	anchors.topMargin: bar.implicitHeight
+	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 	preferredRendererType: Shape.CurveRenderer
+
+	Behavior on anchors.topMargin {
+		Anim {
+		}
+	}
+
+	Resources.Background {
+		startX: 0 - rounding
+		startY: 0
+		wrapper: root.panels.resources
+	}
 
 	Osd.Background {
 		startX: root.width - root.panels.sidebar.width
@@ -71,11 +85,11 @@ Shape {
 		wrapper: root.panels.sidebar
 	}
 
-	// Settings.Background {
-	// 	id: settings
-	//
-	// 	startX: (root.width - wrapper.width) / 2 - rounding
-	// 	startY: 0
-	// 	wrapper: root.panels.settings
-	// }
+	Settings.Background {
+		id: settings
+
+		startX: (root.width - wrapper.width) / 2 - rounding
+		startY: 0
+		wrapper: root.panels.settings
+	}
 }
