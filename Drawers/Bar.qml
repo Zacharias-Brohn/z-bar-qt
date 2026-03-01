@@ -42,7 +42,7 @@ Variants {
 				regions: popoutRegions.instances
 				width: bar.width
 				x: 0
-				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : 34
+				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : backgroundRect.height
 			}
 
 			contentItem.Keys.onEscapePressed: {
@@ -62,7 +62,7 @@ Variants {
 				WlrLayershell.layer: WlrLayer.Bottom
 				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
 				color: "transparent"
-				implicitHeight: 34
+				implicitHeight: backgroundRect.height
 				screen: bar.screen
 
 				anchors {
@@ -185,7 +185,7 @@ Variants {
 					anchors.top: parent.top
 					anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? -30 : 0
 					color: "transparent"
-					implicitHeight: 34
+					implicitHeight: barLoader.childrenRect.height
 					radius: 0
 
 					Behavior on anchors.topMargin {
@@ -200,7 +200,9 @@ Variants {
 					BarLoader {
 						id: barLoader
 
-						anchors.fill: parent
+						anchors.left: parent.left
+						anchors.right: parent.right
+						anchors.verticalCenter: parent.verticalCenter
 						bar: bar
 						popouts: panels.popouts
 						screen: scope.modelData
