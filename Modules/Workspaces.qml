@@ -2,124 +2,109 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
-import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import qs.Config
 import qs.Components
 
 Item {
-	id: itemRoot
+	id: root
 
+	property real activeWorkspaceMargin: Math.ceil(Appearance.padding.small / 2)
 	required property PanelWindow bar
+	readonly property int effectiveActiveWorkspaceId: monitor?.activeWorkspace?.id ?? 1
+	readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.bar.screen)
+	property int workspaceButtonWidth: rect.implicitHeight - root.activeWorkspaceMargin * 2
+	property int workspaceIndexInGroup: (effectiveActiveWorkspaceId - 1) % root.workspacesShown
+	readonly property list<var> workspaces: Hyprland.workspaces.values.filter(w => w.monitor === root.monitor)
+	readonly property int workspacesShown: workspaces.length
 
 	anchors.bottom: parent.bottom
 	anchors.top: parent.top
-	implicitWidth: workspacesRow.implicitWidth + 10
+	implicitWidth: (root.workspaceButtonWidth * root.workspacesShown) + root.activeWorkspaceMargin * 2
 
 	Behavior on implicitWidth {
-		NumberAnimation {
-			duration: MaterialEasing.expressiveEffectsTime
-			easing.bezierCurve: MaterialEasing.expressiveEffects
+		Anim {
 		}
 	}
 
-	Rectangle {
-		id: root
-
-		property HyprlandMonitor monitor: Hyprland.monitorFor(itemRoot.bar?.screen)
-
-		function shouldShow(monitor) {
-			Hyprland.refreshWorkspaces();
-			Hyprland.refreshMonitors();
-			if (monitor === root.monitor) {
-				return true;
-			} else {
-				return false;
-			}
-		}
+	CustomRect {
+		id: rect
 
 		anchors.left: parent.left
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: 22
+		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
 		radius: height / 2
 
-		Behavior on color {
-			CAnim {
+		CustomRect {
+			id: indicator
+
+			property real indicatorLength: (Math.abs(idxPair.idx1 - idxPair.idx2) + 1) * root.workspaceButtonWidth
+			property real indicatorPosition: Math.min(idxPair.idx1, idxPair.idx2) * root.workspaceButtonWidth + root.activeWorkspaceMargin
+			property real indicatorThickness: root.workspaceButtonWidth
+
+			anchors.verticalCenter: parent.verticalCenter
+			color: DynamicColors.palette.m3primary
+			implicitHeight: indicatorThickness
+			implicitWidth: indicatorLength
+			radius: Appearance.rounding.full
+			x: indicatorPosition
+			z: 2
+
+			AnimatedTabIndexPair {
+				id: idxPair
+
+				index: root.workspaces.findIndex(w => w.active)
+
+				onIndexChanged: {
+					console.log(indicator.indicatorPosition);
+				}
 			}
 		}
 
-		RowLayout {
-			id: workspacesRow
-
-			anchors.left: parent.left
-			anchors.leftMargin: 6
-			anchors.verticalCenter: parent.verticalCenter
-			spacing: 8
+		Grid {
+			anchors.fill: parent
+			anchors.margins: root.activeWorkspaceMargin
+			columnSpacing: 0
+			columns: root.workspacesShown
+			rowSpacing: 0
+			rows: 1
+			z: 3
 
 			Repeater {
-				model: Hyprland.workspaces
+				model: root.workspaces
 
-				RowLayout {
-					id: workspaceIndicator
+				Button {
+					id: button
 
-					required property var modelData
+					required property int index
+					required property HyprlandWorkspace modelData
 
-					visible: root.shouldShow(workspaceIndicator.modelData.monitor)
+					implicitHeight: indicator.indicatorThickness
+					implicitWidth: indicator.indicatorThickness
+					width: workspaceButtonWidth
 
-					CustomText {
-						color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
-						font.pointSize: 12
-						text: workspaceIndicator.modelData.name
-						visible: true
+					background: Item {
+						id: workspaceButtonBackground
+
+						implicitHeight: workspaceButtonWidth
+						implicitWidth: workspaceButtonWidth
+
+						CustomText {
+							anchors.centerIn: parent
+							color: (root.effectiveActiveWorkspaceId === button.modelData.id) ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
+							elide: Text.ElideRight
+							horizontalAlignment: Text.AlignHCenter
+							text: button.modelData.name
+							verticalAlignment: Text.AlignVCenter
+							z: 3
+						}
 					}
 
-					Rectangle {
-						border.color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurfaceVariant
-						border.width: 1
-						color: "transparent"
-						implicitHeight: 14
-						implicitWidth: 14
-						opacity: 1.0
-						radius: height / 2
-						scale: 1.0
-
-						Behavior on border.color {
-							ColorAnimation {
-								duration: 150
-								easing.type: Easing.InOutQuad
-							}
-						}
-						NumberAnimation on opacity {
-							duration: 200
-							from: 0.0
-							to: 1.0
-						}
-						NumberAnimation on scale {
-							duration: 300
-							easing.type: Easing.OutBack
-							from: 0.0
-							to: 1.0
-						}
-
-						CustomRect {
-							anchors.centerIn: parent
-							color: workspaceIndicator.modelData.id === Hyprland.focusedWorkspace.id ? DynamicColors.palette.m3primary : "transparent"
-							implicitHeight: 8
-							implicitWidth: 8
-							radius: implicitHeight / 2
-						}
-
-						MouseArea {
-							anchors.fill: parent
-
-							onClicked: {
-								workspaceIndicator.modelData.activate();
-							}
-						}
+					onPressed: {
+						Hyprland.dispatch(`workspace ${button.modelData.name}`);
 					}
 				}
 			}
