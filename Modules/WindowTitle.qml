@@ -11,17 +11,17 @@ Item {
 	required property var bar
 	property color colour: DynamicColors.palette.m3primary
 	property Title current: text1
-	readonly property int maxHeight: {
-		const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
-		const otherHeight = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimHeight ?? curr.height), 0);
-		// Length - 2 cause repeater counts as a child
-		return bar.height - otherHeight - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
-	}
+	readonly property int maxWidth: 300
+	// readonly property int maxWidth: {
+	// 	const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
+	// 	const otherWidth = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimWidth ?? curr.width), 0);
+	// 	return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.hPadding * 2;
+	// }
 	required property Brightness.Monitor monitor
 
 	clip: true
 	implicitHeight: current.implicitHeight
-	implicitWidth: current.implicitWidth + current.anchors.leftMargin
+	implicitWidth: Math.min(current.implicitWidth, root.maxWidth)
 
 	Behavior on implicitWidth {
 		Anim {
@@ -29,16 +29,6 @@ Item {
 			easing.bezierCurve: MaterialEasing.expressiveEffects
 		}
 	}
-
-	// MaterialIcon {
-	//     id: icon
-	//
-	//     anchors.verticalCenter: parent.verticalCenter
-	//
-	//     animate: true
-	//     text: Icons.getAppCategoryIcon(Hypr.activeToplevel?.lastIpcObject.class, "desktop_windows")
-	//     color: root.colour
-	// }
 
 	Title {
 		id: text1
