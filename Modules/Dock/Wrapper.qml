@@ -9,24 +9,15 @@ Item {
 	id: root
 
 	property int contentHeight
-	readonly property real maxHeight: {
-		let max = screen.height - Appearance.spacing.large * 2;
-		if (visibilities.resources)
-			max -= panels.resources.nonAnimHeight;
-		if (visibilities.dashboard && panels.dashboard.x < root.x + root.implicitWidth)
-			max -= panels.dashboard.nonAnimHeight;
-		return max;
-	}
 	required property var panels
 	required property ShellScreen screen
-	readonly property bool shouldBeActive: visibilities.launcher
+	readonly property bool shouldBeActive: visibilities.dock
 	required property PersistentProperties visibilities
 
 	implicitHeight: 0
 	implicitWidth: content.implicitWidth
 	visible: height > 0
 
-	onMaxHeightChanged: timer.start()
 	onShouldBeActiveChanged: {
 		if (shouldBeActive) {
 			timer.stop();
@@ -69,27 +60,6 @@ Item {
 		}
 	}
 
-	Connections {
-		function onEnabledChanged(): void {
-			timer.start();
-		}
-
-		function onMaxShownChanged(): void {
-			timer.start();
-		}
-
-		target: Config.launcher
-	}
-
-	Connections {
-		function onValuesChanged(): void {
-			if (DesktopEntries.applications.values.length < Config.launcher.maxAppsShown)
-				timer.start();
-		}
-
-		target: DesktopEntries.applications
-	}
-
 	Timer {
 		id: timer
 
@@ -100,7 +70,6 @@ Item {
 				content.visible = false;
 				content.active = true;
 			} else {
-				root.contentHeight = Math.min(root.maxHeight, content.implicitHeight);
 				content.active = Qt.binding(() => root.shouldBeActive || root.visible);
 				content.visible = true;
 				if (showAnim.running) {
@@ -120,7 +89,6 @@ Item {
 		visible: false
 
 		sourceComponent: Content {
-			maxHeight: root.maxHeight
 			panels: root.panels
 			visibilities: root.visibilities
 

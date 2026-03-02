@@ -15,6 +15,7 @@ Singleton {
 	property alias barConfig: adapter.barConfig
 	property alias colors: adapter.colors
 	property alias dashboard: adapter.dashboard
+	property alias dock: adapter.dock
 	property alias general: adapter.general
 	property alias launcher: adapter.launcher
 	property alias lock: adapter.lock
@@ -113,7 +114,8 @@ Singleton {
 			osd: serializeOsd(),
 			background: serializeBackground(),
 			launcher: serializeLauncher(),
-			colors: serializeColors()
+			colors: serializeColors(),
+			dock: serializeDock()
 		};
 	}
 
@@ -146,6 +148,17 @@ Singleton {
 				mediaVisualiserSize: dashboard.sizes.mediaVisualiserSize,
 				resourceSize: dashboard.sizes.resourceSize
 			}
+		};
+	}
+
+	function serializeDock(): var {
+		return {
+			enable: dock.enable,
+			height: dock.height,
+			hoverRegionHeight: dock.hoverRegionHeight,
+			hoverToReveal: dock.hoverToReveal,
+			pinnedApps: dock.pinnedApps,
+			pinnedOnStartup: dock.pinnedOnStartup
 		};
 	}
 
@@ -380,6 +393,8 @@ Singleton {
 			property Colors colors: Colors {
 			}
 			property DashboardConfig dashboard: DashboardConfig {
+			}
+			property DockConfig dock: DockConfig {
 			}
 			property General general: General {
 			}
