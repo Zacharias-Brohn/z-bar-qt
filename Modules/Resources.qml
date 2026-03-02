@@ -3,10 +3,9 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import QtQuick.Layouts
-import Quickshell.Wayland
+import qs.Helpers
 import qs.Modules
 import qs.Config
-import qs.Effects
 import qs.Components
 
 Item {
@@ -41,57 +40,37 @@ Item {
 		id: rowLayout
 
 		anchors.centerIn: parent
-		spacing: 6
+		spacing: 0
 
-		MaterialIcon {
-			Layout.alignment: Qt.AlignVCenter
-			color: DynamicColors.palette.m3onSurface
-			font.pointSize: 14
-			text: "memory_alt"
+		Ref {
+			service: SystemUsage
 		}
 
 		Resource {
 			Layout.alignment: Qt.AlignVCenter
+			icon: "memory"
 			mainColor: DynamicColors.palette.m3primary
-			percentage: ResourceUsage.memoryUsedPercentage
+			percentage: SystemUsage.cpuPerc
 			warningThreshold: 95
 		}
 
-		MaterialIcon {
-			Layout.alignment: Qt.AlignVCenter
-			color: DynamicColors.palette.m3onSurface
-			font.pointSize: 14
-			text: "memory"
-		}
-
 		Resource {
+			icon: "memory_alt"
 			mainColor: DynamicColors.palette.m3secondary
-			percentage: ResourceUsage.cpuUsage
+			percentage: SystemUsage.memPerc
 			warningThreshold: 80
 		}
 
-		MaterialIcon {
-			Layout.alignment: Qt.AlignVCenter
-			color: DynamicColors.palette.m3onSurface
-			font.pointSize: 14
-			text: "gamepad"
-		}
-
 		Resource {
+			icon: "gamepad"
 			mainColor: DynamicColors.palette.m3tertiary
-			percentage: ResourceUsage.gpuUsage
-		}
-
-		MaterialIcon {
-			Layout.alignment: Qt.AlignVCenter
-			color: DynamicColors.palette.m3onSurface
-			font.pointSize: 14
-			text: "developer_board"
+			percentage: SystemUsage.gpuPerc
 		}
 
 		Resource {
+			icon: "developer_board"
 			mainColor: DynamicColors.palette.m3primary
-			percentage: ResourceUsage.gpuMemUsage
+			percentage: SystemUsage.gpuMemUsed
 		}
 	}
 }

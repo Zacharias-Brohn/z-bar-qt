@@ -7,26 +7,34 @@ import qs.Config
 Item {
 	id: root
 
-	property color accentColor: DynamicColors.palette.m3primary
+	property color accentColor: warning ? DynamicColors.palette.m3error : mainColor
 	property real animatedPercentage: 0
 	readonly property real arcStartAngle: 0.75 * Math.PI
 	readonly property real arcSweep: 1.5 * Math.PI
-	property color borderColor: warning ? DynamicColors.palette.m3onError : mainColor
 	property string icon
 	required property color mainColor
 	required property double percentage
 	property bool shown: true
-	property string subtitle
-	property string title
 	property color usageColor: warning ? DynamicColors.palette.m3error : mainColor
 	property bool warning: percentage * 100 >= warningThreshold
-	property int warningThreshold: 100
+	property int warningThreshold: 80
 
 	clip: true
-	implicitHeight: root.parent.height
-	implicitWidth: root.parent.width
+	height: implicitHeight
+	implicitHeight: 34
+	implicitWidth: 34
 	percentage: 0
 	visible: width > 0 && height > 0
+	width: implicitWidth
+
+	Behavior on animatedPercentage {
+		Anim {
+			duration: Appearance.anim.durations.large
+		}
+	}
+
+	Component.onCompleted: animatedPercentage = percentage
+	onPercentageChanged: animatedPercentage = percentage
 
 	Canvas {
 		id: gaugeCanvas
@@ -40,7 +48,7 @@ Item {
 			const ctx = getContext("2d");
 			ctx.reset();
 			const cx = width / 2;
-			const cy = height / 2;
+			const cy = (height / 2) + 1;
 			const radius = (Math.min(width, height) - 12) / 2;
 			const lineWidth = 3;
 			ctx.beginPath();
@@ -74,5 +82,12 @@ Item {
 
 			target: DynamicColors
 		}
+	}
+
+	MaterialIcon {
+		anchors.centerIn: parent
+		color: DynamicColors.palette.m3onSurface
+		font.pointSize: 12
+		text: root.icon
 	}
 }
