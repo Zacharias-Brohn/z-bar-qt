@@ -19,7 +19,7 @@ Item {
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: 22
+		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
 		radius: height / 2
 	}
 

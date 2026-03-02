@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Effects
 import Quickshell
 import Quickshell.Hyprland
 import qs.Config
@@ -14,7 +15,7 @@ Item {
 	required property PanelWindow bar
 	readonly property int effectiveActiveWorkspaceId: monitor?.activeWorkspace?.id ?? 1
 	readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.bar.screen)
-	property int workspaceButtonWidth: rect.implicitHeight - root.activeWorkspaceMargin * 2
+	property int workspaceButtonWidth: bgRect.implicitHeight - root.activeWorkspaceMargin * 2
 	property int workspaceIndexInGroup: (effectiveActiveWorkspaceId - 1) % root.workspacesShown
 	readonly property list<var> workspaces: Hyprland.workspaces.values.filter(w => w.monitor === root.monitor)
 	readonly property int workspacesShown: workspaces.length
@@ -29,7 +30,7 @@ Item {
 	}
 
 	CustomRect {
-		id: rect
+		id: bgRect
 
 		anchors.left: parent.left
 		anchors.right: parent.right
@@ -80,17 +81,17 @@ Item {
 
 					implicitHeight: indicator.indicatorThickness
 					implicitWidth: indicator.indicatorThickness
-					width: workspaceButtonWidth
+					width: root.workspaceButtonWidth
 
 					background: Item {
 						id: workspaceButtonBackground
 
-						implicitHeight: workspaceButtonWidth
-						implicitWidth: workspaceButtonWidth
+						implicitHeight: root.workspaceButtonWidth
+						implicitWidth: root.workspaceButtonWidth
 
 						CustomText {
 							anchors.centerIn: parent
-							color: (root.effectiveActiveWorkspaceId === button.modelData.id) ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
+							color: DynamicColors.palette.m3onSecondaryContainer
 							elide: Text.ElideRight
 							horizontalAlignment: Text.AlignHCenter
 							text: button.modelData.name
@@ -104,6 +105,93 @@ Item {
 					}
 				}
 			}
+		}
+
+		Item {
+			id: activeTextSource
+
+			anchors.fill: parent
+			anchors.margins: root.activeWorkspaceMargin
+			layer.enabled: true
+			visible: false
+			z: 4
+
+			Grid {
+				anchors.fill: parent
+				columnSpacing: 0
+				columns: root.workspacesShown
+				rowSpacing: 0
+				rows: 1
+
+				Repeater {
+					model: root.workspaces
+
+					Item {
+						id: activeWorkspace
+
+						required property int index
+						required property HyprlandWorkspace modelData
+
+						implicitHeight: indicator.indicatorThickness
+						implicitWidth: indicator.indicatorThickness
+						width: root.workspaceButtonWidth
+
+						CustomText {
+							anchors.centerIn: parent
+							color: DynamicColors.palette.m3onPrimary
+							elide: Text.ElideRight
+							horizontalAlignment: Text.AlignHCenter
+							text: activeWorkspace.modelData.name
+							verticalAlignment: Text.AlignVCenter
+						}
+					}
+				}
+			}
+		}
+
+		ShaderEffectSource {
+			id: activeTextTex
+
+			anchors.fill: bgRect
+			anchors.margins: root.activeWorkspaceMargin
+			hideSource: true
+			live: true
+			recursive: true
+			sourceItem: activeTextSource
+		}
+
+		Item {
+			id: indicatorMask
+
+			anchors.fill: bgRect
+			visible: false
+
+			CustomRect {
+				color: "white"
+				height: indicator.height
+				radius: indicator.radius
+				width: indicator.width
+				x: indicator.x
+				y: indicator.y
+			}
+		}
+
+		ShaderEffectSource {
+			id: indicatorMaskEffect
+
+			anchors.fill: activeTextSource
+			live: true
+			sourceItem: indicatorMask
+			visible: false
+		}
+
+		MultiEffect {
+			anchors.fill: activeTextSource
+			maskEnabled: true
+			maskInverted: false
+			maskSource: indicatorMaskEffect
+			source: activeTextTex
+			z: 5
 		}
 	}
 }
