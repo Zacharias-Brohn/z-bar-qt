@@ -57,10 +57,6 @@ Item {
 				id: idxPair
 
 				index: root.workspaces.findIndex(w => w.active)
-
-				onIndexChanged: {
-					console.log(indicator.indicatorPosition);
-				}
 			}
 		}
 
