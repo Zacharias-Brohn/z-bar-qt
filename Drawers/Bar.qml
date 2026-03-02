@@ -185,7 +185,7 @@ Variants {
 					anchors.top: parent.top
 					anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? -30 : 0
 					color: "transparent"
-					implicitHeight: barLoader.childrenRect.height
+					implicitHeight: barLoader.implicitHeight
 					radius: 0
 
 					Behavior on anchors.topMargin {

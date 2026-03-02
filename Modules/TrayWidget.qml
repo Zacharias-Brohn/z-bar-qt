@@ -4,8 +4,10 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Services.SystemTray
+import qs.Components
+import qs.Config
 
-Row {
+Item {
 	id: root
 
 	required property PanelWindow bar
@@ -15,26 +17,43 @@ Row {
 
 	anchors.bottom: parent.bottom
 	anchors.top: parent.top
-	spacing: 0
+	implicitHeight: 34
+	implicitWidth: row.width + Appearance.padding.small * 2
 
-	Repeater {
-		id: repeater
+	CustomClippingRect {
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
+		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
+		radius: height / 2
 
-		model: SystemTray.items
+		Row {
+			id: row
 
-		TrayItem {
-			id: trayItem
+			anchors.centerIn: parent
+			spacing: 0
 
-			required property int index
-			required property SystemTrayItem modelData
+			Repeater {
+				id: repeater
 
-			bar: root.bar
-			implicitHeight: 34
-			implicitWidth: 34
-			ind: index
-			item: modelData
-			loader: root.loader
-			popouts: root.popouts
+				model: SystemTray.items
+
+				TrayItem {
+					id: trayItem
+
+					required property int index
+					required property SystemTrayItem modelData
+
+					bar: root.bar
+					implicitHeight: 34
+					implicitWidth: 34
+					ind: index
+					item: modelData
+					loader: root.loader
+					popouts: root.popouts
+				}
+			}
 		}
 	}
 }

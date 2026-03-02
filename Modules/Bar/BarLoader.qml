@@ -52,7 +52,7 @@ RowLayout {
 		}
 	}
 
-	implicitHeight: childrenRect.height
+	implicitHeight: 34
 
 	CustomShortcut {
 		name: "toggle-overview"
