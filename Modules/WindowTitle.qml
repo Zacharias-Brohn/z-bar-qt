@@ -11,12 +11,15 @@ Item {
 	required property var bar
 	property color colour: DynamicColors.palette.m3primary
 	property Title current: text1
-	readonly property int maxWidth: 300
-	// readonly property int maxWidth: {
-	// 	const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
-	// 	const otherWidth = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimWidth ?? curr.width), 0);
-	// 	return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.hPadding * 2;
-	// }
+	// readonly property int maxWidth: 300
+	readonly property int maxWidth: {
+		const otherModules = bar.children.filter(c => c.enabled && c.id && c.item !== this && c.id !== "spacer");
+		otherModules.forEach(m => console.log(m.id, m.item));
+		const otherWidth = otherModules.reduce((acc, curr) => {
+			return acc + (curr.item?.nonAnimWidth ?? curr.width ?? 0);
+		}, 0);
+		return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
+	}
 	required property Brightness.Monitor monitor
 
 	clip: true
@@ -43,6 +46,8 @@ Item {
 	TextMetrics {
 		id: metrics
 
+		elide: Qt.ElideRight
+		elideWidth: root.maxWidth
 		font.family: "Rubik"
 		font.pointSize: 12
 		text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
