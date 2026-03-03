@@ -14,7 +14,6 @@ Item {
 	// readonly property int maxWidth: 300
 	readonly property int maxWidth: {
 		const otherModules = bar.children.filter(c => c.enabled && c.id && c.item !== this && c.id !== "spacer");
-		otherModules.forEach(m => console.log(m.id, m.item));
 		const otherWidth = otherModules.reduce((acc, curr) => {
 			return acc + (curr.item?.nonAnimWidth ?? curr.width ?? 0);
 		}, 0);
