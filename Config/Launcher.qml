@@ -37,7 +37,7 @@ JsonObject {
 		},
 		{
 			name: "Logout",
-			icon: "exit_to_app",
+			icon: "logout",
 			description: "Log out of the current session",
 			command: ["loginctl", "terminate-user", ""],
 			enabled: true,
