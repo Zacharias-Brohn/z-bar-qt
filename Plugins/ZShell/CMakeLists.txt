@@ -49,6 +49,7 @@ qml_module(ZShell
         Qt::Quick
         Qt::Concurrent
         Qt::Sql
+		PkgConfig::Qalculate
 )
 
 add_subdirectory(Models)
