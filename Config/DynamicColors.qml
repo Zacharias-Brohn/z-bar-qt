@@ -78,6 +78,12 @@ Singleton {
 		return Qt.hsla(c.hslHue, c.hslSaturation, 0.1, 1);
 	}
 
+	function setMode(mode: string): void {
+		Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--mode", mode]);
+		Config.general.color.mode = mode;
+		Config.save();
+	}
+
 	FileView {
 		path: `${Paths.state}/scheme.json`
 		watchChanges: true
