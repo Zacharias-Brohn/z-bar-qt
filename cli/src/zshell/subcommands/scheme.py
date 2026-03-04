@@ -64,8 +64,8 @@ def generate(
     WALL_PATH = Path()
 
     with WALL_DIR_PATH.open() as f:
-        line = f.readline()
-        WALL_PATH = line
+        path = json.load(f).currentWallpaperPath
+        WALL_PATH = path
 
     def generate_thumbnail(image_path, thumbnail_path, size=(128, 128)):
         thumbnail_file = Path(thumbnail_path)
