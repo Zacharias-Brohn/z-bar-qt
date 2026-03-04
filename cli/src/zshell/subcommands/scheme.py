@@ -19,8 +19,6 @@ def generate(
     # image inputs (optional - used for image mode)
     image_path: Optional[Path] = typer.Option(
         None, help="Path to source image. Required for image mode."),
-    thumbnail_path: Optional[Path] = typer.Option(
-        Path("thumb.jpg"), help="Path to temporary thumbnail (image mode)."),
     scheme: Optional[str] = typer.Option(
         "fruit-salad", help="Color scheme algorithm to use for image mode. Ignored in preset mode."),
     # preset inputs (optional - used for preset mode)
@@ -28,8 +26,6 @@ def generate(
         None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"),
     mode: str = typer.Option(
         "dark", help="Mode of the preset scheme (dark or light)."),
-    # output (required)
-    output: Path = typer.Option(..., help="Output JSON path.")
 ):
 
     if preset is not None and image_path is not None:
