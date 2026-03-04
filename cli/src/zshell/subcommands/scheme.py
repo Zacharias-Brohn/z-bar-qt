@@ -55,11 +55,11 @@ def generate(
             from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
 
     HOME = str(os.getenv("HOME"))
-    OUTPUT = Path(HOME + ".local/state/zshell/scheme.json")
+    OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
     THUMB_PATH = Path(HOME +
-                      ".cache/zshell/imagecache/thumbnail.jpg")
+                      "/.cache/zshell/imagecache/thumbnail.jpg")
     WALL_DIR_PATH = Path(HOME +
-                         ".local/state/zshell/wallpaper_path.json")
+                         "/.local/state/zshell/wallpaper_path.json")
 
     WALL_PATH = Path()
 
