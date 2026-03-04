@@ -5,6 +5,7 @@ import json
 from zshell.utils.schemepalettes import PRESETS
 from pathlib import Path
 from PIL import Image
+import os
 from materialyoucolor.quantize import QuantizeCelebi
 from materialyoucolor.score.score import Score
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
@@ -30,9 +31,6 @@ def generate(
     # output (required)
     output: Path = typer.Option(..., help="Output JSON path.")
 ):
-    if preset is None and image_path is None:
-        raise typer.BadParameter(
-            "Either --image-path or --preset must be provided.")
 
     if preset is not None and image_path is not None:
         raise typer.BadParameter(
@@ -59,6 +57,18 @@ def generate(
             from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant as Scheme
         case _:
             from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
+
+    OUTPUT = Path(f"os.getenv('HOME')" + ".local/state/zshell/scheme.json")
+    THUMB_PATH = Path(f"os.getenv('HOME')" +
+                      ".cache/zshell/imagecache/thumbnail.jpg")
+    WALL_DIR_PATH = Path(f"os.getenv('HOME')" +
+                         ".local/state/zshell/wallpaper_path.json")
+
+    WALL_PATH = Path()
+
+    with WALL_DIR_PATH.open() as f:
+        line = f.readline
+        WALL_PATH = line
 
     def generate_thumbnail(image_path, thumbnail_path, size=(128, 128)):
         thumbnail_file = Path(thumbnail_path)
@@ -115,9 +125,15 @@ def generate(
             seed = seed_from_preset(preset)
             colors = generate_color_scheme(seed, mode)
             name, flavor = preset.split(":")
-        else:
-            generate_thumbnail(image_path, str(thumbnail_path))
-            seed = seed_from_image(thumbnail_path)
+        elif image_path:
+            generate_thumbnail(image_path, str(THUMB_PATH))
+            seed = seed_from_image(THUMB_PATH)
+            colors = generate_color_scheme(seed, mode)
+            name = "dynamic"
+            flavor = "default"
+        elif image_path is None and mode is not None:
+            generate_thumbnail(WALL_PATH, str(THUMB_PATH))
+            seed = seed_from_image(THUMB_PATH)
             colors = generate_color_scheme(seed, mode)
             name = "dynamic"
             flavor = "default"
@@ -130,8 +146,8 @@ def generate(
             "colors": colors
         }
 
-        output.parent.mkdir(parents=True, exist_ok=True)
-        with open(output, "w") as f:
+        OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+        with open(OUTPUT, "w") as f:
             json.dump(output_dict, f, indent=4)
     except Exception as e:
         print(f"Error: {e}")

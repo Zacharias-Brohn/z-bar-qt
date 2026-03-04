@@ -6,8 +6,24 @@ JsonObject {
 		{
 			name: "Calculator",
 			icon: "calculate",
-			description: "Do simple math equations (powered by Qalc)",
+			description: "Do simple math equations",
 			command: ["autocomplete", "calc"],
+			enabled: true,
+			dangerous: false
+		},
+		{
+			name: "Light",
+			icon: "light_mode",
+			description: "Change to light mode",
+			command: ["setMode", "light"],
+			enabled: true,
+			dangerous: false
+		},
+		{
+			name: "Dark",
+			icon: "dark_mode",
+			description: "Change to dark mode",
+			command: ["setMode", "dark"],
 			enabled: true,
 			dangerous: false
 		},

@@ -19,7 +19,7 @@ Searcher {
 	function preview(path: string): void {
 		previewPath = path;
 		if (Config.general.color.schemeGeneration)
-			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${previewPath} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${previewPath} --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
 		showPreview = true;
 	}
 
@@ -34,7 +34,7 @@ Searcher {
 	function stopPreview(): void {
 		showPreview = false;
 		if (Config.general.color.schemeGeneration)
-			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${root.actualCurrent} --thumbnail-path ${Paths.cache}/imagecache/thumbnail.jpg --output ${Paths.state}/scheme.json --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
+			Quickshell.execDetached(["sh", "-c", `zshell-cli scheme generate --image-path ${root.actualCurrent} --scheme ${Config.colors.schemeType} --mode ${Config.general.color.mode}`]);
 	}
 
 	extraOpts: useFuzzy ? ({}) : ({
