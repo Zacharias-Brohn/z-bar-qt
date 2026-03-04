@@ -64,7 +64,7 @@ def generate(
     WALL_PATH = Path()
 
     with WALL_DIR_PATH.open() as f:
-        line = f.readline
+        line = f.readline()
         WALL_PATH = line
 
     def generate_thumbnail(image_path, thumbnail_path, size=(128, 128)):
