@@ -59,6 +59,7 @@ def generate(
 
     HOME = str(os.getenv("HOME"))
     OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
+    SEQ_STATE = Path(HOME + "/.local/state/zshell/sequences.txt")
     THUMB_PATH = Path(HOME +
                       "/.cache/zshell/imagecache/thumbnail.jpg")
     WALL_DIR_PATH = Path(HOME +
@@ -192,6 +193,29 @@ def generate(
 
         thumbnail_file.parent.mkdir(parents=True, exist_ok=True)
         image.save(thumbnail_path, "JPEG")
+
+    def apply_terms(sequences: str, sequences_tmux: str, state_path: Path) -> None:
+        state_path.parent.mkdir(parents=True, exist_ok=True)
+        state_path.write_text(sequences, encoding="utf-8")
+
+        pts_path = Path("/dev/pts")
+        if not pts_path.exists():
+            return
+
+        O_NOCTTY = getattr(os, "O_NOCTTY", 0)
+
+        for pt in pts_path.iterdir():
+            if not pt.name.isdigit():
+                continue
+            try:
+                fd = os.open(str(pt), os.O_WRONLY | os.O_NONBLOCK | O_NOCTTY)
+                try:
+                    os.write(fd, sequences_tmux.encode())
+                    os.write(fd, sequences.encode())
+                finally:
+                    os.close(fd)
+            except (PermissionError, OSError, BlockingIOError):
+                pass
 
     def build_template_context(
         *,
@@ -416,6 +440,8 @@ def generate(
                 templates_dir=TEMPLATE_DIR,
                 context=ctx,
             )
+
+            apply_terms(ctx["sequences"], ctx["sequences_tmux"], SEQ_STATE)
 
             for p in rendered:
                 print(f"rendered: {p}")
