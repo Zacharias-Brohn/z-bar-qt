@@ -135,7 +135,6 @@ def generate(
 
         parts.append(f"{ESC}]10;{foreground}{ST}")
         parts.append(f"{ESC}]11;{background}{ST}")
-        parts.append(f"{ESC}]12;{cursor}{ST}")
 
         return "".join(parts)
 
