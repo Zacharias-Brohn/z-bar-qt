@@ -105,7 +105,60 @@ def generate(
             ctx[k] = v
             ctx[f"m3{k}"] = v
 
+        term = terminal_palette_from_m3(colors, mode)
+        ctx.update(term)
+        ctx["term"] = [term[f"term{i}"] for i in range(16)]
+
         return ctx
+
+    def terminal_palette_from_m3(colors: dict[str, str], mode: str) -> dict[str, str]:
+        def need(k: str) -> str:
+            try:
+                return colors[k]
+            except KeyError as e:
+                raise KeyError(
+                    f"Missing M3 color '{k}' needed for terminal palette") from e
+
+        is_dark = mode.lower() == "dark"
+
+        if is_dark:
+            return {
+                "term0":  need("surfaceDim"),
+                "term1":  need("onError"),
+                "term2":  need("outlineVariant"),
+                "term3":  need("onPrimaryFixedVariant"),
+                "term4":  need("onPrimary"),
+                "term5":  need("surfaceContainerHighest"),
+                "term6":  need("secondaryContainer"),
+                "term7":  need("inversePrimary"),
+                "term8":  need("inverseSurface"),
+                "term9":  need("error"),
+                "term10": need("tertiaryFixed"),
+                "term11": need("primaryFixed"),
+                "term12": need("primary"),
+                "term13": need("tertiary"),
+                "term14": need("tertiaryFixedDim"),
+                "term15": need("onSurface"),
+            }
+        else:
+            return {
+                "term0":  need("surfaceContainerHighest"),
+                "term1":  need("error"),
+                "term2":  need("onTertiaryFixedVariant"),
+                "term3":  need("onSecondaryFixedVariant"),
+                "term4":  need("primary"),
+                "term5":  need("secondary"),
+                "term6":  need("outline"),
+                "term7":  need("onSurfaceVariant"),
+                "term8":  need("tertiary"),
+                "term9":  need("onErrorContainer"),
+                "term10": need("tertiaryFixedDim"),
+                "term11": need("onPrimaryFixedVariant"),
+                "term12": need("onPrimaryContainer"),
+                "term13": need("onSecondaryContainer"),
+                "term14": need("primaryFixedDim"),
+                "term15": need("surfaceDim"),
+            }
 
     def parse_output_directive(first_line: str) -> Optional[Path]:
         s = first_line.strip()
