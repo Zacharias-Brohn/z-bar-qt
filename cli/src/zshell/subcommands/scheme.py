@@ -67,6 +67,14 @@ def generate(
     TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
     WALL_PATH = Path()
 
+    def hex_to_hct(hex_color: str) -> Hct:
+        s = hex_color.strip()
+        if s.startswith("#"):
+            s = s[1:]
+        if len(s) != 6:
+            raise ValueError(f"Expected 6-digit hex color, got: {hex_color!r}")
+        return Hct.from_int(int("0xFF" + s, 16))
+
     LIGHT_GRUVBOX = list(
         map(
             hex_to_hct,
@@ -119,30 +127,22 @@ def generate(
         path = json.load(f)["currentWallpaperPath"]
         WALL_PATH = path
 
-    def hex_to_hct(hex_color: str) -> Hct:
-        s = hex_color.strip()
-        if s.startswith("#"):
-            s = s[1:]
-        if len(s) != 6:
-            raise ValueError(f"Expected 6-digit hex color, got: {hex_color!r}")
-        return Hct.from_int(int("0xFF" + s, 16))
+    def lighten(color: Hct, amount: float) -> Hct:
+        diff = (100 - color.tone) * amount
+        tone = max(0.0, min(100.0, color.tone + diff))
+        chroma = max(0.0, color.chroma + diff / 5)
+        return Hct.from_hct(color.hue, chroma, tone)
 
-    def lighten(colour: Hct, amount: float) -> Hct:
-        diff = (100 - colour.tone) * amount
-        tone = max(0.0, min(100.0, colour.tone + diff))
-        chroma = max(0.0, colour.chroma + diff / 5)
-        return Hct.from_hct(colour.hue, chroma, tone)
+    def darken(color: Hct, amount: float) -> Hct:
+        diff = color.tone * amount
+        tone = max(0.0, min(100.0, color.tone - diff))
+        chroma = max(0.0, color.chroma - diff / 5)
+        return Hct.from_hct(color.hue, chroma, tone)
 
-    def darken(colour: Hct, amount: float) -> Hct:
-        diff = colour.tone * amount
-        tone = max(0.0, min(100.0, colour.tone - diff))
-        chroma = max(0.0, colour.chroma - diff / 5)
-        return Hct.from_hct(colour.hue, chroma, tone)
-
-    def grayscale(colour: Hct, light: bool) -> Hct:
-        colour = darken(colour, 0.35) if light else lighten(colour, 0.65)
-        colour.chroma = 0
-        return colour
+    def grayscale(color: Hct, light: bool) -> Hct:
+        color = darken(color, 0.35) if light else lighten(color, 0.65)
+        color.chroma = 0
+        return color
 
     def harmonize(from_hct: Hct, to_hct: Hct, tone_boost: float) -> Hct:
         diff = difference_degrees(from_hct.hue, to_hct.hue)
