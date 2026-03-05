@@ -109,7 +109,39 @@ def generate(
         ctx.update(term)
         ctx["term"] = [term[f"term{i}"] for i in range(16)]
 
+        seq = make_sequences(
+            term=term,
+            foreground=ctx["m3onSurface"],
+            background=ctx["m3surface"],
+        )
+        ctx["sequences"] = seq
+        ctx["sequences_tmux"] = tmux_wrap_sequences(seq)
+
         return ctx
+
+    def make_sequences(
+        *,
+        term: dict[str, str],
+        foreground: str,
+        background: str,
+    ) -> str:
+        ESC = "\x1b"
+        ST = ESC + "\\"
+
+        parts: list[str] = []
+
+        for i in range(16):
+            parts.append(f"{ESC}]4;{i};{term[f'term{i}']}{ST}")
+
+        parts.append(f"{ESC}]10;{foreground}{ST}")
+        parts.append(f"{ESC}]11;{background}{ST}")
+        parts.append(f"{ESC}]12;{cursor}{ST}")
+
+        return "".join(parts)
+
+    def tmux_wrap_sequences(seq: str) -> str:
+        ESC = "\x1b"
+        return f"{ESC}Ptmux;{seq.replace(ESC, ESC+ESC)}{ESC}\\"
 
     def terminal_palette_from_m3(colors: dict[str, str], mode: str) -> dict[str, str]:
         def need(k: str) -> str:
