@@ -24,7 +24,7 @@ def generate(
     # preset inputs (optional - used for preset mode)
     preset: Optional[str] = typer.Option(
         None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"),
-    mode: str = typer.Option(
+    mode: Optional[str] = typer.Option(
         "dark", help="Mode of the preset scheme (dark or light)."),
 ):
 
@@ -128,9 +128,18 @@ def generate(
             colors = generate_color_scheme(seed, mode)
             name = "dynamic"
             flavor = "default"
-        elif image_path is None and mode is not None:
+        elif mode and scheme is None:
             generate_thumbnail(WALL_PATH, str(THUMB_PATH))
             seed = seed_from_image(THUMB_PATH)
+            colors = generate_color_scheme(seed, mode)
+            name = "dynamic"
+            flavor = "default"
+        elif scheme:
+            with OUTPUT.open() as f:
+                js = json.load(f)
+                seed = Hct.from_int(js["seed"])
+                mode = str(js["mode"])
+
             colors = generate_color_scheme(seed, mode)
             name = "dynamic"
             flavor = "default"
@@ -140,7 +149,8 @@ def generate(
             "flavor": flavor,
             "mode": mode,
             "variant": scheme,
-            "colors": colors
+            "colors": colors,
+            "seed": seed.to_int()
         }
 
         OUTPUT.parent.mkdir(parents=True, exist_ok=True)
