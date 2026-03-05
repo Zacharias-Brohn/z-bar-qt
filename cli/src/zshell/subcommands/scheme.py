@@ -1,11 +1,13 @@
-from typing import Annotated, Optional
 import typer
 import json
+import shutil
+import os
 
+from jinja2 import Environment, FileSystemLoader, StrictUndefined, Undefined
+from typing import Any, Optional, Tuple
 from zshell.utils.schemepalettes import PRESETS
 from pathlib import Path
 from PIL import Image
-import os
 from materialyoucolor.quantize import QuantizeCelebi
 from materialyoucolor.score.score import Score
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
@@ -61,6 +63,7 @@ def generate(
     WALL_DIR_PATH = Path(HOME +
                          "/.local/state/zshell/wallpaper_path.json")
 
+    TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
     WALL_PATH = Path()
 
     with WALL_DIR_PATH.open() as f:
@@ -76,6 +79,101 @@ def generate(
 
         thumbnail_file.parent.mkdir(parents=True, exist_ok=True)
         image.save(thumbnail_path, "JPEG")
+
+    def build_template_context(
+        *,
+        colors: dict[str, str],
+        seed: Hct,
+        mode: str,
+        wallpaper_path: str,
+        name: str,
+        flavor: str,
+        variant: str,
+    ) -> dict[str, Any]:
+        ctx: dict[str, Any] = {
+            "mode": mode,
+            "wallpaper_path": wallpaper_path,
+            "name": name,
+            "seed": seed.to_int(),
+            "flavor": flavor,
+            "variant": variant,
+            "colors": colors
+        }
+
+        for k, v in colors.items():
+            ctx[k] = v
+            ctx[f"m3{k}"] = v
+
+        return ctx
+
+    def parse_output_directive(first_line: str) -> Optional[Path]:
+        s = first_line.strip()
+        if not s.startswith("#") or s.startswith("#!"):
+            return None
+
+        target = s[1:].strip()
+        if not target:
+            return None
+
+        expanded = os.path.expandvars(os.path.expanduser(target))
+        return Path(expanded)
+
+    def split_directive_and_body(text: str) -> Tuple[Optional[Path], str]:
+        lines = text.splitlines(keepends=True)
+        if not lines:
+            return None, ""
+
+        out_path = parse_output_directive(lines[0])
+        if out_path is None:
+            return None, text
+
+        body = "".join(lines[1:])
+        return out_path, body
+
+    def render_all_templates(
+        templates_dir: Path,
+        context: dict[str, object],
+        *,
+        strict: bool = True,
+    ) -> list[Path]:
+        undefined_cls = StrictUndefined if strict else Undefined
+        env = Environment(
+            loader=FileSystemLoader(str(templates_dir)),
+            autoescape=False,
+            keep_trailing_newline=True,
+            undefined=undefined_cls,
+        )
+
+        rendered_outputs: list[Path] = []
+
+        for tpl_path in sorted(p for p in templates_dir.rglob("*") if p.is_file()):
+            rel = tpl_path.relative_to(templates_dir)
+
+            if any(part.startswith(".") for part in rel.parts):
+                continue
+
+            raw = tpl_path.read_text(encoding="utf-8")
+            out_path, body = split_directive_and_body(raw)
+
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+
+            try:
+                template = env.from_string(body)
+                text = template.render(**context)
+            except Exception as e:
+                raise RuntimeError(
+                    f"Template render failed for '{rel}': {e}") from e
+
+            out_path.write_text(text, encoding="utf-8")
+
+            try:
+                shutil.copymode(tpl_path, out_path)
+            except OSError:
+                pass
+
+            rendered_outputs.append(out_path)
+
+        return rendered_outputs
 
     def seed_from_image(image_path: Path) -> Hct:
         image = Image.open(image_path)
@@ -152,6 +250,26 @@ def generate(
             "colors": colors,
             "seed": seed.to_int()
         }
+
+        if TEMPLATE_DIR is not None:
+            wp = str(WALL_PATH)
+            ctx = build_template_context(
+                colors=colors,
+                seed=seed,
+                mode=mode,
+                wallpaper_path=wp,
+                name=name,
+                flavor=flavor,
+                variant=scheme
+            )
+
+            rendered = render_all_templates(
+                templates_dir=TEMPLATE_DIR,
+                context=ctx,
+            )
+
+            for p in rendered:
+                print(f"rendered: {p}")
 
         OUTPUT.parent.mkdir(parents=True, exist_ok=True)
         with open(OUTPUT, "w") as f:
