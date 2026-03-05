@@ -12,6 +12,7 @@ from materialyoucolor.quantize import QuantizeCelebi
 from materialyoucolor.score.score import Score
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
 from materialyoucolor.hct.hct import Hct
+from materialyoucolor.utils.math_utils import difference_degrees, rotation_direction, sanitize_degrees_double
 
 app = typer.Typer()
 
@@ -66,9 +67,121 @@ def generate(
     TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
     WALL_PATH = Path()
 
+    LIGHT_GRUVBOX = list(
+        map(
+            hex_to_hct,
+            [
+                "FDF9F3",
+                "FF6188",
+                "A9DC76",
+                "FC9867",
+                "FFD866",
+                "F47FD4",
+                "78DCE8",
+                "333034",
+                "121212",
+                "FF6188",
+                "A9DC76",
+                "FC9867",
+                "FFD866",
+                "F47FD4",
+                "78DCE8",
+                "333034",
+            ],
+        )
+    )
+
+    DARK_GRUVBOX = list(
+        map(
+            hex_to_hct,
+            [
+                "282828",
+                "CC241D",
+                "98971A",
+                "D79921",
+                "458588",
+                "B16286",
+                "689D6A",
+                "A89984",
+                "928374",
+                "FB4934",
+                "B8BB26",
+                "FABD2F",
+                "83A598",
+                "D3869B",
+                "8EC07C",
+                "EBDBB2",
+            ],
+        )
+    )
+
     with WALL_DIR_PATH.open() as f:
         path = json.load(f)["currentWallpaperPath"]
         WALL_PATH = path
+
+    def hex_to_hct(hex_color: str) -> Hct:
+        s = hex_color.strip()
+        if s.startswith("#"):
+            s = s[1:]
+        if len(s) != 6:
+            raise ValueError(f"Expected 6-digit hex color, got: {hex_color!r}")
+        return Hct.from_int(int("0xFF" + s, 16))
+
+    def lighten(colour: Hct, amount: float) -> Hct:
+        diff = (100 - colour.tone) * amount
+        tone = max(0.0, min(100.0, colour.tone + diff))
+        chroma = max(0.0, colour.chroma + diff / 5)
+        return Hct.from_hct(colour.hue, chroma, tone)
+
+    def darken(colour: Hct, amount: float) -> Hct:
+        diff = colour.tone * amount
+        tone = max(0.0, min(100.0, colour.tone - diff))
+        chroma = max(0.0, colour.chroma - diff / 5)
+        return Hct.from_hct(colour.hue, chroma, tone)
+
+    def grayscale(colour: Hct, light: bool) -> Hct:
+        colour = darken(colour, 0.35) if light else lighten(colour, 0.65)
+        colour.chroma = 0
+        return colour
+
+    def harmonize(from_hct: Hct, to_hct: Hct, tone_boost: float) -> Hct:
+        diff = difference_degrees(from_hct.hue, to_hct.hue)
+        rotation = min(diff * 0.8, 100)
+        output_hue = sanitize_degrees_double(
+            from_hct.hue
+            + rotation * rotation_direction(from_hct.hue, to_hct.hue)
+        )
+        tone = max(0.0, min(100.0, from_hct.tone * (1 + tone_boost)))
+        return Hct.from_hct(output_hue, from_hct.chroma, tone)
+
+    def terminal_palette(
+        colors: dict[str, str], mode: str, variant: str
+    ) -> dict[str, str]:
+        light = mode.lower() == "light"
+
+        key_hex = (
+            colors.get("primary_paletteKeyColor")
+            or colors.get("primaryPaletteKeyColor")
+            or colors.get("primary")
+            or int_to_hex(seed.to_int())
+        )
+        key_hct = hex_to_hct(key_hex)
+
+        base = LIGHT_GRUVBOX if light else DARK_GRUVBOX
+        out: dict[str, str] = {}
+
+        is_mono = variant.lower() == "monochrome"
+
+        for i, base_hct in enumerate(base):
+            if is_mono:
+                h = grayscale(base_hct, light)
+            else:
+                tone_boost = (0.35 if i < 8 else 0.2) * (-1 if light else 1)
+                h = harmonize(base_hct, key_hct, tone_boost)
+
+            out[f"term{i}"] = int_to_hex(h.to_int())
+
+        return out
 
     def generate_thumbnail(image_path, thumbnail_path, size=(128, 128)):
         thumbnail_file = Path(thumbnail_path)
@@ -105,7 +218,7 @@ def generate(
             ctx[k] = v
             ctx[f"m3{k}"] = v
 
-        term = terminal_palette_from_m3(colors, mode)
+        term = terminal_palette(colors, mode, variant)
         ctx.update(term)
         ctx["term"] = [term[f"term{i}"] for i in range(16)]
 
@@ -141,55 +254,6 @@ def generate(
     def tmux_wrap_sequences(seq: str) -> str:
         ESC = "\x1b"
         return f"{ESC}Ptmux;{seq.replace(ESC, ESC+ESC)}{ESC}\\"
-
-    def terminal_palette_from_m3(colors: dict[str, str], mode: str) -> dict[str, str]:
-        def need(k: str) -> str:
-            try:
-                return colors[k]
-            except KeyError as e:
-                raise KeyError(
-                    f"Missing M3 color '{k}' needed for terminal palette") from e
-
-        is_dark = mode.lower() == "dark"
-
-        if is_dark:
-            return {
-                "term0":  need("surfaceDim"),
-                "term1":  need("onError"),
-                "term2":  need("outlineVariant"),
-                "term3":  need("onPrimaryFixedVariant"),
-                "term4":  need("onPrimary"),
-                "term5":  need("surfaceContainerHighest"),
-                "term6":  need("secondaryContainer"),
-                "term7":  need("inversePrimary"),
-                "term8":  need("inverseSurface"),
-                "term9":  need("error"),
-                "term10": need("tertiaryFixed"),
-                "term11": need("primaryFixed"),
-                "term12": need("primary"),
-                "term13": need("tertiary"),
-                "term14": need("tertiaryFixedDim"),
-                "term15": need("onSurface"),
-            }
-        else:
-            return {
-                "term0":  need("surfaceContainerHighest"),
-                "term1":  need("error"),
-                "term2":  need("onTertiaryFixedVariant"),
-                "term3":  need("onSecondaryFixedVariant"),
-                "term4":  need("primary"),
-                "term5":  need("secondary"),
-                "term6":  need("outline"),
-                "term7":  need("onSurfaceVariant"),
-                "term8":  need("tertiary"),
-                "term9":  need("onErrorContainer"),
-                "term10": need("tertiaryFixedDim"),
-                "term11": need("onPrimaryFixedVariant"),
-                "term12": need("onPrimaryContainer"),
-                "term13": need("onSecondaryContainer"),
-                "term14": need("primaryFixedDim"),
-                "term15": need("surfaceDim"),
-            }
 
     def parse_output_directive(first_line: str) -> Optional[Path]:
         s = first_line.strip()
