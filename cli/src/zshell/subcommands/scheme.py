@@ -93,6 +93,7 @@ def generate(
         ctx: dict[str, Any] = {
             "mode": mode,
             "wallpaper_path": wallpaper_path,
+            "source_color": int_to_hex(seed.to_int()),
             "name": name,
             "seed": seed.to_int(),
             "flavor": flavor,
