@@ -123,11 +123,6 @@ Item {
 						search.text = "";
 				}
 
-				function onSessionChanged(): void {
-					if (!root.visibilities.session)
-						search.forceActiveFocus();
-				}
-
 				target: root.visibilities
 			}
 		}

@@ -36,6 +36,14 @@ JsonObject {
 			dangerous: false
 		},
 		{
+			name: "Variant",
+			icon: "colors",
+			description: "Change the current scheme variant",
+			command: ["autocomplete", "variant"],
+			enabled: true,
+			dangerous: false
+		},
+		{
 			name: "Shutdown",
 			icon: "power_settings_new",
 			description: "Shutdown the system",

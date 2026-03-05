@@ -131,6 +131,14 @@ CustomListView {
 				model.values: [0]
 				root.delegate: calcItem
 			}
+		},
+		State {
+			name: "variant"
+
+			PropertyChanges {
+				model.values: SchemeVariants.query(search.text)
+				root.delegate: variantItem
+			}
 		}
 	]
 	transitions: Transition {
@@ -208,6 +216,14 @@ CustomListView {
 		id: calcItem
 
 		CalcItem {
+			list: root
+		}
+	}
+
+	Component {
+		id: variantItem
+
+		VariantItem {
 			list: root
 		}
 	}
