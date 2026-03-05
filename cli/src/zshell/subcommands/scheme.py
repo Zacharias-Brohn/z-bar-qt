@@ -375,7 +375,7 @@ def generate(
             colors = generate_color_scheme(seed, mode)
             name = "dynamic"
             flavor = "default"
-        elif mode and scheme is None:
+        elif mode:
             generate_thumbnail(WALL_PATH, str(THUMB_PATH))
             seed = seed_from_image(THUMB_PATH)
             colors = generate_color_scheme(seed, mode)
