@@ -23,7 +23,7 @@ def generate(
     image_path: Optional[Path] = typer.Option(
         None, help="Path to source image. Required for image mode."),
     scheme: Optional[str] = typer.Option(
-        "fruit-salad", help="Color scheme algorithm to use for image mode. Ignored in preset mode."),
+        None, help="Color scheme algorithm to use for image mode. Ignored in preset mode."),
     # preset inputs (optional - used for preset mode)
     preset: Optional[str] = typer.Option(
         None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"),
@@ -31,9 +31,25 @@ def generate(
         None, help="Mode of the preset scheme (dark or light)."),
 ):
 
+    HOME = str(os.getenv("HOME"))
+    OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
+    SEQ_STATE = Path(HOME + "/.local/state/zshell/sequences.txt")
+    THUMB_PATH = Path(HOME +
+                      "/.cache/zshell/imagecache/thumbnail.jpg")
+    WALL_DIR_PATH = Path(HOME +
+                         "/.local/state/zshell/wallpaper_path.json")
+
+    TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
+    WALL_PATH = Path()
+    CONFIG = Path(HOME + "/.config/zshell/config.json")
+
     if preset is not None and image_path is not None:
         raise typer.BadParameter(
             "Use either --image-path or --preset, not both.")
+
+    if scheme is None:
+        with CONFIG.open() as f:
+            scheme = json.load(f)["colors"]["schemeType"]
 
     match scheme:
         case "fruit-salad":
@@ -56,18 +72,6 @@ def generate(
             from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant as Scheme
         case _:
             from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
-
-    HOME = str(os.getenv("HOME"))
-    OUTPUT = Path(HOME + "/.local/state/zshell/scheme.json")
-    SEQ_STATE = Path(HOME + "/.local/state/zshell/sequences.txt")
-    THUMB_PATH = Path(HOME +
-                      "/.cache/zshell/imagecache/thumbnail.jpg")
-    WALL_DIR_PATH = Path(HOME +
-                         "/.local/state/zshell/wallpaper_path.json")
-
-    TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
-    WALL_PATH = Path()
-    CONFIG = Path(HOME + "/.config/zshell/config.json")
 
     if mode is None:
         with CONFIG.open() as f:
