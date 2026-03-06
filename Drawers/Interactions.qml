@@ -223,12 +223,8 @@ CustomMouseArea {
 				root.utilitiesShortcutActive = false;
 
 				// Also hide dashboard and OSD if they're not being hovered
-				const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY);
 				const inOsdArea = root.inRightPanel(root.panels.osd, root.mouseX, root.mouseY);
 
-				if (!inDashboardArea) {
-					root.visibilities.dashboard = false;
-				}
 				if (!inOsdArea) {
 					root.visibilities.osd = false;
 					root.panels.osd.hovered = false;
@@ -246,6 +242,12 @@ CustomMouseArea {
 			} else {
 				// OSD hidden, clear shortcut flag
 				root.osdShortcutActive = false;
+			}
+		}
+
+		function onResourcesChanged() {
+			if (root.visibilities.resources && root.popouts.currentName.startsWith("audio")) {
+				root.popouts.hasCurrent = false;
 			}
 		}
 
