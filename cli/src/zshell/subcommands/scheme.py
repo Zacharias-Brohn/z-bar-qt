@@ -67,6 +67,11 @@ def generate(
 
     TEMPLATE_DIR = Path(HOME + "/.config/zshell/templates")
     WALL_PATH = Path()
+    CONFIG = Path(HOME + "/.config/zshell/config.json")
+
+    if not mode:
+        with CONFIG.open() as f:
+            mode = json.load(f)["general"]["color"]["mode"]
 
     def hex_to_hct(hex_color: str) -> Hct:
         s = hex_color.strip()
