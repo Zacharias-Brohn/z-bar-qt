@@ -14,8 +14,6 @@ Item {
 
 	required property var wrapper
 
-	Component.onCompleted: console.log(Networking.backend.toString())
-
 	ColumnLayout {
 		id: layout
 
@@ -26,12 +24,12 @@ Item {
 
 			CustomRadioButton {
 				id: network
-				visible: modelData.name !== "lo"
 
 				required property NetworkDevice modelData
 
 				checked: Helpers.Network.activeDevice?.name === modelData.name
 				text: modelData.description
+				visible: modelData.name !== "lo"
 			}
 		}
 	}

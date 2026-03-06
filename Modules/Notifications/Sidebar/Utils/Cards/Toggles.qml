@@ -1,41 +1,86 @@
+import Quickshell.Bluetooth
+import Quickshell.Networking as QSNetwork
+import QtQuick
+import QtQuick.Layouts
 import qs.Components
 import qs.Config
 import qs.Modules
 import qs.Daemons
-import QtQuick
-import QtQuick.Layouts
 
 CustomRect {
-    id: root
+	id: root
 
-    required property var visibilities
-    required property Item popouts
+	required property Item popouts
+	required property var visibilities
 
-    Layout.fillWidth: true
-    implicitHeight: layout.implicitHeight + 18 * 2
+	Layout.fillWidth: true
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: layout.implicitHeight + 18 * 2
+	radius: 8
 
-    radius: 8
-    color: DynamicColors.tPalette.m3surfaceContainer
+	ColumnLayout {
+		id: layout
 
-    ColumnLayout {
-        id: layout
+		anchors.fill: parent
+		anchors.margins: 18
+		spacing: 10
 
-        anchors.fill: parent
-        anchors.margins: 18
-        spacing: 10
+		RowLayout {
+			Layout.alignment: Qt.AlignHCenter
+			spacing: 7
 
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 7
+			Toggle {
+				checked: Network.wifiEnabled
+				icon: Network.wifiEnabled ? "wifi" : "wifi_off"
+				visible: QSNetwork.Networking.devices.values.length > 0
 
-            Toggle {
+				onClicked: Network.toggleWifi()
+			}
+
+			Toggle {
 				id: toggle
-                icon: "notifications_off"
-                checked: NotifServer.dnd
-                onClicked: NotifServer.dnd = !NotifServer.dnd
-            }
-        }
-    }
+
+				checked: !NotifServer.dnd
+				icon: NotifServer.dnd ? "notifications_off" : "notifications"
+
+				onClicked: NotifServer.dnd = !NotifServer.dnd
+			}
+
+			Toggle {
+				checked: !Audio.sourceMuted
+				icon: Audio.sourceMuted ? "mic_off" : "mic"
+
+				onClicked: {
+					const audio = Audio.source?.audio;
+					if (audio)
+						audio.muted = !audio.muted;
+				}
+			}
+
+			Toggle {
+				checked: !Audio.muted
+				icon: Audio.muted ? "volume_off" : "volume_up"
+
+				onClicked: {
+					const audio = Audio.sink?.audio;
+					if (audio)
+						audio.muted = !audio.muted;
+				}
+			}
+
+			Toggle {
+				checked: Bluetooth.defaultAdapter?.enabled ?? false
+				icon: Bluetooth.defaultAdapter?.enabled ? "bluetooth" : "bluetooth_disabled"
+				visible: Bluetooth.defaultAdapter ?? false
+
+				onClicked: {
+					const adapter = Bluetooth.defaultAdapter;
+					if (adapter)
+						adapter.enabled = !adapter.enabled;
+				}
+			}
+		}
+	}
 
 	CustomShortcut {
 		name: "toggle-dnd"
@@ -45,20 +90,20 @@ CustomRect {
 		}
 	}
 
-    component Toggle: IconButton {
-        Layout.fillWidth: true
-        Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
-        radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
-        inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
-        toggle: true
-        radiusAnim.duration: MaterialEasing.expressiveEffectsTime
-        radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
+	component Toggle: IconButton {
+		Layout.fillWidth: true
+		Layout.preferredWidth: implicitWidth + (stateLayer.pressed ? 18 : internalChecked ? 7 : 0)
+		inactiveColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+		radius: stateLayer.pressed ? 6 / 2 : internalChecked ? 6 : 8
+		radiusAnim.duration: MaterialEasing.expressiveEffectsTime
+		radiusAnim.easing.bezierCurve: MaterialEasing.expressiveEffects
+		toggle: true
 
-        Behavior on Layout.preferredWidth {
-            Anim {
+		Behavior on Layout.preferredWidth {
+			Anim {
 				duration: MaterialEasing.expressiveEffectsTime
 				easing.bezierCurve: MaterialEasing.expressiveEffects
-            }
-        }
-    }
+			}
+		}
+	}
 }

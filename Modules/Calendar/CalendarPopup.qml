@@ -11,8 +11,8 @@ Item {
 
 	required property Item wrapper
 
-	implicitWidth: layout.childrenRect.width + layout.anchors.margins * 2
 	implicitHeight: layout.childrenRect.height + layout.anchors.margins * 2
+	implicitWidth: layout.childrenRect.width + layout.anchors.margins * 2
 
 	ColumnLayout {
 		id: layout
@@ -59,17 +59,17 @@ Item {
 
 				DayOfWeekRow {
 					id: dayOfWeekRow
-					locale: Qt.locale()
+
 					Layout.fillWidth: true
 					Layout.preferredHeight: 30
+					locale: Qt.locale()
 				}
 
 				MonthGrid {
-					locale: Qt.locale()
-
-					wrapper: root.wrapper
-					Layout.preferredWidth: childrenRect.width
 					Layout.preferredHeight: childrenRect.height
+					Layout.preferredWidth: childrenRect.width
+					locale: Qt.locale()
+					wrapper: root.wrapper
 				}
 			}
 		}

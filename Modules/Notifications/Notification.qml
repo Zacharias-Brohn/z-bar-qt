@@ -12,473 +12,456 @@ import QtQuick
 import QtQuick.Layouts
 
 CustomRect {
-    id: root
+	id: root
 
-    required property NotifServer.Notif modelData
-    readonly property bool hasImage: modelData.image.length > 0
-    readonly property bool hasAppIcon: modelData.appIcon.length > 0
-    readonly property int nonAnimHeight: summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
-    property bool expanded: Config.notifs.openExpanded
+	property bool expanded: Config.notifs.openExpanded
+	readonly property bool hasAppIcon: modelData.appIcon.length > 0
+	readonly property bool hasImage: modelData.image.length > 0
+	required property NotifServer.Notif modelData
+	readonly property int nonAnimHeight: summary.implicitHeight + (root.expanded ? appName.height + body.height + actions.height + actions.anchors.topMargin : bodyPreview.height) + inner.anchors.margins * 2
 
-    color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondaryContainer : DynamicColors.tPalette.m3surfaceContainer
-    radius: 6
-    implicitWidth: Config.notifs.sizes.width
-    implicitHeight: inner.implicitHeight
+	color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondaryContainer : DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: inner.implicitHeight
+	implicitWidth: Config.notifs.sizes.width
+	radius: 6
+	x: Config.notifs.sizes.width
 
-    x: Config.notifs.sizes.width
-    Component.onCompleted: {
-        x = 0;
-        modelData.lock(this);
-    }
-    Component.onDestruction: modelData.unlock(this)
-
-    Behavior on x {
-        Anim {
+	Behavior on x {
+		Anim {
 			easing.bezierCurve: MaterialEasing.expressiveEffects
-        }
-    }
+		}
+	}
 
-    MouseArea {
-        property int startY
+	Component.onCompleted: {
+		x = 0;
+		modelData.lock(this);
+	}
+	Component.onDestruction: modelData.unlock(this)
 
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: root.expanded && body.hoveredLink ? Qt.PointingHandCursor : pressed ? Qt.ClosedHandCursor : undefined
-        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
-        preventStealing: true
+	MouseArea {
+		property int startY
 
-        onEntered: root.modelData.timer.stop()
-        onExited: {
-            if (!pressed)
-                root.modelData.timer.start();
-        }
+		acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+		anchors.fill: parent
+		cursorShape: root.expanded && body.hoveredLink ? Qt.PointingHandCursor : pressed ? Qt.ClosedHandCursor : undefined
+		drag.axis: Drag.XAxis
+		drag.target: parent
+		hoverEnabled: true
+		preventStealing: true
 
-        drag.target: parent
-        drag.axis: Drag.XAxis
+		onClicked: event => {
+			if (!Config.notifs.actionOnClick || event.button !== Qt.LeftButton)
+				return;
 
-        onPressed: event => {
-            root.modelData.timer.stop();
-            startY = event.y;
-            if (event.button === Qt.MiddleButton)
-                root.modelData.close();
-        }
-        onReleased: event => {
-            if (!containsMouse)
-                root.modelData.timer.start();
+			const actions = root.modelData.actions;
+			if (actions?.length === 1)
+				actions[0].invoke();
+		}
+		onEntered: root.modelData.timer.stop()
+		onExited: {
+			if (!pressed)
+				root.modelData.timer.start();
+		}
+		onPositionChanged: event => {
+			if (pressed) {
+				const diffY = event.y - startY;
+				if (Math.abs(diffY) > Config.notifs.expandThreshold)
+					root.expanded = diffY > 0;
+			}
+		}
+		onPressed: event => {
+			root.modelData.timer.stop();
+			startY = event.y;
+			if (event.button === Qt.MiddleButton)
+				root.modelData.close();
+		}
+		onReleased: event => {
+			if (!containsMouse)
+				root.modelData.timer.start();
 
-            if (Math.abs(root.x) < Config.notifs.sizes.width * Config.notifs.clearThreshold)
-                root.x = 0;
-            else
-                root.modelData.popup = false;
-        }
-        onPositionChanged: event => {
-            if (pressed) {
-                const diffY = event.y - startY;
-                if (Math.abs(diffY) > Config.notifs.expandThreshold)
-                    root.expanded = diffY > 0;
-            }
-        }
-        onClicked: event => {
-            if (!Config.notifs.actionOnClick || event.button !== Qt.LeftButton)
-                return;
+			if (Math.abs(root.x) < Config.notifs.sizes.width * Config.notifs.clearThreshold)
+				root.x = 0;
+			else
+				root.modelData.popup = false;
+		}
 
-            const actions = root.modelData.actions;
-            if (actions?.length === 1)
-                actions[0].invoke();
-        }
+		Item {
+			id: inner
 
-        Item {
-            id: inner
+			anchors.left: parent.left
+			anchors.margins: 8
+			anchors.right: parent.right
+			anchors.top: parent.top
+			implicitHeight: root.nonAnimHeight
 
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: 8
-
-            implicitHeight: root.nonAnimHeight
-
-            Behavior on implicitHeight {
-                Anim {
+			Behavior on implicitHeight {
+				Anim {
 					duration: MaterialEasing.expressiveEffectsTime
 					easing.bezierCurve: MaterialEasing.expressiveEffects
-                }
-            }
+				}
+			}
 
-            Loader {
-                id: image
+			Loader {
+				id: image
 
-                active: root.hasImage
-
-                anchors.left: parent.left
-                anchors.top: parent.top
-                width: Config.notifs.sizes.image
-                height: Config.notifs.sizes.image
-                visible: root.hasImage || root.hasAppIcon
+				active: root.hasImage
+				anchors.left: parent.left
+				anchors.top: parent.top
 				asynchronous: true
+				height: Config.notifs.sizes.image
+				visible: root.hasImage || root.hasAppIcon
+				width: Config.notifs.sizes.image
 
-                sourceComponent: ClippingRectangle {
-                    radius: 1000
-                    implicitWidth: Config.notifs.sizes.image
-                    implicitHeight: Config.notifs.sizes.image
+				sourceComponent: ClippingRectangle {
+					implicitHeight: Config.notifs.sizes.image
+					implicitWidth: Config.notifs.sizes.image
+					radius: 1000
 
-                    Image {
-                        anchors.fill: parent
-                        source: Qt.resolvedUrl(root.modelData.image)
-                        fillMode: Image.PreserveAspectCrop
+					Image {
+						anchors.fill: parent
+						asynchronous: true
+						cache: false
+						fillMode: Image.PreserveAspectCrop
 						mipmap: true
-                        cache: false
-                        asynchronous: true
-                    }
-                }
-            }
+						source: Qt.resolvedUrl(root.modelData.image)
+					}
+				}
+			}
 
-            Loader {
-                id: appIcon
+			Loader {
+				id: appIcon
 
-                active: root.hasAppIcon || !root.hasImage
-
-                anchors.horizontalCenter: root.hasImage ? undefined : image.horizontalCenter
-                anchors.verticalCenter: root.hasImage ? undefined : image.verticalCenter
-                anchors.right: root.hasImage ? image.right : undefined
-                anchors.bottom: root.hasImage ? image.bottom : undefined
+				active: root.hasAppIcon || !root.hasImage
+				anchors.bottom: root.hasImage ? image.bottom : undefined
+				anchors.horizontalCenter: root.hasImage ? undefined : image.horizontalCenter
+				anchors.right: root.hasImage ? image.right : undefined
+				anchors.verticalCenter: root.hasImage ? undefined : image.verticalCenter
 				asynchronous: true
 
-                sourceComponent: CustomRect {
-                    radius: 1000
-                    color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : root.modelData.urgency === NotificationUrgency.Low ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2) : DynamicColors.palette.m3secondaryContainer
-                    implicitWidth: root.hasImage ? Config.notifs.sizes.badge : Config.notifs.sizes.image
-                    implicitHeight: root.hasImage ? Config.notifs.sizes.badge : Config.notifs.sizes.image
+				sourceComponent: CustomRect {
+					color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3error : root.modelData.urgency === NotificationUrgency.Low ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2) : DynamicColors.palette.m3secondaryContainer
+					implicitHeight: root.hasImage ? Config.notifs.sizes.badge : Config.notifs.sizes.image
+					implicitWidth: root.hasImage ? Config.notifs.sizes.badge : Config.notifs.sizes.image
+					radius: 1000
 
-                    Loader {
-                        id: icon
+					Loader {
+						id: icon
 
-                        active: root.hasAppIcon
+						active: root.hasAppIcon
+						anchors.centerIn: parent
+						asynchronous: true
+						height: Math.round(parent.width * 0.6)
+						width: Math.round(parent.width * 0.6)
 
-                        anchors.centerIn: parent
+						sourceComponent: CustomIcon {
+							anchors.fill: parent
+							layer.enabled: root.modelData.appIcon.endsWith("symbolic")
+							source: Quickshell.iconPath(root.modelData.appIcon)
+						}
+					}
+
+					Loader {
+						active: !root.hasAppIcon
+						anchors.centerIn: parent
+						anchors.horizontalCenterOffset: -18 * 0.02
+						anchors.verticalCenterOffset: 18 * 0.02
 						asynchronous: true
 
-                        width: Math.round(parent.width * 0.6)
-                        height: Math.round(parent.width * 0.6)
+						sourceComponent: MaterialIcon {
+							color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
+							font.pointSize: 18
+							text: Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)
+						}
+					}
+				}
+			}
 
-                        sourceComponent: CustomIcon {
-                            anchors.fill: parent
-                            source: Quickshell.iconPath(root.modelData.appIcon)
-                            layer.enabled: root.modelData.appIcon.endsWith("symbolic")
-                        }
-                    }
+			CustomText {
+				id: appName
 
-                    Loader {
-                        active: !root.hasAppIcon
-                        anchors.centerIn: parent
-                        anchors.horizontalCenterOffset: -18 * 0.02
-                        anchors.verticalCenterOffset: 18 * 0.02
-						asynchronous: true
+				anchors.left: image.right
+				anchors.leftMargin: 10
+				anchors.top: parent.top
+				animate: true
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 10
+				maximumLineCount: 1
+				opacity: root.expanded ? 1 : 0
+				text: appNameMetrics.elidedText
 
-                        sourceComponent: MaterialIcon {
-                            text: Icons.getNotifIcon(root.modelData.summary, root.modelData.urgency)
+				Behavior on opacity {
+					Anim {
+					}
+				}
+			}
 
-                            color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onError : root.modelData.urgency === NotificationUrgency.Low ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
-                            font.pointSize: 18
-                        }
-                    }
-                }
-            }
+			TextMetrics {
+				id: appNameMetrics
 
-            CustomText {
-                id: appName
+				elide: Text.ElideRight
+				elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - 7 * 3
+				font.family: appName.font.family
+				font.pointSize: appName.font.pointSize
+				text: root.modelData.appName
+			}
 
-                anchors.top: parent.top
-                anchors.left: image.right
-                anchors.leftMargin: 10
+			CustomText {
+				id: summary
 
-                animate: true
-                text: appNameMetrics.elidedText
-                maximumLineCount: 1
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: 10
+				anchors.left: image.right
+				anchors.leftMargin: 10
+				anchors.top: parent.top
+				animate: true
+				height: implicitHeight
+				maximumLineCount: 1
+				text: summaryMetrics.elidedText
 
-                opacity: root.expanded ? 1 : 0
+				Behavior on height {
+					Anim {
+					}
+				}
+				states: State {
+					name: "expanded"
+					when: root.expanded
 
-                Behavior on opacity {
-                    Anim {}
-                }
-            }
+					PropertyChanges {
+						summary.maximumLineCount: undefined
+					}
 
-            TextMetrics {
-                id: appNameMetrics
+					AnchorChanges {
+						anchors.top: appName.bottom
+						target: summary
+					}
+				}
+				transitions: Transition {
+					PropertyAction {
+						property: "maximumLineCount"
+						target: summary
+					}
 
-                text: root.modelData.appName
-                font.family: appName.font.family
-                font.pointSize: appName.font.pointSize
-                elide: Text.ElideRight
-                elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - 7 * 3
-            }
-
-            CustomText {
-                id: summary
-
-                anchors.top: parent.top
-                anchors.left: image.right
-                anchors.leftMargin: 10
-
-                animate: true
-                text: summaryMetrics.elidedText
-                maximumLineCount: 1
-                height: implicitHeight
-
-                states: State {
-                    name: "expanded"
-                    when: root.expanded
-
-                    PropertyChanges {
-                        summary.maximumLineCount: undefined
-                    }
-
-                    AnchorChanges {
-                        target: summary
-                        anchors.top: appName.bottom
-                    }
-                }
-
-                transitions: Transition {
-                    PropertyAction {
-                        target: summary
-                        property: "maximumLineCount"
-                    }
-                    AnchorAnimation {
-						easing.type: Easing.BezierSpline
+					AnchorAnimation {
 						duration: MaterialEasing.expressiveEffectsTime
 						easing.bezierCurve: MaterialEasing.expressiveEffects
-                    }
-                }
-
-                Behavior on height {
-                    Anim {}
-                }
-            }
-
-            TextMetrics {
-                id: summaryMetrics
-
-                text: root.modelData.summary
-                font.family: summary.font.family
-                font.pointSize: summary.font.pointSize
-                elide: Text.ElideRight
-                elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - 7 * 3
-            }
-
-            CustomText {
-                id: timeSep
-
-                anchors.top: parent.top
-                anchors.left: summary.right
-                anchors.leftMargin: 7
-
-                text: "•"
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: 10
-
-                states: State {
-                    name: "expanded"
-                    when: root.expanded
-
-                    AnchorChanges {
-                        target: timeSep
-                        anchors.left: appName.right
-                    }
-                }
-
-                transitions: Transition {
-                    AnchorAnimation {
 						easing.type: Easing.BezierSpline
+					}
+				}
+			}
+
+			TextMetrics {
+				id: summaryMetrics
+
+				elide: Text.ElideRight
+				elideWidth: expandBtn.x - time.width - timeSep.width - summary.x - 7 * 3
+				font.family: summary.font.family
+				font.pointSize: summary.font.pointSize
+				text: root.modelData.summary
+			}
+
+			CustomText {
+				id: timeSep
+
+				anchors.left: summary.right
+				anchors.leftMargin: 7
+				anchors.top: parent.top
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 10
+				text: "•"
+
+				states: State {
+					name: "expanded"
+					when: root.expanded
+
+					AnchorChanges {
+						anchors.left: appName.right
+						target: timeSep
+					}
+				}
+				transitions: Transition {
+					AnchorAnimation {
 						duration: MaterialEasing.expressiveEffectsTime
 						easing.bezierCurve: MaterialEasing.expressiveEffects
-                    }
-                }
-            }
+						easing.type: Easing.BezierSpline
+					}
+				}
+			}
 
-            CustomText {
-                id: time
+			CustomText {
+				id: time
 
-                anchors.top: parent.top
-                anchors.left: timeSep.right
-                anchors.leftMargin: 7
+				anchors.left: timeSep.right
+				anchors.leftMargin: 7
+				anchors.top: parent.top
+				animate: true
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 10
+				horizontalAlignment: Text.AlignLeft
+				text: root.modelData.timeStr
+			}
 
-                animate: true
-                horizontalAlignment: Text.AlignLeft
-                text: root.modelData.timeStr
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: 10
-            }
+			Item {
+				id: expandBtn
 
-            Item {
-                id: expandBtn
+				anchors.right: parent.right
+				anchors.top: parent.top
+				implicitHeight: expandIcon.height
+				implicitWidth: expandIcon.height
 
-                anchors.right: parent.right
-                anchors.top: parent.top
+				StateLayer {
+					function onClicked() {
+						root.expanded = !root.expanded;
+					}
 
-                implicitWidth: expandIcon.height
-                implicitHeight: expandIcon.height
+					color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
+					radius: 1000
+				}
 
-                StateLayer {
-                    radius: 1000
-                    color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
+				MaterialIcon {
+					id: expandIcon
 
-                    function onClicked() {
-                        root.expanded = !root.expanded;
-                    }
-                }
+					anchors.centerIn: parent
+					animate: true
+					font.pointSize: 13
+					text: root.expanded ? "expand_less" : "expand_more"
+				}
+			}
 
-                MaterialIcon {
-                    id: expandIcon
+			CustomText {
+				id: bodyPreview
 
-                    anchors.centerIn: parent
+				anchors.left: summary.left
+				anchors.right: expandBtn.left
+				anchors.rightMargin: 7
+				anchors.top: summary.bottom
+				animate: true
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 10
+				opacity: root.expanded ? 0 : 1
+				text: bodyPreviewMetrics.elidedText
+				textFormat: Text.MarkdownText
 
-                    animate: true
-                    text: root.expanded ? "expand_less" : "expand_more"
-                    font.pointSize: 13
-                }
-            }
+				Behavior on opacity {
+					Anim {
+					}
+				}
+			}
 
-            CustomText {
-                id: bodyPreview
+			TextMetrics {
+				id: bodyPreviewMetrics
 
-                anchors.left: summary.left
-                anchors.right: expandBtn.left
-                anchors.top: summary.bottom
-                anchors.rightMargin: 7
+				elide: Text.ElideRight
+				elideWidth: bodyPreview.width
+				font.family: bodyPreview.font.family
+				font.pointSize: bodyPreview.font.pointSize
+				text: root.modelData.body
+			}
 
-                animate: true
-                textFormat: Text.MarkdownText
-                text: bodyPreviewMetrics.elidedText
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: 10
+			CustomText {
+				id: body
 
-                opacity: root.expanded ? 0 : 1
+				anchors.left: summary.left
+				anchors.right: expandBtn.left
+				anchors.rightMargin: 7
+				anchors.top: summary.bottom
+				animate: true
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: 10
+				height: text ? implicitHeight : 0
+				opacity: root.expanded ? 1 : 0
+				text: root.modelData.body
+				textFormat: Text.MarkdownText
+				wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                Behavior on opacity {
-                    Anim {}
-                }
-            }
+				Behavior on opacity {
+					Anim {
+					}
+				}
 
-            TextMetrics {
-                id: bodyPreviewMetrics
+				onLinkActivated: link => {
+					if (!root.expanded)
+						return;
 
-                text: root.modelData.body
-                font.family: bodyPreview.font.family
-                font.pointSize: bodyPreview.font.pointSize
-                elide: Text.ElideRight
-                elideWidth: bodyPreview.width
-            }
+					Quickshell.execDetached(["app2unit", "-O", "--", link]);
+					root.modelData.popup = false;
+				}
+			}
 
-            CustomText {
-                id: body
+			RowLayout {
+				id: actions
 
-                anchors.left: summary.left
-                anchors.right: expandBtn.left
-                anchors.top: summary.bottom
-                anchors.rightMargin: 7
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: body.bottom
+				anchors.topMargin: 7
+				opacity: root.expanded ? 1 : 0
+				spacing: 10
 
-                animate: true
-                textFormat: Text.MarkdownText
-                text: root.modelData.body
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: 10
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                height: text ? implicitHeight : 0
+				Behavior on opacity {
+					Anim {
+					}
+				}
 
-                onLinkActivated: link => {
-                    if (!root.expanded)
-                        return;
+				Action {
+					modelData: QtObject {
+						readonly property string text: qsTr("Close")
 
-                    Quickshell.execDetached(["app2unit", "-O", "--", link]);
-                    root.modelData.popup = false;
-                }
+						function invoke(): void {
+							root.modelData.close();
+						}
+					}
+				}
 
-                opacity: root.expanded ? 1 : 0
+				Repeater {
+					model: root.modelData.actions
 
-                Behavior on opacity {
-                    Anim {}
-                }
-            }
+					delegate: Component {
+						Action {
+						}
+					}
+				}
+			}
+		}
+	}
 
-            RowLayout {
-                id: actions
+	component Action: CustomRect {
+		id: action
 
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: body.bottom
-                anchors.topMargin: 7
+		required property var modelData
 
-                spacing: 10
+		Layout.preferredHeight: actionText.height + 4 * 2
+		Layout.preferredWidth: actionText.width + 8 * 2
+		color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+		implicitHeight: actionText.height + 4 * 2
+		implicitWidth: actionText.width + 8 * 2
+		radius: 1000
 
-                opacity: root.expanded ? 1 : 0
+		StateLayer {
+			function onClicked(): void {
+				action.modelData.invoke();
+			}
 
-                Behavior on opacity {
-                    Anim {}
-                }
+			color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurface
+			radius: 1000
+		}
 
-                Action {
-                    modelData: QtObject {
-                        readonly property string text: qsTr("Close")
-                        function invoke(): void {
-                            root.modelData.close();
-                        }
-                    }
-                }
+		CustomText {
+			id: actionText
 
-                Repeater {
-                    model: root.modelData.actions
+			anchors.centerIn: parent
+			color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurfaceVariant
+			font.pointSize: 10
+			text: actionTextMetrics.elidedText
+		}
 
-                    delegate: Component {
-                        Action {}
-                    }
-                }
-            }
-        }
-    }
+		TextMetrics {
+			id: actionTextMetrics
 
-    component Action: CustomRect {
-        id: action
-
-        required property var modelData
-
-        radius: 1000
-        color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3secondary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
-
-        Layout.preferredWidth: actionText.width + 8 * 2
-        Layout.preferredHeight: actionText.height + 4 * 2
-        implicitWidth: actionText.width + 8 * 2
-        implicitHeight: actionText.height + 4 * 2
-
-        StateLayer {
-            radius: 1000
-            color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurface
-
-            function onClicked(): void {
-                action.modelData.invoke();
-            }
-        }
-
-        CustomText {
-            id: actionText
-
-            anchors.centerIn: parent
-            text: actionTextMetrics.elidedText
-            color: root.modelData.urgency === NotificationUrgency.Critical ? DynamicColors.palette.m3onSecondary : DynamicColors.palette.m3onSurfaceVariant
-            font.pointSize: 10
-        }
-
-        TextMetrics {
-            id: actionTextMetrics
-
-            text: action.modelData.text
-            font.family: actionText.font.family
-            font.pointSize: actionText.font.pointSize
-            elide: Text.ElideRight
-            elideWidth: {
-                const numActions = root.modelData.actions.length + 1;
-                return (inner.width - actions.spacing * (numActions - 1)) / numActions - 8 * 2;
-            }
-        }
-    }
+			elide: Text.ElideRight
+			elideWidth: {
+				const numActions = root.modelData.actions.length + 1;
+				return (inner.width - actions.spacing * (numActions - 1)) / numActions - 8 * 2;
+			}
+			font.family: actionText.font.family
+			font.pointSize: actionText.font.pointSize
+			text: action.modelData.text
+		}
+	}
 }

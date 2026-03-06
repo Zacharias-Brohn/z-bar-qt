@@ -7,92 +7,89 @@ import qs.Config
 import qs.Modules
 
 Item {
-    id: root
+	id: root
 
-    required property FileSystemEntry modelData
-    required property PersistentProperties visibilities
+	required property FileSystemEntry modelData
+	required property PersistentProperties visibilities
 
-    scale: 0.5
-    opacity: 0
-    z: PathView.z ?? 0
+	implicitHeight: image.height + label.height + Appearance.spacing.small / 2 + Appearance.padding.large + Appearance.padding.normal
+	implicitWidth: image.width + Appearance.padding.larger * 2
+	opacity: 0
+	scale: 0.5
+	z: PathView.z ?? 0
 
-    Component.onCompleted: {
-        scale = Qt.binding(() => PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0);
-        opacity = Qt.binding(() => PathView.onPath ? 1 : 0);
-    }
+	Behavior on opacity {
+		Anim {
+		}
+	}
+	Behavior on scale {
+		Anim {
+		}
+	}
 
-    implicitWidth: image.width + Appearance.padding.larger * 2
-    implicitHeight: image.height + label.height + Appearance.spacing.small / 2 + Appearance.padding.large + Appearance.padding.normal
+	Component.onCompleted: {
+		scale = Qt.binding(() => PathView.isCurrentItem ? 1 : PathView.onPath ? 0.8 : 0);
+		opacity = Qt.binding(() => PathView.onPath ? 1 : 0);
+	}
 
-    StateLayer {
-        radius: Appearance.rounding.normal
+	StateLayer {
+		function onClicked(): void {
+			Wallpapers.setWallpaper(root.modelData.path);
+			root.visibilities.launcher = false;
+		}
 
-        function onClicked(): void {
-			console.log(root.modelData.path);
-            Wallpapers.setWallpaper(root.modelData.path);
-            root.visibilities.launcher = false;
-        }
-    }
+		radius: Appearance.rounding.normal
+	}
 
-    Elevation {
-        anchors.fill: image
-        radius: image.radius
-        opacity: root.PathView.isCurrentItem ? 1 : 0
-        level: 4
+	Elevation {
+		anchors.fill: image
+		level: 4
+		opacity: root.PathView.isCurrentItem ? 1 : 0
+		radius: image.radius
 
-        Behavior on opacity {
-            Anim {}
-        }
-    }
+		Behavior on opacity {
+			Anim {
+			}
+		}
+	}
 
-    CustomClippingRect {
-        id: image
+	CustomClippingRect {
+		id: image
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        y: Appearance.padding.large
-        color: DynamicColors.tPalette.m3surfaceContainer
-        radius: Appearance.rounding.normal
+		anchors.horizontalCenter: parent.horizontalCenter
+		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: implicitWidth / 16 * 9
+		implicitWidth: Config.launcher.sizes.wallpaperWidth
+		radius: Appearance.rounding.small
+		y: Appearance.padding.large
 
-        implicitWidth: Config.launcher.sizes.wallpaperWidth
-        implicitHeight: implicitWidth / 16 * 9
+		MaterialIcon {
+			anchors.centerIn: parent
+			color: DynamicColors.tPalette.m3outline
+			font.pointSize: Appearance.font.size.extraLarge * 2
+			font.weight: 600
+			text: "image"
+		}
 
-        MaterialIcon {
-            anchors.centerIn: parent
-            text: "image"
-            color: DynamicColors.tPalette.m3outline
-            font.pointSize: Appearance.font.size.extraLarge * 2
-            font.weight: 600
-        }
+		CachingImage {
+			anchors.fill: parent
+			cache: true
+			path: root.modelData.path
+			smooth: !root.PathView.view.moving
+		}
+	}
 
-        CachingImage {
-            path: root.modelData.path
-            smooth: !root.PathView.view.moving
-            cache: true
+	CustomText {
+		id: label
 
-            anchors.fill: parent
-        }
-    }
-
-    CustomText {
-        id: label
-
-        anchors.top: image.bottom
-        anchors.topMargin: Appearance.spacing.small / 2
-        anchors.horizontalCenter: parent.horizontalCenter
-
-        width: image.width - Appearance.padding.normal * 2
-        horizontalAlignment: Text.AlignHCenter
-        elide: Text.ElideRight
-        renderType: Text.QtRendering
-        text: root.modelData.relativePath
-        font.pointSize: Appearance.font.size.normal
-    }
-
-    Behavior on scale {
-        Anim {}
-    }
-
-    Behavior on opacity {
-        Anim {}
-    }
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: image.bottom
+		anchors.topMargin: Appearance.spacing.small / 2
+		elide: Text.ElideRight
+		font.pointSize: Appearance.font.size.normal
+		horizontalAlignment: Text.AlignHCenter
+		renderType: Text.QtRendering
+		text: root.modelData.relativePath
+		width: image.width - Appearance.padding.normal * 2
+	}
 }

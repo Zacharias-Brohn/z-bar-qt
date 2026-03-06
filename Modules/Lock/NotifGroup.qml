@@ -12,305 +12,304 @@ import qs.Config
 import qs.Daemons
 
 CustomRect {
-    id: root
+	id: root
 
-    required property string modelData
+	readonly property string appIcon: notifs.find(n => n.appIcon.length > 0)?.appIcon ?? ""
+	property bool expanded
+	readonly property string image: notifs.find(n => n.image.length > 0)?.image ?? ""
+	required property string modelData
+	readonly property list<var> notifs: NotifServer.list.filter(notif => notif.appName === modelData)
+	readonly property string urgency: notifs.some(n => n.urgency === NotificationUrgency.Critical) ? "critical" : notifs.some(n => n.urgency === NotificationUrgency.Normal) ? "normal" : "low"
 
-    readonly property list<var> notifs: NotifServer.list.filter(notif => notif.appName === modelData)
-    readonly property string image: notifs.find(n => n.image.length > 0)?.image ?? ""
-    readonly property string appIcon: notifs.find(n => n.appIcon.length > 0)?.appIcon ?? ""
-    readonly property string urgency: notifs.some(n => n.urgency === NotificationUrgency.Critical) ? "critical" : notifs.some(n => n.urgency === NotificationUrgency.Normal) ? "normal" : "low"
+	anchors.left: parent?.left
+	anchors.right: parent?.right
+	clip: true
+	color: root.urgency === "critical" ? DynamicColors.palette.m3secondaryContainer : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+	implicitHeight: content.implicitHeight + Appearance.padding.normal * 2
+	radius: Appearance.rounding.normal
 
-    property bool expanded
+	Behavior on implicitHeight {
+		Anim {
+			duration: Appearance.anim.durations.expressiveDefaultSpatial
+			easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+		}
+	}
 
-    anchors.left: parent?.left
-    anchors.right: parent?.right
-    implicitHeight: content.implicitHeight + Appearance.padding.normal * 2
+	RowLayout {
+		id: content
 
-    clip: true
-    radius: Appearance.rounding.normal
-    color: root.urgency === "critical" ? DynamicColors.palette.m3secondaryContainer : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+		anchors.left: parent.left
+		anchors.margins: Appearance.padding.normal
+		anchors.right: parent.right
+		anchors.top: parent.top
+		spacing: Appearance.spacing.normal
 
-    RowLayout {
-        id: content
+		Item {
+			Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+			implicitHeight: Config.notifs.sizes.image
+			implicitWidth: Config.notifs.sizes.image
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        anchors.margins: Appearance.padding.normal
+			Component {
+				id: imageComp
 
-        spacing: Appearance.spacing.normal
+				Image {
+					asynchronous: true
+					cache: false
+					fillMode: Image.PreserveAspectCrop
+					height: Config.notifs.sizes.image
+					source: Qt.resolvedUrl(root.image)
+					width: Config.notifs.sizes.image
+				}
+			}
 
-        Item {
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            implicitWidth: Config.notifs.sizes.image
-            implicitHeight: Config.notifs.sizes.image
+			Component {
+				id: appIconComp
 
-            Component {
-                id: imageComp
+				ColoredIcon {
+					color: root.urgency === "critical" ? DynamicColors.palette.m3onError : root.urgency === "low" ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
+					implicitSize: Math.round(Config.notifs.sizes.image * 0.6)
+					layer.enabled: root.appIcon.endsWith("symbolic")
+					source: Quickshell.iconPath(root.appIcon)
+				}
+			}
 
-                Image {
-                    source: Qt.resolvedUrl(root.image)
-                    fillMode: Image.PreserveAspectCrop
-                    cache: false
-                    asynchronous: true
-                    width: Config.notifs.sizes.image
-                    height: Config.notifs.sizes.image
-                }
-            }
+			Component {
+				id: materialIconComp
 
-            Component {
-                id: appIconComp
+				MaterialIcon {
+					color: root.urgency === "critical" ? DynamicColors.palette.m3onError : root.urgency === "low" ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
+					font.pointSize: Appearance.font.size.large
+					text: Icons.getNotifIcon(root.notifs[0]?.summary, root.urgency)
+				}
+			}
 
-                ColoredIcon {
-                    implicitSize: Math.round(Config.notifs.sizes.image * 0.6)
-                    source: Quickshell.iconPath(root.appIcon)
-                    color: root.urgency === "critical" ? DynamicColors.palette.m3onError : root.urgency === "low" ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
-                    layer.enabled: root.appIcon.endsWith("symbolic")
-                }
-            }
+			ClippingRectangle {
+				anchors.fill: parent
+				color: root.urgency === "critical" ? DynamicColors.palette.m3error : root.urgency === "low" ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 3) : DynamicColors.palette.m3secondaryContainer
+				radius: Appearance.rounding.full
 
-            Component {
-                id: materialIconComp
+				Loader {
+					anchors.centerIn: parent
+					sourceComponent: root.image ? imageComp : root.appIcon ? appIconComp : materialIconComp
+				}
+			}
 
-                MaterialIcon {
-                    text: Icons.getNotifIcon(root.notifs[0]?.summary, root.urgency)
-                    color: root.urgency === "critical" ? DynamicColors.palette.m3onError : root.urgency === "low" ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
-                    font.pointSize: Appearance.font.size.large
-                }
-            }
+			Loader {
+				active: root.appIcon && root.image
+				anchors.bottom: parent.bottom
+				anchors.right: parent.right
 
-            ClippingRectangle {
-                anchors.fill: parent
-                color: root.urgency === "critical" ? DynamicColors.palette.m3error : root.urgency === "low" ? DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 3) : DynamicColors.palette.m3secondaryContainer
-                radius: Appearance.rounding.full
+				sourceComponent: CustomRect {
+					color: root.urgency === "critical" ? DynamicColors.palette.m3error : root.urgency === "low" ? DynamicColors.palette.m3surfaceContainerHighest : DynamicColors.palette.m3secondaryContainer
+					implicitHeight: Config.notifs.sizes.badge
+					implicitWidth: Config.notifs.sizes.badge
+					radius: Appearance.rounding.full
 
-                Loader {
-                    anchors.centerIn: parent
-                    sourceComponent: root.image ? imageComp : root.appIcon ? appIconComp : materialIconComp
-                }
-            }
+					ColoredIcon {
+						anchors.centerIn: parent
+						color: root.urgency === "critical" ? DynamicColors.palette.m3onError : root.urgency === "low" ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
+						implicitSize: Math.round(Config.notifs.sizes.badge * 0.6)
+						layer.enabled: root.appIcon.endsWith("symbolic")
+						source: Quickshell.iconPath(root.appIcon)
+					}
+				}
+			}
+		}
 
-            Loader {
-                anchors.right: parent.right
-                anchors.bottom: parent.bottom
-                active: root.appIcon && root.image
+		ColumnLayout {
+			Layout.bottomMargin: -Appearance.padding.small / 2 - (root.expanded ? 0 : spacing)
+			Layout.fillWidth: true
+			Layout.topMargin: -Appearance.padding.small
+			spacing: Math.round(Appearance.spacing.small / 2)
 
-                sourceComponent: CustomRect {
-                    implicitWidth: Config.notifs.sizes.badge
-                    implicitHeight: Config.notifs.sizes.badge
+			RowLayout {
+				Layout.bottomMargin: -parent.spacing
+				Layout.fillWidth: true
+				spacing: Appearance.spacing.smaller
 
-                    color: root.urgency === "critical" ? DynamicColors.palette.m3error : root.urgency === "low" ? DynamicColors.palette.m3surfaceContainerHighest : DynamicColors.palette.m3secondaryContainer
-                    radius: Appearance.rounding.full
+				CustomText {
+					Layout.fillWidth: true
+					color: DynamicColors.palette.m3onSurfaceVariant
+					elide: Text.ElideRight
+					font.pointSize: Appearance.font.size.small
+					text: root.modelData
+				}
 
-                    ColoredIcon {
-                        anchors.centerIn: parent
-                        implicitSize: Math.round(Config.notifs.sizes.badge * 0.6)
-                        source: Quickshell.iconPath(root.appIcon)
-                        color: root.urgency === "critical" ? DynamicColors.palette.m3onError : root.urgency === "low" ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSecondaryContainer
-                        layer.enabled: root.appIcon.endsWith("symbolic")
-                    }
-                }
-            }
-        }
+				CustomText {
+					animate: true
+					color: DynamicColors.palette.m3outline
+					font.pointSize: Appearance.font.size.small
+					text: root.notifs[0]?.timeStr ?? ""
+				}
 
-        ColumnLayout {
-            Layout.topMargin: -Appearance.padding.small
-            Layout.bottomMargin: -Appearance.padding.small / 2 - (root.expanded ? 0 : spacing)
-            Layout.fillWidth: true
-            spacing: Math.round(Appearance.spacing.small / 2)
+				CustomRect {
+					Layout.preferredWidth: root.notifs.length > Config.notifs.groupPreviewNum ? implicitWidth : 0
+					color: root.urgency === "critical" ? DynamicColors.palette.m3error : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
+					implicitHeight: groupCount.implicitHeight + Appearance.padding.small
+					implicitWidth: expandBtn.implicitWidth + Appearance.padding.smaller * 2
+					opacity: root.notifs.length > Config.notifs.groupPreviewNum ? 1 : 0
+					radius: Appearance.rounding.full
 
-            RowLayout {
-                Layout.bottomMargin: -parent.spacing
-                Layout.fillWidth: true
-                spacing: Appearance.spacing.smaller
+					Behavior on Layout.preferredWidth {
+						Anim {
+						}
+					}
+					Behavior on opacity {
+						Anim {
+						}
+					}
 
-                CustomText {
-                    Layout.fillWidth: true
-                    text: root.modelData
-                    color: DynamicColors.palette.m3onSurfaceVariant
-                    font.pointSize: Appearance.font.size.small
-                    elide: Text.ElideRight
-                }
+					StateLayer {
+						function onClicked(): void {
+							root.expanded = !root.expanded;
+						}
 
-                CustomText {
-                    animate: true
-                    text: root.notifs[0]?.timeStr ?? ""
-                    color: DynamicColors.palette.m3outline
-                    font.pointSize: Appearance.font.size.small
-                }
+						color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
+					}
 
-                CustomRect {
-                    implicitWidth: expandBtn.implicitWidth + Appearance.padding.smaller * 2
-                    implicitHeight: groupCount.implicitHeight + Appearance.padding.small
+					RowLayout {
+						id: expandBtn
 
-                    color: root.urgency === "critical" ? DynamicColors.palette.m3error : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 2)
-                    radius: Appearance.rounding.full
+						anchors.centerIn: parent
+						spacing: Appearance.spacing.small / 2
 
-                    opacity: root.notifs.length > Config.notifs.groupPreviewNum ? 1 : 0
-                    Layout.preferredWidth: root.notifs.length > Config.notifs.groupPreviewNum ? implicitWidth : 0
+						CustomText {
+							id: groupCount
 
-                    StateLayer {
-                        color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
+							Layout.leftMargin: Appearance.padding.small / 2
+							animate: true
+							color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
+							font.pointSize: Appearance.font.size.small
+							text: root.notifs.length
+						}
 
-                        function onClicked(): void {
-                            root.expanded = !root.expanded;
-                        }
-                    }
+						MaterialIcon {
+							Layout.rightMargin: -Appearance.padding.small / 2
+							animate: true
+							color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
+							text: root.expanded ? "expand_less" : "expand_more"
+						}
+					}
+				}
+			}
 
-                    RowLayout {
-                        id: expandBtn
+			Repeater {
+				model: ScriptModel {
+					values: root.notifs.slice(0, Config.notifs.groupPreviewNum)
+				}
 
-                        anchors.centerIn: parent
-                        spacing: Appearance.spacing.small / 2
+				NotifLine {
+					id: notif
 
-                        CustomText {
-                            id: groupCount
+					ParallelAnimation {
+						running: true
 
-                            Layout.leftMargin: Appearance.padding.small / 2
-                            animate: true
-                            text: root.notifs.length
-                            color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
-                            font.pointSize: Appearance.font.size.small
-                        }
+						Anim {
+							from: 0
+							property: "opacity"
+							target: notif
+							to: 1
+						}
 
-                        MaterialIcon {
-                            Layout.rightMargin: -Appearance.padding.small / 2
-                            animate: true
-                            text: root.expanded ? "expand_less" : "expand_more"
-                            color: root.urgency === "critical" ? DynamicColors.palette.m3onError : DynamicColors.palette.m3onSurface
-                        }
-                    }
+						Anim {
+							from: 0.7
+							property: "scale"
+							target: notif
+							to: 1
+						}
 
-                    Behavior on opacity {
-                        Anim {}
-                    }
+						Anim {
+							from: 0
+							property: "preferredHeight"
+							target: notif.Layout
+							to: notif.implicitHeight
+						}
+					}
 
-                    Behavior on Layout.preferredWidth {
-                        Anim {}
-                    }
-                }
-            }
+					ParallelAnimation {
+						running: notif.modelData.closed
 
-            Repeater {
-                model: ScriptModel {
-                    values: root.notifs.slice(0, Config.notifs.groupPreviewNum)
-                }
+						onFinished: notif.modelData.unlock(notif)
 
-                NotifLine {
-                    id: notif
+						Anim {
+							property: "opacity"
+							target: notif
+							to: 0
+						}
 
-                    ParallelAnimation {
-                        running: true
+						Anim {
+							property: "scale"
+							target: notif
+							to: 0.7
+						}
 
-                        Anim {
-                            target: notif
-                            property: "opacity"
-                            from: 0
-                            to: 1
-                        }
-                        Anim {
-                            target: notif
-                            property: "scale"
-                            from: 0.7
-                            to: 1
-                        }
-                        Anim {
-                            target: notif.Layout
-                            property: "preferredHeight"
-                            from: 0
-                            to: notif.implicitHeight
-                        }
-                    }
+						Anim {
+							property: "preferredHeight"
+							target: notif.Layout
+							to: 0
+						}
+					}
+				}
+			}
 
-                    ParallelAnimation {
-                        running: notif.modelData.closed
-                        onFinished: notif.modelData.unlock(notif)
+			Loader {
+				Layout.fillWidth: true
+				Layout.preferredHeight: root.expanded ? implicitHeight : 0
+				active: opacity > 0
+				opacity: root.expanded ? 1 : 0
 
-                        Anim {
-                            target: notif
-                            property: "opacity"
-                            to: 0
-                        }
-                        Anim {
-                            target: notif
-                            property: "scale"
-                            to: 0.7
-                        }
-                        Anim {
-                            target: notif.Layout
-                            property: "preferredHeight"
-                            to: 0
-                        }
-                    }
-                }
-            }
+				Behavior on opacity {
+					Anim {
+					}
+				}
+				sourceComponent: ColumnLayout {
+					Repeater {
+						model: ScriptModel {
+							values: root.notifs.slice(Config.notifs.groupPreviewNum)
+						}
 
-            Loader {
-                Layout.fillWidth: true
+						NotifLine {
+						}
+					}
+				}
+			}
+		}
+	}
 
-                opacity: root.expanded ? 1 : 0
-                Layout.preferredHeight: root.expanded ? implicitHeight : 0
-                active: opacity > 0
+	component NotifLine: CustomText {
+		id: notifLine
 
-                sourceComponent: ColumnLayout {
-                    Repeater {
-                        model: ScriptModel {
-                            values: root.notifs.slice(Config.notifs.groupPreviewNum)
-                        }
+		required property NotifServer.Notif modelData
 
-                        NotifLine {}
-                    }
-                }
+		Layout.fillWidth: true
+		color: root.urgency === "critical" ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
+		text: {
+			const summary = modelData.summary.replace(/\n/g, " ");
+			const body = modelData.body.replace(/\n/g, " ");
+			const color = root.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline;
 
-                Behavior on opacity {
-                    Anim {}
-                }
-            }
-        }
-    }
+			if (metrics.text === metrics.elidedText)
+				return `${summary} <span style='color:${color}'>${body}</span>`;
 
-    Behavior on implicitHeight {
-        Anim {
-            duration: Appearance.anim.durations.expressiveDefaultSpatial
-            easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-        }
-    }
+			const t = metrics.elidedText.length - 3;
+			if (t < summary.length)
+				return `${summary.slice(0, t)}...`;
 
-    component NotifLine: CustomText {
-        id: notifLine
+			return `${summary} <span style='color:${color}'>${body.slice(0, t - summary.length)}...</span>`;
+		}
+		textFormat: Text.MarkdownText
 
-        required property NotifServer.Notif modelData
+		Component.onCompleted: modelData.lock(this)
+		Component.onDestruction: modelData.unlock(this)
 
-        Layout.fillWidth: true
-        textFormat: Text.MarkdownText
-        text: {
-            const summary = modelData.summary.replace(/\n/g, " ");
-            const body = modelData.body.replace(/\n/g, " ");
-            const color = root.urgency === "critical" ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline;
+		TextMetrics {
+			id: metrics
 
-            if (metrics.text === metrics.elidedText)
-                return `${summary} <span style='color:${color}'>${body}</span>`;
-
-            const t = metrics.elidedText.length - 3;
-            if (t < summary.length)
-                return `${summary.slice(0, t)}...`;
-
-            return `${summary} <span style='color:${color}'>${body.slice(0, t - summary.length)}...</span>`;
-        }
-        color: root.urgency === "critical" ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
-
-        Component.onCompleted: modelData.lock(this)
-        Component.onDestruction: modelData.unlock(this)
-
-        TextMetrics {
-            id: metrics
-
-            text: `${notifLine.modelData.summary} ${notifLine.modelData.body}`.replace(/\n/g, " ")
-            font.pointSize: notifLine.font.pointSize
-            font.family: notifLine.font.family
-            elideWidth: notifLine.width
-            elide: Text.ElideRight
-        }
-    }
+			elide: Text.ElideRight
+			elideWidth: notifLine.width
+			font.family: notifLine.font.family
+			font.pointSize: notifLine.font.pointSize
+			text: `${notifLine.modelData.summary} ${notifLine.modelData.body}`.replace(/\n/g, " ")
+		}
+	}
 }

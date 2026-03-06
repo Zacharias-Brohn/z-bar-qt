@@ -9,162 +9,156 @@ import qs.Helpers
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property var content
-    required property PersistentProperties visibilities
-    required property var panels
-    required property real maxHeight
-    required property CustomTextField search
-    required property int padding
-    required property int rounding
+	required property var content
+	readonly property Item currentList: showWallpapers ? wallpaperList.item : appList.item
+	required property real maxHeight
+	required property int padding
+	required property var panels
+	required property int rounding
+	required property CustomTextField search
+	readonly property bool showWallpapers: search.text.startsWith(`${Config.launcher.actionPrefix}wallpaper `)
+	required property PersistentProperties visibilities
 
-    readonly property bool showWallpapers: search.text.startsWith(`${Config.launcher.actionPrefix}wallpaper `)
-    readonly property Item currentList: showWallpapers ? wallpaperList.item : appList.item
+	anchors.bottom: parent.bottom
+	anchors.horizontalCenter: parent.horizontalCenter
+	clip: true
+	state: showWallpapers ? "wallpapers" : "apps"
 
-    anchors.horizontalCenter: parent.horizontalCenter
-    anchors.bottom: parent.bottom
+	Behavior on implicitHeight {
+		enabled: root.visibilities.launcher
 
-    clip: true
-    state: showWallpapers ? "wallpapers" : "apps"
+		Anim {
+			duration: Appearance.anim.durations.small
+			easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+		}
+	}
+	Behavior on implicitWidth {
+		enabled: root.visibilities.launcher
 
-    states: [
-        State {
-            name: "apps"
+		Anim {
+			duration: Appearance.anim.durations.small
+			easing.bezierCurve: Appearance.anim.curves.expressiveEffects
+		}
+	}
+	Behavior on state {
+		SequentialAnimation {
+			Anim {
+				duration: Appearance.anim.durations.small
+				from: 1
+				property: "opacity"
+				target: root
+				to: 0
+			}
 
-            PropertyChanges {
-                root.implicitWidth: Config.launcher.sizes.itemWidth
-                root.implicitHeight: Math.min(root.maxHeight, appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight)
-                appList.active: true
-            }
+			PropertyAction {
+			}
 
-            AnchorChanges {
-                anchors.left: root.parent.left
-                anchors.right: root.parent.right
-            }
-        },
-        State {
-            name: "wallpapers"
+			Anim {
+				duration: Appearance.anim.durations.small
+				from: 0
+				property: "opacity"
+				target: root
+				to: 1
+			}
+		}
+	}
+	states: [
+		State {
+			name: "apps"
 
-            PropertyChanges {
-                root.implicitWidth: Math.max(Config.launcher.sizes.itemWidth * 1.2, wallpaperList.implicitWidth)
-                root.implicitHeight: Config.launcher.sizes.wallpaperHeight
-                wallpaperList.active: true
-            }
-        }
-    ]
+			PropertyChanges {
+				appList.active: true
+				root.implicitHeight: Math.min(root.maxHeight, appList.implicitHeight > 0 ? appList.implicitHeight : empty.implicitHeight)
+				root.implicitWidth: Config.launcher.sizes.itemWidth
+			}
 
-    Behavior on state {
-        SequentialAnimation {
-            Anim {
-                target: root
-                property: "opacity"
-                from: 1
-                to: 0
-                duration: Appearance.anim.durations.small
-            }
-            PropertyAction {}
-            Anim {
-                target: root
-                property: "opacity"
-                from: 0
-                to: 1
-                duration: Appearance.anim.durations.small
-            }
-        }
-    }
+			AnchorChanges {
+				anchors.left: root.parent.left
+				anchors.right: root.parent.right
+			}
+		},
+		State {
+			name: "wallpapers"
 
-    Loader {
-        id: appList
+			PropertyChanges {
+				root.implicitHeight: Config.launcher.sizes.wallpaperHeight
+				root.implicitWidth: Math.max(Config.launcher.sizes.itemWidth * 1.2, wallpaperList.implicitWidth)
+				wallpaperList.active: true
+			}
+		}
+	]
 
-        active: false
+	Loader {
+		id: appList
 
-        anchors.fill: parent
+		active: false
+		anchors.fill: parent
 
-        sourceComponent: AppList {
-            search: root.search
-            visibilities: root.visibilities
-        }
-    }
+		sourceComponent: AppList {
+			search: root.search
+			visibilities: root.visibilities
+		}
+	}
 
-    Loader {
-        id: wallpaperList
+	Loader {
+		id: wallpaperList
 
-        active: false
+		active: false
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
 
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
+		sourceComponent: WallpaperList {
+			content: root.content
+			panels: root.panels
+			search: root.search
+			visibilities: root.visibilities
+		}
+	}
 
-        sourceComponent: WallpaperList {
-            search: root.search
-            visibilities: root.visibilities
-            panels: root.panels
-            content: root.content
-        }
-    }
+	Row {
+		id: empty
 
-    Row {
-        id: empty
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.verticalCenter: parent.verticalCenter
+		opacity: root.currentList?.count === 0 ? 1 : 0
+		padding: Appearance.padding.large
+		scale: root.currentList?.count === 0 ? 1 : 0.5
+		spacing: Appearance.spacing.normal
 
-        opacity: root.currentList?.count === 0 ? 1 : 0
-        scale: root.currentList?.count === 0 ? 1 : 0.5
+		Behavior on opacity {
+			Anim {
+			}
+		}
+		Behavior on scale {
+			Anim {
+			}
+		}
 
-        spacing: Appearance.spacing.normal
-        padding: Appearance.padding.large
+		MaterialIcon {
+			anchors.verticalCenter: parent.verticalCenter
+			color: DynamicColors.palette.m3onSurfaceVariant
+			font.pointSize: Appearance.font.size.extraLarge
+			text: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
+		}
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+		Column {
+			anchors.verticalCenter: parent.verticalCenter
 
-        MaterialIcon {
-            text: root.state === "wallpapers" ? "wallpaper_slideshow" : "manage_search"
-            color: DynamicColors.palette.m3onSurfaceVariant
-            font.pointSize: Appearance.font.size.extraLarge
+			CustomText {
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: Appearance.font.size.larger
+				font.weight: 500
+				text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No results")
+			}
 
-            anchors.verticalCenter: parent.verticalCenter
-        }
-
-        Column {
-            anchors.verticalCenter: parent.verticalCenter
-
-            CustomText {
-                text: root.state === "wallpapers" ? qsTr("No wallpapers found") : qsTr("No results")
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: Appearance.font.size.larger
-                font.weight: 500
-            }
-
-            CustomText {
-                text: root.state === "wallpapers" && Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else")
-                color: DynamicColors.palette.m3onSurfaceVariant
-                font.pointSize: Appearance.font.size.normal
-            }
-        }
-
-        Behavior on opacity {
-            Anim {}
-        }
-
-        Behavior on scale {
-            Anim {}
-        }
-    }
-
-    Behavior on implicitWidth {
-        enabled: root.visibilities.launcher
-
-        Anim {
-            duration: Appearance.anim.durations.small
-            easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-        }
-    }
-
-    Behavior on implicitHeight {
-        enabled: root.visibilities.launcher
-
-        Anim {
-            duration: Appearance.anim.durations.small
-            easing.bezierCurve: Appearance.anim.curves.expressiveEffects
-        }
-    }
+			CustomText {
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: Appearance.font.size.normal
+				text: root.state === "wallpapers" && Wallpapers.list.length === 0 ? qsTr("Try putting some wallpapers in %1").arg(Paths.shortenHome(Paths.wallsdir)) : qsTr("Try searching for something else")
+			}
+		}
+	}
 }

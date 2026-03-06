@@ -1,40 +1,38 @@
 import QtQuick
 import qs.Components
 import qs.Config
-import qs.Modules as Modules
 
 Item {
-    id: root
+	id: root
 
-    required property var visibilities
-    required property Item panels
+	required property Item panels
+	required property var visibilities
 
-    visible: height > 0
-    implicitWidth: Math.max(panels.sidebar.width, content.implicitWidth)
-    implicitHeight: content.implicitHeight
+	implicitHeight: content.implicitHeight
+	implicitWidth: Math.max(panels.sidebar.width, content.implicitWidth)
+	visible: height > 0
 
-    states: State {
-        name: "hidden"
-        when: root.visibilities.sidebar
+	states: State {
+		name: "hidden"
+		when: root.visibilities.sidebar
 
-        PropertyChanges {
-            root.implicitHeight: 0
-        }
-    }
+		PropertyChanges {
+			root.implicitHeight: 0
+		}
+	}
+	transitions: Transition {
+		Anim {
+			duration: MaterialEasing.expressiveEffectsTime
+			easing.bezierCurve: MaterialEasing.expressiveEffects
+			property: "implicitHeight"
+			target: root
+		}
+	}
 
-    transitions: Transition {
-        Modules.Anim {
-            target: root
-            property: "implicitHeight"
-            duration: MaterialEasing.expressiveEffectsTime
-            easing.bezierCurve: MaterialEasing.expressiveEffects
-        }
-    }
+	Content {
+		id: content
 
-    Content {
-        id: content
-
-        visibilities: root.visibilities
-        panels: root.panels
-    }
+		panels: root.panels
+		visibilities: root.visibilities
+	}
 }

@@ -6,75 +6,73 @@ import qs.Helpers
 import qs.Config
 
 GridLayout {
-    id: root
+	id: root
 
-    anchors.left: parent.left
-    anchors.right: parent.right
-    anchors.margins: Appearance.padding.large
+	anchors.left: parent.left
+	anchors.margins: Appearance.padding.large
+	anchors.right: parent.right
+	columnSpacing: Appearance.spacing.large
+	columns: 2
+	rowSpacing: Appearance.spacing.large
+	rows: 1
 
-    rowSpacing: Appearance.spacing.large
-    columnSpacing: Appearance.spacing.large
-    rows: 1
-    columns: 2
+	Ref {
+		service: SystemUsage
+	}
 
-    Ref {
-        service: SystemUsage
-    }
+	Resource {
+		Layout.bottomMargin: Appearance.padding.large
+		Layout.topMargin: Appearance.padding.large
+		colour: DynamicColors.palette.m3primary
+		icon: "memory"
+		value: SystemUsage.cpuPerc
+	}
 
-    Resource {
-        Layout.bottomMargin: Appearance.padding.large
-        Layout.topMargin: Appearance.padding.large
-        icon: "memory"
-        value: SystemUsage.cpuPerc
-        colour: DynamicColors.palette.m3primary
-    }
+	Resource {
+		Layout.bottomMargin: Appearance.padding.large
+		Layout.topMargin: Appearance.padding.large
+		colour: DynamicColors.palette.m3secondary
+		icon: "memory_alt"
+		value: SystemUsage.memPerc
+	}
 
-    Resource {
-        Layout.bottomMargin: Appearance.padding.large
-        Layout.topMargin: Appearance.padding.large
-        icon: "memory_alt"
-        value: SystemUsage.memPerc
-        colour: DynamicColors.palette.m3secondary
-    }
+	component Resource: CustomRect {
+		id: res
 
-    component Resource: CustomRect {
-        id: res
+		required property color colour
+		required property string icon
+		required property real value
 
-        required property string icon
-        required property real value
-        required property color colour
+		Layout.fillWidth: true
+		color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+		implicitHeight: width
+		radius: Appearance.rounding.large
 
-        Layout.fillWidth: true
-        implicitHeight: width
+		Behavior on value {
+			Anim {
+				duration: Appearance.anim.durations.large
+			}
+		}
 
-        color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
-        radius: Appearance.rounding.large
+		CircularProgress {
+			id: circ
 
-        CircularProgress {
-            id: circ
+			anchors.fill: parent
+			bgColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 3)
+			fgColour: res.colour
+			padding: Appearance.padding.large * 3
+			strokeWidth: width < 200 ? Appearance.padding.smaller : Appearance.padding.normal
+			value: res.value
+		}
 
-            anchors.fill: parent
-            value: res.value
-            padding: Appearance.padding.large * 3
-            fgColour: res.colour
-            bgColour: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHighest, 3)
-            strokeWidth: width < 200 ? Appearance.padding.smaller : Appearance.padding.normal
-        }
+		MaterialIcon {
+			id: icon
 
-        MaterialIcon {
-            id: icon
-
-            anchors.centerIn: parent
-            text: res.icon
-            color: res.colour
-            font.pointSize: (circ.arcRadius * 0.7) || 1
-            font.weight: 600
-        }
-
-        Behavior on value {
-            Anim {
-                duration: Appearance.anim.durations.large
-            }
-        }
-    }
+			anchors.centerIn: parent
+			color: res.colour
+			font.pointSize: (circ.arcRadius * 0.7) || 1
+			font.weight: 600
+			text: res.icon
+		}
+	}
 }

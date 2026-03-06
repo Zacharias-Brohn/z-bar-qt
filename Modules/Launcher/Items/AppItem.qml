@@ -8,67 +8,62 @@ import qs.Config
 import qs.Modules
 
 Item {
-    id: root
+	id: root
 
-    required property DesktopEntry modelData
-    required property PersistentProperties visibilities
+	required property DesktopEntry modelData
+	required property PersistentProperties visibilities
 
-    implicitHeight: Config.launcher.sizes.itemHeight
+	anchors.left: parent?.left
+	anchors.right: parent?.right
+	implicitHeight: Config.launcher.sizes.itemHeight
 
-    anchors.left: parent?.left
-    anchors.right: parent?.right
+	StateLayer {
+		function onClicked(): void {
+			Apps.launch(root.modelData);
+			root.visibilities.launcher = false;
+		}
 
-    StateLayer {
-        radius: 8
+		radius: 8
+	}
 
-        function onClicked(): void {
-            Apps.launch(root.modelData);
-            root.visibilities.launcher = false;
-        }
-    }
+	Item {
+		anchors.fill: parent
+		anchors.leftMargin: Appearance.padding.larger
+		anchors.margins: Appearance.padding.smaller
+		anchors.rightMargin: Appearance.padding.larger
 
-    Item {
-        anchors.fill: parent
-        anchors.leftMargin: Appearance.padding.larger
-        anchors.rightMargin: Appearance.padding.larger
-        anchors.margins: Appearance.padding.smaller
+		IconImage {
+			id: icon
 
-        IconImage {
-            id: icon
+			anchors.verticalCenter: parent.verticalCenter
+			implicitSize: parent.height
+			source: Quickshell.iconPath(root.modelData?.icon, "image-missing")
+		}
 
-            source: Quickshell.iconPath(root.modelData?.icon, "image-missing")
-            implicitSize: parent.height
+		Item {
+			anchors.left: icon.right
+			anchors.leftMargin: Appearance.spacing.normal
+			anchors.verticalCenter: icon.verticalCenter
+			implicitHeight: name.implicitHeight + comment.implicitHeight
+			implicitWidth: parent.width - icon.width
 
-            anchors.verticalCenter: parent.verticalCenter
-        }
+			CustomText {
+				id: name
 
-        Item {
-            anchors.left: icon.right
-            anchors.leftMargin: Appearance.spacing.normal
-            anchors.verticalCenter: icon.verticalCenter
+				font.pointSize: Appearance.font.size.normal
+				text: root.modelData?.name ?? ""
+			}
 
-            implicitWidth: parent.width - icon.width
-            implicitHeight: name.implicitHeight + comment.implicitHeight
+			CustomText {
+				id: comment
 
-            CustomText {
-                id: name
-
-                text: root.modelData?.name ?? ""
-                font.pointSize: Appearance.font.size.normal
-            }
-
-            CustomText {
-                id: comment
-
-                text: (root.modelData?.comment || root.modelData?.genericName || root.modelData?.name) ?? ""
-                font.pointSize: Appearance.font.size.small
-                color: DynamicColors.palette.m3outline
-
-                elide: Text.ElideRight
-                width: root.width - icon.width - Appearance.rounding.normal * 2
-
-                anchors.top: name.bottom
-            }
-        }
-    }
+				anchors.top: name.bottom
+				color: DynamicColors.palette.m3outline
+				elide: Text.ElideRight
+				font.pointSize: Appearance.font.size.small
+				text: (root.modelData?.comment || root.modelData?.genericName || root.modelData?.name) ?? ""
+				width: root.width - icon.width - Appearance.rounding.normal * 2
+			}
+		}
+	}
 }

@@ -8,113 +8,95 @@ import qs.Config
 import qs.Components
 
 Item {
-    id: root
-    implicitWidth: expanded ? 300 : 150
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
+	id: root
 
-    property bool expanded: false
-    property color textColor: DynamicColors.palette.m3onSurface
-    property color barColor: DynamicColors.palette.m3primary
+	property color barColor: DynamicColors.palette.m3primary
+	property color textColor: DynamicColors.palette.m3onSurface
 
-    Behavior on implicitWidth {
-        NumberAnimation {
-            duration: 300
-            easing.type: Easing.OutCubic
-        }
-    }
+	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	implicitWidth: 150
 
-    Rectangle {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.right: parent.right
-        height: 22
-        radius: height / 2
-        color: DynamicColors.tPalette.m3surfaceContainer
+	Behavior on implicitWidth {
+		NumberAnimation {
+			duration: 300
+			easing.type: Easing.OutCubic
+		}
+	}
 
-        Behavior on color {
-            CAnim {}
-        }
+	CustomRect {
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
+		color: DynamicColors.tPalette.m3surfaceContainer
+		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
+		radius: height / 2
+	}
 
-        Rectangle {
-            anchors.centerIn: parent
-            width: parent.width
-            height: parent.height
-            radius: width / 2
-            color: "transparent"
-            border.color: "#30ffffff"
-            border.width: 0
-        }
+	RowLayout {
+		id: layout
 
-        RowLayout {
-            anchors {
-                fill: parent
-                leftMargin: 10
-                rightMargin: 15
-            }
+		anchors.fill: parent
+		anchors.leftMargin: Appearance.padding.small
+		anchors.rightMargin: Appearance.padding.small * 2
+		anchors.verticalCenter: parent.verticalCenter
 
-            MaterialIcon {
-                Layout.alignment: Qt.AlignVCenter
-                font.pixelSize: 18
-                text: Audio.muted ? "volume_off" : "volume_up"
-                color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
-            }
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			animate: true
+			color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
+			font.pointSize: 14
+			text: Audio.muted ? "volume_off" : "volume_up"
+		}
 
-            Rectangle {
-                Layout.fillWidth: true
+		CustomRect {
+			Layout.fillWidth: true
+			color: "#50ffffff"
+			implicitHeight: 4
+			radius: 20
 
-                implicitHeight: 4
-                radius: 20
-                color: "#50ffffff"
+			CustomRect {
+				id: sinkVolumeBar
 
-                Rectangle {
-                    id: sinkVolumeBar
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
+				color: Audio.muted ? DynamicColors.palette.m3error : root.barColor
+				implicitWidth: parent.width * (Audio.volume ?? 0)
+				radius: parent.radius
 
-                    implicitWidth: parent.width * ( Audio.volume ?? 0 )
-                    radius: parent.radius
-					color: Audio.muted ? DynamicColors.palette.m3error : root.barColor
-                    Behavior on color {
-                        CAnim {}
-                    }
-                }
-            }
+				anchors {
+					bottom: parent.bottom
+					left: parent.left
+					top: parent.top
+				}
+			}
+		}
 
-            MaterialIcon {
-                Layout.alignment: Qt.AlignVCenter
-                font.pixelSize: 18
-                text: Audio.sourceMuted ? "mic_off" : "mic"
-                color: ( Audio.sourceMuted ?? false ) ? DynamicColors.palette.m3error : root.textColor
-            }
+		MaterialIcon {
+			Layout.alignment: Qt.AlignVCenter
+			animate: true
+			color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor
+			font.pointSize: 14
+			text: Audio.sourceMuted ? "mic_off" : "mic"
+		}
 
-            Rectangle {
-                Layout.fillWidth: true
+		CustomRect {
+			Layout.fillWidth: true
+			color: "#50ffffff"
+			implicitHeight: 4
+			radius: 20
 
-                implicitHeight: 4
-                radius: 20
-                color: "#50ffffff"
+			CustomRect {
+				id: sourceVolumeBar
 
-                Rectangle {
-                    id: sourceVolumeBar
-                    anchors {
-                        left: parent.left
-                        top: parent.top
-                        bottom: parent.bottom
-                    }
+				color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.barColor
+				implicitWidth: parent.width * (Audio.sourceVolume ?? 0)
+				radius: parent.radius
 
-                    implicitWidth: parent.width * ( Audio.sourceVolume ?? 0 )
-                    radius: parent.radius
-                    color: ( Audio.sourceMuted ?? false ) ? DynamicColors.palette.m3error : root.barColor
-
-                    Behavior on color {
-                        CAnim {}
-                    }
-                }
-            }
-        }
-    }
+				anchors {
+					bottom: parent.bottom
+					left: parent.left
+					top: parent.top
+				}
+			}
+		}
+	}
 }

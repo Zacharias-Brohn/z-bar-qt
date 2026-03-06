@@ -4,12 +4,13 @@ import Quickshell
 import Quickshell.Io
 
 Singleton {
-    id: root
+	id: root
 
-    property alias hasNotifications: adapter.hasNotifications
+	property alias hasNotifications: adapter.hasNotifications
 
-    JsonObject {
-        id: adapter
-        property bool hasNotifications: false
-    }
+	JsonObject {
+		id: adapter
+
+		property bool hasNotifications: false
+	}
 }

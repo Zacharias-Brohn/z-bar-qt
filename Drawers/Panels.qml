@@ -1,6 +1,6 @@
 import Quickshell
 import QtQuick
-import QtQuick.Shapes
+import qs.Components
 import qs.Modules as Modules
 import qs.Modules.Notifications as Notifications
 import qs.Modules.Notifications.Sidebar as Sidebar
@@ -9,116 +9,130 @@ import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
+import qs.Modules.Resources as Resources
+import qs.Modules.Settings as Settings
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property ShellScreen screen
-    required property Item bar
+	required property Item bar
+	readonly property alias dashboard: dashboard
+	readonly property alias launcher: launcher
+	readonly property alias notifications: notifications
+	readonly property alias osd: osd
+	readonly property alias popouts: popouts
+	readonly property alias resources: resources
+	required property ShellScreen screen
+	readonly property alias settings: settings
+	readonly property alias sidebar: sidebar
+	readonly property alias toasts: toasts
+	readonly property alias utilities: utilities
 	required property PersistentProperties visibilities
 
-    readonly property alias popouts: popouts
-	readonly property alias sidebar: sidebar
-	readonly property alias notifications: notifications
-	readonly property alias utilities: utilities
-	readonly property alias dashboard: dashboard
-	readonly property alias osd: osd
-	readonly property alias toasts: toasts
-	readonly property alias launcher: launcher
+	anchors.fill: parent
+	// anchors.margins: 8
+	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 
-    anchors.fill: parent
-    // anchors.margins: 8
-    anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 	Behavior on anchors.topMargin {
-		Modules.Anim {}
+		Anim {
+		}
+	}
+
+	Resources.Wrapper {
+		id: resources
+
+		anchors.left: parent.left
+		anchors.top: parent.top
+		visibilities: root.visibilities
 	}
 
 	Osd.Wrapper {
 		id: osd
 
+		anchors.right: parent.right
+		anchors.rightMargin: sidebar.width
+		anchors.verticalCenter: parent.verticalCenter
 		clip: sidebar.width > 0
 		screen: root.screen
 		visibilities: root.visibilities
-
-		anchors.verticalCenter: parent.verticalCenter
-		anchors.right: parent.right
-		anchors.rightMargin: sidebar.width
 	}
 
-    Modules.Wrapper {
-        id: popouts
+	Modules.Wrapper {
+		id: popouts
 
-        screen: root.screen
-
-        anchors.top: parent.top
-
-        x: {
-            const off = currentCenter - nonAnimWidth / 2;
-            const diff = root.width - Math.floor(off + nonAnimWidth);
-            if ( diff < 0 )
-                return off + diff;
-            return Math.floor( Math.max( off, 0 ));
-        }
-    }
+		anchors.top: parent.top
+		screen: root.screen
+		x: {
+			const off = currentCenter - nonAnimWidth / 2;
+			const diff = root.width - Math.floor(off + nonAnimWidth);
+			if (diff < 0)
+				return off + diff;
+			return Math.floor(Math.max(off, 0));
+		}
+	}
 
 	Toasts.Toasts {
 		id: toasts
 
 		anchors.bottom: sidebar.visible ? parent.bottom : utilities.top
-		anchors.right: sidebar.left
 		anchors.margins: Appearance.padding.normal
+		anchors.right: sidebar.left
 	}
 
 	Notifications.Wrapper {
 		id: notifications
 
-		visibilities: root.visibilities
-		panels: root
-
-		anchors.top: parent.top
 		anchors.right: parent.right
+		anchors.top: parent.top
+		panels: root
+		visibilities: root.visibilities
 	}
 
 	Launcher.Wrapper {
 		id: launcher
 
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		panels: root
 		screen: root.screen
 		visibilities: root.visibilities
-		panels: root
-
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.bottom: parent.bottom
 	}
 
 	Utils.Wrapper {
 		id: utilities
 
-		visibilities: root.visibilities
-		sidebar: sidebar
-		popouts: popouts
-
 		anchors.bottom: parent.bottom
 		anchors.right: parent.right
+		popouts: popouts
+		sidebar: sidebar
+		visibilities: root.visibilities
 	}
 
 	Dashboard.Wrapper {
 		id: dashboard
 
-		visibilities: root.visibilities
-
 		anchors.right: parent.right
 		anchors.top: parent.top
+		visibilities: root.visibilities
 	}
 
 	Sidebar.Wrapper {
 		id: sidebar
 
-		visibilities: root.visibilities
-		panels: root
-
-		anchors.top: notifications.bottom
 		anchors.bottom: utilities.top
 		anchors.right: parent.right
+		anchors.top: notifications.bottom
+		panels: root
+		visibilities: root.visibilities
+	}
+
+	Settings.Wrapper {
+		id: settings
+
+		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.top: parent.top
+		panels: root
+		visibilities: root.visibilities
 	}
 }

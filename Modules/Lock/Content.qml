@@ -5,78 +5,76 @@ import qs.Helpers
 import qs.Config
 
 RowLayout {
-    id: root
+	id: root
 
-    required property var lock
+	required property var lock
 
-    spacing: Appearance.spacing.large * 2
+	spacing: Appearance.spacing.large * 2
 
-    ColumnLayout {
-        Layout.fillWidth: true
-        spacing: Appearance.spacing.normal
+	ColumnLayout {
+		Layout.fillWidth: true
+		spacing: Appearance.spacing.normal
 
-        CustomRect {
-            Layout.fillWidth: true
-            implicitHeight: weather.implicitHeight
+		CustomRect {
+			Layout.fillWidth: true
+			color: DynamicColors.tPalette.m3surfaceContainer
+			implicitHeight: weather.implicitHeight
+			radius: Appearance.rounding.small
+			topLeftRadius: Appearance.rounding.large
 
-            topLeftRadius: Appearance.rounding.large
-            radius: Appearance.rounding.small
-            color: DynamicColors.tPalette.m3surfaceContainer
+			WeatherInfo {
+				id: weather
 
-            WeatherInfo {
-                id: weather
-
-                rootHeight: root.height
-            }
-        }
-
-        CustomRect {
-            Layout.fillWidth: true
-            implicitHeight: resources.implicitHeight
-
-            radius: Appearance.rounding.small
-            color: DynamicColors.tPalette.m3surfaceContainer
-
-            Resources {
-				id: resources
+				rootHeight: root.height
 			}
-        }
+		}
 
-        CustomClippingRect {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+		CustomRect {
+			Layout.fillWidth: true
+			color: DynamicColors.tPalette.m3surfaceContainer
+			implicitHeight: resources.implicitHeight
+			radius: Appearance.rounding.small
 
-            bottomLeftRadius: Appearance.rounding.large
-            radius: Appearance.rounding.small
-            color: DynamicColors.tPalette.m3surfaceContainer
+			Resources {
+				id: resources
 
-            Media {
-                id: media
+			}
+		}
 
-                lock: root.lock
-            }
-        }
-    }
+		CustomClippingRect {
+			Layout.fillHeight: true
+			Layout.fillWidth: true
+			bottomLeftRadius: Appearance.rounding.large
+			color: DynamicColors.tPalette.m3surfaceContainer
+			radius: Appearance.rounding.small
 
-    Center {
-        lock: root.lock
-    }
+			Media {
+				id: media
 
-    ColumnLayout {
-        Layout.fillWidth: true
-        spacing: Appearance.spacing.normal
-        CustomRect {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+				lock: root.lock
+			}
+		}
+	}
 
-            topRightRadius: Appearance.rounding.large
-            bottomRightRadius: Appearance.rounding.large
-            radius: Appearance.rounding.small
-            color: DynamicColors.tPalette.m3surfaceContainer
+	Center {
+		lock: root.lock
+	}
 
-            NotifDock {
-                lock: root.lock
-            }
-        }
-    }
+	ColumnLayout {
+		Layout.fillWidth: true
+		spacing: Appearance.spacing.normal
+
+		CustomRect {
+			Layout.fillHeight: true
+			Layout.fillWidth: true
+			bottomRightRadius: Appearance.rounding.large
+			color: DynamicColors.tPalette.m3surfaceContainer
+			radius: Appearance.rounding.small
+			topRightRadius: Appearance.rounding.large
+
+			NotifDock {
+				lock: root.lock
+			}
+		}
+	}
 }

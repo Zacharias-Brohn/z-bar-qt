@@ -9,244 +9,232 @@ import qs.Config
 import qs.Modules
 
 CustomMouseArea {
-    id: root
+	id: root
 
-    required property var state
+	readonly property int currMonth: state.currentDate.getMonth()
+	readonly property int currYear: state.currentDate.getFullYear()
+	required property var state
 
-    readonly property int currMonth: state.currentDate.getMonth()
-    readonly property int currYear: state.currentDate.getFullYear()
+	function onWheel(event: WheelEvent): void {
+		if (event.angleDelta.y > 0)
+			root.state.currentDate = new Date(root.currYear, root.currMonth - 1, 1);
+		else if (event.angleDelta.y < 0)
+			root.state.currentDate = new Date(root.currYear, root.currMonth + 1, 1);
+	}
 
-    anchors.left: parent.left
-    anchors.right: parent.right
-    implicitHeight: inner.implicitHeight + inner.anchors.margins * 2
+	acceptedButtons: Qt.MiddleButton
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: inner.implicitHeight + inner.anchors.margins * 2
 
-    acceptedButtons: Qt.MiddleButton
-    onClicked: root.state.currentDate = new Date()
+	onClicked: root.state.currentDate = new Date()
 
-    function onWheel(event: WheelEvent): void {
-        if (event.angleDelta.y > 0)
-            root.state.currentDate = new Date(root.currYear, root.currMonth - 1, 1);
-        else if (event.angleDelta.y < 0)
-            root.state.currentDate = new Date(root.currYear, root.currMonth + 1, 1);
-    }
+	ColumnLayout {
+		id: inner
 
-    ColumnLayout {
-        id: inner
+		anchors.fill: parent
+		anchors.margins: Appearance.padding.large
+		spacing: Appearance.spacing.small
 
-        anchors.fill: parent
-        anchors.margins: Appearance.padding.large
-        spacing: Appearance.spacing.small
+		RowLayout {
+			id: monthNavigationRow
 
-        RowLayout {
-            id: monthNavigationRow
+			Layout.fillWidth: true
+			spacing: Appearance.spacing.small
 
-            Layout.fillWidth: true
-            spacing: Appearance.spacing.small
+			Item {
+				implicitHeight: prevMonthText.implicitHeight + Appearance.padding.small * 2
+				implicitWidth: implicitHeight
 
-            Item {
-                implicitWidth: implicitHeight
-                implicitHeight: prevMonthText.implicitHeight + Appearance.padding.small * 2
+				StateLayer {
+					id: prevMonthStateLayer
 
-                StateLayer {
-                    id: prevMonthStateLayer
+					function onClicked(): void {
+						root.state.currentDate = new Date(root.currYear, root.currMonth - 1, 1);
+					}
 
-                    radius: Appearance.rounding.full
+					radius: Appearance.rounding.full
+				}
 
-                    function onClicked(): void {
-                        root.state.currentDate = new Date(root.currYear, root.currMonth - 1, 1);
-                    }
-                }
+				MaterialIcon {
+					id: prevMonthText
 
-                MaterialIcon {
-                    id: prevMonthText
+					anchors.centerIn: parent
+					color: DynamicColors.palette.m3tertiary
+					font.pointSize: Appearance.font.size.normal
+					font.weight: 700
+					text: "chevron_left"
+				}
+			}
 
-                    anchors.centerIn: parent
-                    text: "chevron_left"
-                    color: DynamicColors.palette.m3tertiary
-                    font.pointSize: Appearance.font.size.normal
-                    font.weight: 700
-                }
-            }
+			Item {
+				Layout.fillWidth: true
+				implicitHeight: monthYearDisplay.implicitHeight + Appearance.padding.small * 2
+				implicitWidth: monthYearDisplay.implicitWidth + Appearance.padding.small * 2
 
-            Item {
-                Layout.fillWidth: true
+				StateLayer {
+					function onClicked(): void {
+						root.state.currentDate = new Date();
+					}
 
-                implicitWidth: monthYearDisplay.implicitWidth + Appearance.padding.small * 2
-                implicitHeight: monthYearDisplay.implicitHeight + Appearance.padding.small * 2
+					anchors.fill: monthYearDisplay
+					anchors.leftMargin: -Appearance.padding.normal
+					anchors.margins: -Appearance.padding.small
+					anchors.rightMargin: -Appearance.padding.normal
+					disabled: {
+						const now = new Date();
+						return root.currMonth === now.getMonth() && root.currYear === now.getFullYear();
+					}
+					radius: Appearance.rounding.full
+				}
 
-                StateLayer {
-                    anchors.fill: monthYearDisplay
-                    anchors.margins: -Appearance.padding.small
-                    anchors.leftMargin: -Appearance.padding.normal
-                    anchors.rightMargin: -Appearance.padding.normal
+				CustomText {
+					id: monthYearDisplay
 
-                    radius: Appearance.rounding.full
-                    disabled: {
-                        const now = new Date();
-                        return root.currMonth === now.getMonth() && root.currYear === now.getFullYear();
-                    }
+					anchors.centerIn: parent
+					color: DynamicColors.palette.m3primary
+					font.capitalization: Font.Capitalize
+					font.pointSize: Appearance.font.size.normal
+					font.weight: 500
+					text: grid.title
+				}
+			}
 
-                    function onClicked(): void {
-                        root.state.currentDate = new Date();
-                    }
-                }
+			Item {
+				implicitHeight: nextMonthText.implicitHeight + Appearance.padding.small * 2
+				implicitWidth: implicitHeight
 
-                CustomText {
-                    id: monthYearDisplay
+				StateLayer {
+					id: nextMonthStateLayer
 
-                    anchors.centerIn: parent
-                    text: grid.title
-                    color: DynamicColors.palette.m3primary
-                    font.pointSize: Appearance.font.size.normal
-                    font.weight: 500
-                    font.capitalization: Font.Capitalize
-                }
-            }
+					function onClicked(): void {
+						root.state.currentDate = new Date(root.currYear, root.currMonth + 1, 1);
+					}
 
-            Item {
-                implicitWidth: implicitHeight
-                implicitHeight: nextMonthText.implicitHeight + Appearance.padding.small * 2
+					radius: Appearance.rounding.full
+				}
 
-                StateLayer {
-                    id: nextMonthStateLayer
+				MaterialIcon {
+					id: nextMonthText
 
-                    radius: Appearance.rounding.full
+					anchors.centerIn: parent
+					color: DynamicColors.palette.m3tertiary
+					font.pointSize: Appearance.font.size.normal
+					font.weight: 700
+					text: "chevron_right"
+				}
+			}
+		}
 
-                    function onClicked(): void {
-                        root.state.currentDate = new Date(root.currYear, root.currMonth + 1, 1);
-                    }
-                }
+		DayOfWeekRow {
+			id: daysRow
 
-                MaterialIcon {
-                    id: nextMonthText
+			Layout.fillWidth: true
+			locale: grid.locale
 
-                    anchors.centerIn: parent
-                    text: "chevron_right"
-                    color: DynamicColors.palette.m3tertiary
-                    font.pointSize: Appearance.font.size.normal
-                    font.weight: 700
-                }
-            }
-        }
+			delegate: CustomText {
+				required property var model
 
-        DayOfWeekRow {
-            id: daysRow
+				color: (model.day === 0) ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurfaceVariant
+				font.weight: 500
+				horizontalAlignment: Text.AlignHCenter
+				text: model.shortName
+			}
+		}
 
-            Layout.fillWidth: true
-            locale: grid.locale
+		Item {
+			Layout.fillWidth: true
+			implicitHeight: grid.implicitHeight
 
-            delegate: CustomText {
-                required property var model
+			MonthGrid {
+				id: grid
 
-                horizontalAlignment: Text.AlignHCenter
-                text: model.shortName
-                font.weight: 500
-                color: (model.day === 0) ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3onSurfaceVariant
-            }
-        }
+				anchors.fill: parent
+				locale: Qt.locale("en_SE")
+				month: root.currMonth
+				spacing: 3
+				year: root.currYear
 
-        Item {
-            Layout.fillWidth: true
-            implicitHeight: grid.implicitHeight
+				delegate: Item {
+					id: dayItem
 
-            MonthGrid {
-                id: grid
+					required property var model
 
-                month: root.currMonth
-                year: root.currYear
+					implicitHeight: text.implicitHeight + Appearance.padding.small * 2
+					implicitWidth: implicitHeight
 
-                anchors.fill: parent
+					CustomText {
+						id: text
 
-                spacing: 3
-                locale: Qt.locale("en_SE")
+						anchors.centerIn: parent
+						color: {
+							const dayOfWeek = dayItem.model.date.getUTCDay();
+							if (dayOfWeek === 6)
+								return DynamicColors.palette.m3secondary;
 
-                delegate: Item {
-                    id: dayItem
+							return DynamicColors.palette.m3onSurfaceVariant;
+						}
+						font.pointSize: Appearance.font.size.normal
+						font.weight: 500
+						horizontalAlignment: Text.AlignHCenter
+						opacity: dayItem.model.today || dayItem.model.month === grid.month ? 1 : 0.4
+						text: grid.locale.toString(dayItem.model.day)
+					}
+				}
+			}
 
-                    required property var model
+			CustomRect {
+				id: todayIndicator
 
-                    implicitWidth: implicitHeight
-                    implicitHeight: text.implicitHeight + Appearance.padding.small * 2
+				property Item today
+				readonly property Item todayItem: grid.contentItem.children.find(c => c.model.today) ?? null
 
-                    CustomText {
-                        id: text
+				clip: true
+				color: DynamicColors.palette.m3primary
+				implicitHeight: today?.implicitHeight ?? 0
+				implicitWidth: today?.implicitWidth ?? 0
+				opacity: todayItem ? 1 : 0
+				radius: Appearance.rounding.full
+				scale: todayItem ? 1 : 0.7
+				x: today ? today.x + (today.width - implicitWidth) / 2 : 0
+				y: today?.y ?? 0
 
-                        anchors.centerIn: parent
+				Behavior on opacity {
+					Anim {
+					}
+				}
+				Behavior on scale {
+					Anim {
+					}
+				}
+				Behavior on x {
+					Anim {
+						duration: Appearance.anim.durations.expressiveDefaultSpatial
+						easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					}
+				}
+				Behavior on y {
+					Anim {
+						duration: Appearance.anim.durations.expressiveDefaultSpatial
+						easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					}
+				}
 
-                        horizontalAlignment: Text.AlignHCenter
-                        text: grid.locale.toString(dayItem.model.day)
-                        color: {
-                            const dayOfWeek = dayItem.model.date.getUTCDay();
-                            if (dayOfWeek === 6)
-                                return DynamicColors.palette.m3secondary;
+				onTodayItemChanged: {
+					if (todayItem)
+						today = todayItem;
+				}
 
-                            return DynamicColors.palette.m3onSurfaceVariant;
-                        }
-                        opacity: dayItem.model.today || dayItem.model.month === grid.month ? 1 : 0.4
-                        font.pointSize: Appearance.font.size.normal
-                        font.weight: 500
-                    }
-                }
-            }
-
-            CustomRect {
-                id: todayIndicator
-
-                readonly property Item todayItem: grid.contentItem.children.find(c => c.model.today) ?? null
-                property Item today
-
-                onTodayItemChanged: {
-                    if (todayItem)
-                        today = todayItem;
-                }
-
-                x: today ? today.x + (today.width - implicitWidth) / 2 : 0
-                y: today?.y ?? 0
-
-                implicitWidth: today?.implicitWidth ?? 0
-                implicitHeight: today?.implicitHeight ?? 0
-
-                clip: true
-                radius: Appearance.rounding.full
-                color: DynamicColors.palette.m3primary
-
-                opacity: todayItem ? 1 : 0
-                scale: todayItem ? 1 : 0.7
-
-                Coloriser {
-                    x: -todayIndicator.x
-                    y: -todayIndicator.y
-
-                    implicitWidth: grid.width
-                    implicitHeight: grid.height
-
-                    source: grid
-                    sourceColor: DynamicColors.palette.m3onSurface
-                    colorizationColor: DynamicColors.palette.m3onPrimary
-                }
-
-                Behavior on opacity {
-                    Anim {}
-                }
-
-                Behavior on scale {
-                    Anim {}
-                }
-
-                Behavior on x {
-                    Anim {
-                        duration: Appearance.anim.durations.expressiveDefaultSpatial
-                        easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-                    }
-                }
-
-                Behavior on y {
-                    Anim {
-                        duration: Appearance.anim.durations.expressiveDefaultSpatial
-                        easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-                    }
-                }
-            }
-        }
-    }
+				Coloriser {
+					colorizationColor: DynamicColors.palette.m3onPrimary
+					implicitHeight: grid.height
+					implicitWidth: grid.width
+					source: grid
+					sourceColor: DynamicColors.palette.m3onSurface
+					x: -todayIndicator.x
+					y: -todayIndicator.y
+				}
+			}
+		}
+	}
 }

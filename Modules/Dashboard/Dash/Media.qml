@@ -1,238 +1,319 @@
-import ZShell.Services
+pragma ComponentBehavior: Bound
+
+import Quickshell
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Shapes
+import ZShell.Services
 import qs.Daemons
 import qs.Components
 import qs.Config
 import qs.Helpers
-import qs.Modules
-import qs.Paths
 
 Item {
-    id: root
+	id: root
 
-    property real playerProgress: {
-        const active = Players.active;
-        return active?.length ? active.position / active.length : 0;
-    }
+	property real playerProgress: {
+		const active = Players.active;
+		return active?.length ? active.position / active.length : 0;
+	}
+	property int rowHeight: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    implicitWidth: Config.dashboard.sizes.mediaWidth
+	anchors.left: parent.left
+	anchors.right: parent.right
+	implicitHeight: cover.height + rowHeight * 2
 
-    Behavior on playerProgress {
-        Anim {
-            duration: Appearance.anim.durations.large
-        }
-    }
+	Behavior on playerProgress {
+		Anim {
+			duration: Appearance.anim.durations.large
+		}
+	}
 
-    Timer {
-        running: Players.active?.isPlaying ?? false
-        interval: Config.dashboard.mediaUpdateInterval
-        triggeredOnStart: true
-        repeat: true
-        onTriggered: Players.active?.positionChanged()
-    }
+	Timer {
+		interval: Config.dashboard.mediaUpdateInterval
+		repeat: true
+		running: Players.active?.isPlaying ?? false
+		triggeredOnStart: true
 
-    ServiceRef {
-        service: Audio.beatTracker
-    }
+		onTriggered: Players.active?.positionChanged()
+	}
 
-    Shape {
-        preferredRendererType: Shape.CurveRenderer
+	ServiceRef {
+		service: Audio.cava
+	}
 
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
-            strokeWidth: Config.dashboard.sizes.mediaProgressThickness
-            capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+	Shape {
+		id: visualizer
 
-            PathAngleArc {
-                centerX: cover.x + cover.width / 2
-                centerY: cover.y + cover.height / 2
-                radiusX: (cover.width + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
-                radiusY: (cover.height + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
-                startAngle: -90 - Config.dashboard.sizes.mediaProgressSweep / 2
-                sweepAngle: Config.dashboard.sizes.mediaProgressSweep
-            }
+		readonly property real barW: Math.max(0, (width - gap * (bars - 1)) / bars)
+		readonly property int bars: Config.services.visualizerBars
+		property color color: DynamicColors.palette.m3primary
+		readonly property real gap: Appearance.spacing.small
 
-            Behavior on strokeColor {
-                CAnim {}
-            }
-        }
+		anchors.fill: layout
+		asynchronous: true
+		data: visualizerBars.instances
+		preferredRendererType: Shape.CurveRenderer
+	}
 
-        ShapePath {
-            fillColor: "transparent"
-            strokeColor: DynamicColors.palette.m3primary
-            strokeWidth: Config.dashboard.sizes.mediaProgressThickness
-            capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+	Variants {
+		id: visualizerBars
 
-            PathAngleArc {
-                centerX: cover.x + cover.width / 2
-                centerY: cover.y + cover.height / 2
-                radiusX: (cover.width + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
-                radiusY: (cover.height + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
-                startAngle: -90 - Config.dashboard.sizes.mediaProgressSweep / 2
-                sweepAngle: Config.dashboard.sizes.mediaProgressSweep * root.playerProgress
-            }
+		model: Array.from({
+			length: Config.services.visualizerBars
+		}, (_, i) => i)
 
-            Behavior on strokeColor {
-                CAnim {}
-            }
-        }
-    }
+		ShapePath {
+			id: visualizerBar
 
-    CustomClippingRect {
-        id: cover
+			readonly property real magnitude: value * Config.dashboard.sizes.mediaVisualiserSize
+			required property int modelData
+			readonly property real value: Math.max(1e-3, Audio.cava.values[modelData])
 
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.margins: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+			startX: (visualizer.barW / 2) + modelData * (visualizer.barW + visualizer.gap)
+			startY: layout.y + layout.height
+			strokeColor: visualizer.color
+			strokeWidth: visualizer.barW
 
-        implicitHeight: width
-        color: DynamicColors.tPalette.m3surfaceContainerHigh
-        radius: Infinity
+			Behavior on strokeColor {
+				CAnim {
+				}
+			}
 
-        MaterialIcon {
-            anchors.centerIn: parent
+			PathLine {
+				relativeX: 0
+				relativeY: -visualizerBar.magnitude
+			}
+		}
+	}
 
-            grade: 200
-            text: "art_track"
-            color: DynamicColors.palette.m3onSurfaceVariant
-            font.pointSize: (parent.width * 0.4) || 1
-        }
+	Shape {
+		preferredRendererType: Shape.CurveRenderer
 
-        Image {
-            id: image
+		ShapePath {
+			capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+			fillColor: "transparent"
+			strokeColor: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
+			strokeWidth: Config.dashboard.sizes.mediaProgressThickness
 
-            anchors.fill: parent
+			Behavior on strokeColor {
+				CAnim {
+				}
+			}
 
-            source: Players.active?.trackArtUrl ?? ""
-            asynchronous: true
-            fillMode: Image.PreserveAspectCrop
-            sourceSize.width: width
-            sourceSize.height: height
-        }
-    }
+			PathAngleArc {
+				centerX: cover.x + cover.width / 2
+				centerY: cover.y + cover.height / 2
+				radiusX: (cover.width + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
+				radiusY: (cover.height + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
+				startAngle: -90 - Config.dashboard.sizes.mediaProgressSweep / 2
+				sweepAngle: Config.dashboard.sizes.mediaProgressSweep
+			}
+		}
 
-    CustomText {
-        id: title
+		ShapePath {
+			capStyle: Appearance.rounding.scale === 0 ? ShapePath.SquareCap : ShapePath.RoundCap
+			fillColor: "transparent"
+			strokeColor: DynamicColors.palette.m3primary
+			strokeWidth: Config.dashboard.sizes.mediaProgressThickness
 
-        anchors.top: cover.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: Appearance.spacing.normal
+			Behavior on strokeColor {
+				CAnim {
+				}
+			}
 
-        animate: true
-        horizontalAlignment: Text.AlignHCenter
-        text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
-        color: DynamicColors.palette.m3primary
-        font.pointSize: Appearance.font.size.normal
+			PathAngleArc {
+				centerX: cover.x + cover.width / 2
+				centerY: cover.y + cover.height / 2
+				radiusX: (cover.width + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
+				radiusY: (cover.height + Config.dashboard.sizes.mediaProgressThickness) / 2 + Appearance.spacing.small
+				startAngle: -90 - Config.dashboard.sizes.mediaProgressSweep / 2
+				sweepAngle: Config.dashboard.sizes.mediaProgressSweep * root.playerProgress
+			}
+		}
+	}
 
-        width: parent.implicitWidth - Appearance.padding.large * 2
-        elide: Text.ElideRight
-    }
+	RowLayout {
+		id: layout
 
-    CustomText {
-        id: album
+		anchors.left: parent.left
+		anchors.right: parent.right
+		implicitHeight: root.implicitHeight
 
-        anchors.top: title.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: Appearance.spacing.small
+		CustomClippingRect {
+			id: cover
 
-        animate: true
-        horizontalAlignment: Text.AlignHCenter
-        text: (Players.active?.trackAlbum ?? qsTr("No media")) || qsTr("Unknown album")
-        color: DynamicColors.palette.m3outline
-        font.pointSize: Appearance.font.size.small
+			Layout.alignment: Qt.AlignLeft
+			Layout.bottomMargin: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			Layout.leftMargin: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			Layout.preferredHeight: Config.dashboard.sizes.mediaCoverArtSize
+			Layout.preferredWidth: Config.dashboard.sizes.mediaCoverArtSize
+			Layout.topMargin: Appearance.padding.large + Config.dashboard.sizes.mediaProgressThickness + Appearance.spacing.small
+			color: DynamicColors.tPalette.m3surfaceContainerHigh
+			radius: Infinity
 
-        width: parent.implicitWidth - Appearance.padding.large * 2
-        elide: Text.ElideRight
-    }
+			MaterialIcon {
+				anchors.centerIn: parent
+				color: DynamicColors.palette.m3onSurfaceVariant
+				font.pointSize: (parent.width * 0.4) || 1
+				grade: 200
+				text: "art_track"
+			}
 
-    CustomText {
-        id: artist
+			Image {
+				id: image
 
-        anchors.top: album.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: Appearance.spacing.small
+				anchors.fill: parent
+				asynchronous: true
+				fillMode: Image.PreserveAspectCrop
+				source: Players.active?.trackArtUrl ?? ""
+				sourceSize.height: Math.floor(height)
+				sourceSize.width: Math.floor(width)
+			}
+		}
 
-        animate: true
-        horizontalAlignment: Text.AlignHCenter
-        text: (Players.active?.trackArtist ?? qsTr("No media")) || qsTr("Unknown artist")
-        color: DynamicColors.palette.m3secondary
+		CustomRect {
+			Layout.fillWidth: true
+			Layout.preferredHeight: childrenRect.height
 
-        width: parent.implicitWidth - Appearance.padding.large * 2
-        elide: Text.ElideRight
-    }
+			MarqueeText {
+				id: title
 
-    Row {
-        id: controls
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: parent.top
+				color: DynamicColors.palette.m3primary
+				font.pointSize: Appearance.font.size.normal
+				horizontalAlignment: Text.AlignHCenter
+				pauseMs: 4000
+				text: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
+				width: parent.width - Appearance.padding.large * 4
+			}
 
-        anchors.top: artist.bottom
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.topMargin: Appearance.spacing.smaller
+			MarqueeText {
+				id: album
 
-        spacing: Appearance.spacing.small
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: title.bottom
+				anchors.topMargin: Appearance.spacing.small
+				color: DynamicColors.palette.m3outline
+				font.pointSize: Appearance.font.size.small
+				horizontalAlignment: Text.AlignHCenter
+				pauseMs: 4000
+				text: (Players.active?.trackAlbum ?? qsTr("No media")) || qsTr("Unknown album")
+				width: parent.width - Appearance.padding.large * 4
+			}
 
-        Control {
-            icon: "skip_previous"
-            canUse: Players.active?.canGoPrevious ?? false
+			MarqueeText {
+				id: artist
 
-            function onClicked(): void {
-                Players.active?.previous();
-            }
-        }
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: album.bottom
+				anchors.topMargin: Appearance.spacing.small
+				color: DynamicColors.palette.m3secondary
+				horizontalAlignment: Text.AlignHCenter
+				pauseMs: 4000
+				text: (Players.active?.trackArtist ?? qsTr("No media")) || qsTr("Unknown artist")
+				width: parent.width - Appearance.padding.large * 4
+			}
 
-        Control {
-            icon: Players.active?.isPlaying ? "pause" : "play_arrow"
-            canUse: Players.active?.canTogglePlaying ?? false
+			RowLayout {
+				id: controls
 
-            function onClicked(): void {
-                Players.active?.togglePlaying();
-            }
-        }
+				anchors.horizontalCenter: parent.horizontalCenter
+				anchors.top: artist.bottom
+				anchors.topMargin: Appearance.spacing.smaller
+				spacing: Appearance.spacing.small
 
-        Control {
-            icon: "skip_next"
-            canUse: Players.active?.canGoNext ?? false
+				Control {
+					function onClicked(): void {
+						Players.active?.previous();
+					}
 
-            function onClicked(): void {
-                Players.active?.next();
-            }
-        }
-    }
+					canUse: Players.active?.canGoPrevious ?? false
+					icon: "skip_previous"
+				}
 
-    component Control: CustomRect {
-        id: control
+				Control {
+					function onClicked(): void {
+						Players.active?.togglePlaying();
+					}
 
-        required property string icon
-        required property bool canUse
-        function onClicked(): void {
-        }
+					canUse: Players.active?.canTogglePlaying ?? false
+					icon: Players.active?.isPlaying ? "pause" : "play_arrow"
+				}
 
-        implicitWidth: Math.max(icon.implicitHeight, icon.implicitHeight) + Appearance.padding.small
-        implicitHeight: implicitWidth
+				Control {
+					function onClicked(): void {
+						Players.active?.next();
+					}
 
-        StateLayer {
-            disabled: !control.canUse
-            radius: Appearance.rounding.full
+					canUse: Players.active?.canGoNext ?? false
+					icon: "skip_next"
+				}
+			}
+		}
+	}
 
-            function onClicked(): void {
-                control.onClicked();
-            }
-        }
+	component Control: CustomRect {
+		id: control
 
-        MaterialIcon {
-            id: icon
+		required property bool canUse
+		required property string icon
+		property int level: 1
+		property string set_color: "Secondary"
 
-            anchors.centerIn: parent
-            anchors.verticalCenterOffset: font.pointSize * 0.05
+		function onClicked(): void {
+		}
 
-            animate: true
-            text: control.icon
-            color: control.canUse ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3outline
-            font.pointSize: Appearance.font.size.large
-        }
-    }
+		Layout.preferredWidth: implicitWidth + (controlState.pressed ? Appearance.padding.normal * 2 : 0)
+		color: canUse ? DynamicColors.palette[`m3${set_color.toLowerCase()}`] : DynamicColors.palette[`m3${set_color.toLowerCase()}Container`]
+		implicitHeight: implicitWidth
+		implicitWidth: Math.max(icon.implicitHeight, icon.implicitHeight) + Appearance.padding.small
+		radius: Appearance.rounding.full
+
+		Behavior on Layout.preferredWidth {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+		Behavior on radius {
+			Anim {
+				duration: Appearance.anim.durations.expressiveFastSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+			}
+		}
+
+		Elevation {
+			anchors.fill: parent
+			level: controlState.containsMouse && !controlState.pressed ? control.level + 1 : control.level
+			radius: parent.radius
+			z: -1
+		}
+
+		StateLayer {
+			id: controlState
+
+			function onClicked(): void {
+				control.onClicked();
+			}
+
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
+			disabled: !control.canUse
+			// radius: Appearance.rounding.full
+		}
+
+		MaterialIcon {
+			id: icon
+
+			anchors.centerIn: parent
+			anchors.verticalCenterOffset: font.pointSize * 0.05
+			animate: true
+			color: control.canUse ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
+			fill: control.canUse ? 1 : 0
+			font.pointSize: Appearance.font.size.large
+			text: control.icon
+		}
+	}
 }

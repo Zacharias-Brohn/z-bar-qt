@@ -6,80 +6,74 @@ import qs.Config
 import qs.Helpers
 
 Item {
-    id: root
+	id: root
 
-    required property var bar
-    required property Brightness.Monitor monitor
-    property color colour: DynamicColors.palette.m3primary
+	required property var bar
+	property color colour: DynamicColors.palette.m3primary
+	property Title current: text1
+	// readonly property int maxWidth: 300
+	readonly property int maxWidth: {
+		const otherModules = bar.children.filter(c => c.enabled && c.id && c.item !== this && c.id !== "spacer");
+		const otherWidth = otherModules.reduce((acc, curr) => {
+			return acc + (curr.item?.nonAnimWidth ?? curr.width ?? 0);
+		}, 0);
+		return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
+	}
+	required property Brightness.Monitor monitor
 
-    readonly property int maxHeight: {
-        const otherModules = bar.children.filter(c => c.id && c.item !== this && c.id !== "spacer");
-        const otherHeight = otherModules.reduce((acc, curr) => acc + (curr.item.nonAnimHeight ?? curr.height), 0);
-        // Length - 2 cause repeater counts as a child
-        return bar.height - otherHeight - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
-    }
-    property Title current: text1
+	clip: true
+	implicitHeight: current.implicitHeight
+	implicitWidth: Math.min(current.implicitWidth, root.maxWidth)
 
-    clip: true
-    implicitWidth: current.implicitWidth + current.anchors.leftMargin
-    implicitHeight: current.implicitHeight
+	Behavior on implicitWidth {
+		Anim {
+			duration: MaterialEasing.expressiveEffectsTime
+			easing.bezierCurve: MaterialEasing.expressiveEffects
+		}
+	}
 
-    // MaterialIcon {
-    //     id: icon
-    //
-    //     anchors.verticalCenter: parent.verticalCenter
-    //
-    //     animate: true
-    //     text: Icons.getAppCategoryIcon(Hypr.activeToplevel?.lastIpcObject.class, "desktop_windows")
-    //     color: root.colour
-    // }
+	Title {
+		id: text1
 
-    Title {
-        id: text1
-    }
+	}
 
-    Title {
-        id: text2
-    }
+	Title {
+		id: text2
 
-    TextMetrics {
-        id: metrics
+	}
 
-        text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
-        font.pointSize: 12
-        font.family: "Rubik"
+	TextMetrics {
+		id: metrics
 
-        onTextChanged: {
-            const next = root.current === text1 ? text2 : text1;
-            next.text = elidedText;
-            root.current = next;
-        }
-        onElideWidthChanged: root.current.text = elidedText
-    }
+		elide: Qt.ElideRight
+		elideWidth: root.maxWidth
+		font.family: "Rubik"
+		font.pointSize: 12
+		text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
 
-    Behavior on implicitWidth {
-        Anim {
-            duration: MaterialEasing.expressiveEffectsTime
-            easing.bezierCurve: MaterialEasing.expressiveEffects
-        }
-    }
+		onElideWidthChanged: root.current.text = elidedText
+		onTextChanged: {
+			const next = root.current === text1 ? text2 : text1;
+			next.text = elidedText;
+			root.current = next;
+		}
+	}
 
-    component Title: CustomText {
-        id: text
+	component Title: CustomText {
+		id: text
 
+		anchors.leftMargin: 7
 		anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: 7
+		color: root.colour
+		font.family: metrics.font.family
+		font.pointSize: metrics.font.pointSize
+		height: implicitHeight
+		opacity: root.current === this ? 1 : 0
+		width: implicitWidth
 
-        font.pointSize: metrics.font.pointSize
-        font.family: metrics.font.family
-        color: root.colour
-        opacity: root.current === this ? 1 : 0
-
-        width: implicitWidth
-        height: implicitHeight
-
-        Behavior on opacity {
-            Anim {}
-        }
-    }
+		Behavior on opacity {
+			Anim {
+			}
+		}
+	}
 }

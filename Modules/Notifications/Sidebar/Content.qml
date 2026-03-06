@@ -4,36 +4,34 @@ import QtQuick
 import QtQuick.Layouts
 
 Item {
-    id: root
+	id: root
 
-    required property Props props
-    required property var visibilities
+	required property Props props
+	required property var visibilities
 
-    ColumnLayout {
-        id: layout
+	ColumnLayout {
+		id: layout
 
-        anchors.fill: parent
-        spacing: 8
+		anchors.fill: parent
+		spacing: 8
 
-        CustomRect {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+		CustomRect {
+			Layout.fillHeight: true
+			Layout.fillWidth: true
+			color: DynamicColors.tPalette.m3surfaceContainerLow
+			radius: 8
 
-            radius: 8
-            color: DynamicColors.tPalette.m3surfaceContainerLow
+			NotifDock {
+				props: root.props
+				visibilities: root.visibilities
+			}
+		}
 
-            NotifDock {
-                props: root.props
-                visibilities: root.visibilities
-            }
-        }
-
-        CustomRect {
-            Layout.topMargin: 8 - layout.spacing
-            Layout.fillWidth: true
-            implicitHeight: 1
-
-            color: DynamicColors.tPalette.m3outlineVariant
-        }
-    }
+		CustomRect {
+			Layout.fillWidth: true
+			Layout.topMargin: 8 - layout.spacing
+			color: DynamicColors.tPalette.m3outlineVariant
+			implicitHeight: 1
+		}
+	}
 }

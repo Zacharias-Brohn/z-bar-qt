@@ -16,6 +16,7 @@ python3.pkgs.buildPythonApplication {
   dependencies = with python3.pkgs; [
     materialyoucolor
     pillow
+    jinja2
     typer
   ];
 

@@ -1,420 +1,56 @@
 import Quickshell.Io
 
 JsonObject {
-	property list<var> week_0: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_1: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_2: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_3: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_4: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_5: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_6: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_7: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_8: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_9: [
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_10:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_11:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_12:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_13:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_14:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_15:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_16:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_17:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_18:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_19:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_20:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_21:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_22:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_23:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_24:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_25:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_26:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_27:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_28:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_29:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_30:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_31:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_32:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_33:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_34:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_35:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_36:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_37:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_38:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_39:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_40:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_41:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_42:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_43:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_44:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_45:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_46:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_47:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_48:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_49:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_50:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
-	property list<var> week_51:[
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-	]
+	property list<var> week_0: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_1: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_10: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_11: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_12: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_13: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_14: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_15: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_16: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_17: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_18: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_19: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_2: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_20: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_21: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_22: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_23: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_24: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_25: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_26: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_27: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_28: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_29: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_3: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_30: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_31: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_32: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_33: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_34: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_35: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_36: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_37: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_38: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_39: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_4: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_40: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_41: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_42: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_43: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_44: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_45: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_46: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_47: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_48: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_49: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_5: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_50: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_51: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_6: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_7: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_8: [0, 0, 0, 0, 0, 0,]
+	property list<var> week_9: [0, 0, 0, 0, 0, 0,]
 }

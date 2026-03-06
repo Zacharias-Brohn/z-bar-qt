@@ -1,12 +1,12 @@
 import QtQuick
-import qs.Modules
 
 Rectangle {
-    id: root
+	id: root
 
-    color: "transparent"
+	color: "transparent"
 
-    Behavior on color {
-        CAnim {}
-    }
+	Behavior on color {
+		CAnim {
+		}
+	}
 }

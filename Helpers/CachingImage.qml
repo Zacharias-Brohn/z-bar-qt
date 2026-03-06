@@ -4,25 +4,25 @@ import QtQuick
 import qs.Paths
 
 Image {
-    id: root
+	id: root
 
-    property alias path: manager.path
+	property alias path: manager.path
 
-    asynchronous: true
-    fillMode: Image.PreserveAspectCrop
+	asynchronous: true
+	fillMode: Image.PreserveAspectCrop
 
-    Connections {
-        target: QsWindow.window
+	Connections {
+		function onDevicePixelRatioChanged(): void {
+			manager.updateSource();
+		}
 
-        function onDevicePixelRatioChanged(): void {
-            manager.updateSource();
-        }
-    }
+		target: QsWindow.window
+	}
 
-    CachingImageManager {
-        id: manager
+	CachingImageManager {
+		id: manager
 
-        item: root
-        cacheDir: Qt.resolvedUrl(Paths.imagecache)
-    }
+		cacheDir: Qt.resolvedUrl(Paths.imagecache)
+		item: root
+	}
 }

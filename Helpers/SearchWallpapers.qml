@@ -9,41 +9,41 @@ import qs.Helpers
 import qs.Paths
 
 Searcher {
-    id: root
+	id: root
 
-    property bool showPreview: false
-    readonly property string current: showPreview ? previewPath : actualCurrent
-    property string previewPath
-    property string actualCurrent: WallpaperPath.currentWallpaperPath
+	property string actualCurrent: WallpaperPath.currentWallpaperPath
+	readonly property string current: showPreview ? previewPath : actualCurrent
+	property string previewPath
+	property bool showPreview: false
 
-    function setWallpaper(path: string): void {
-        actualCurrent = path;
-        WallpaperPath.currentWallpaperPath = path;
+	function preview(path: string): void {
+		previewPath = path;
+		showPreview = true;
+	}
+
+	function setWallpaper(path: string): void {
+		actualCurrent = path;
+		WallpaperPath.currentWallpaperPath = path;
 		Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/LockScreenBg.py")} --input_image=${root.actualCurrent} --output_path=${Paths.state}/lockscreen_bg.png`]);
-    }
+	}
 
-    function preview(path: string): void {
-        previewPath = path;
-        showPreview = true;
-    }
+	function stopPreview(): void {
+		showPreview = false;
+		Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/SchemeColorGen.py")} --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
+	}
 
-    function stopPreview(): void {
-        showPreview = false;
-        Quickshell.execDetached(["sh", "-c", `python3 ${Quickshell.shellPath("scripts/SchemeColorGen.py")} --path=${root.actualCurrent} --thumbnail=${Paths.cache}/imagecache/thumbnail.jpg --output=${Paths.state}/scheme.json --scheme=${Config.colors.schemeType}`]);
-    }
+	extraOpts: useFuzzy ? ({}) : ({
+			forward: false
+		})
+	key: "relativePath"
+	list: wallpapers.entries
+	useFuzzy: true
 
-    list: wallpapers.entries
-    key: "relativePath"
-    useFuzzy: true
-    extraOpts: useFuzzy ? ({}) : ({
-            forward: false
-        })
+	FileSystemModel {
+		id: wallpapers
 
-    FileSystemModel {
-        id: wallpapers
-
-        recursive: true
-        path: Config.general.wallpaperPath
-        filter: FileSystemModel.Images
-    }
+		filter: FileSystemModel.Images
+		path: Config.general.wallpaperPath
+		recursive: true
+	}
 }

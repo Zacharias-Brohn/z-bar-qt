@@ -9,142 +9,138 @@ import qs.Helpers
 import qs.Config
 
 Item {
-    id: root
+	id: root
 
-    required property Pam pam
-    readonly property alias placeholder: placeholder
-    property string buffer
+	property string buffer
+	required property Pam pam
+	readonly property alias placeholder: placeholder
 
-    Layout.fillWidth: true
-    Layout.fillHeight: true
+	Layout.fillHeight: true
+	Layout.fillWidth: true
+	clip: true
 
-    clip: true
+	Connections {
+		function onBufferChanged(): void {
+			if (root.pam.buffer.length > root.buffer.length) {
+				charList.bindImWidth();
+			} else if (root.pam.buffer.length === 0) {
+				charList.implicitWidth = charList.implicitWidth;
+				placeholder.animate = true;
+			}
 
-    Connections {
-        target: root.pam
+			root.buffer = root.pam.buffer;
+		}
 
-        function onBufferChanged(): void {
-            if (root.pam.buffer.length > root.buffer.length) {
-                charList.bindImWidth();
-            } else if (root.pam.buffer.length === 0) {
-                charList.implicitWidth = charList.implicitWidth;
-                placeholder.animate = true;
-            }
+		target: root.pam
+	}
 
-            root.buffer = root.pam.buffer;
-        }
-    }
+	CustomText {
+		id: placeholder
 
-    CustomText {
-        id: placeholder
+		anchors.centerIn: parent
+		animate: true
+		color: root.pam.passwd.active ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline
+		font.family: Appearance.font.family.mono
+		font.pointSize: Appearance.font.size.normal
+		opacity: root.buffer ? 0 : 1
+		text: {
+			if (root.pam.passwd.active)
+				return qsTr("Loading...");
+			if (root.pam.state === "max")
+				return qsTr("You have reached the maximum number of tries");
+			return qsTr("Enter your password");
+		}
 
-        anchors.centerIn: parent
+		Behavior on opacity {
+			Anim {
+			}
+		}
+	}
 
-        text: {
-            if (root.pam.passwd.active)
-                return qsTr("Loading...");
-            if (root.pam.state === "max")
-                return qsTr("You have reached the maximum number of tries");
-            return qsTr("Enter your password");
-        }
+	ListView {
+		id: charList
 
-        animate: true
-        color: root.pam.passwd.active ? DynamicColors.palette.m3secondary : DynamicColors.palette.m3outline
-        font.pointSize: Appearance.font.size.normal
-        font.family: Appearance.font.family.mono
+		readonly property int fullWidth: count * (implicitHeight + spacing) - spacing
 
-        opacity: root.buffer ? 0 : 1
+		function bindImWidth(): void {
+			imWidthBehavior.enabled = false;
+			implicitWidth = Qt.binding(() => fullWidth);
+			imWidthBehavior.enabled = true;
+		}
 
-        Behavior on opacity {
-            Anim {}
-        }
-    }
+		anchors.centerIn: parent
+		anchors.horizontalCenterOffset: implicitWidth > root.width ? -(implicitWidth - root.width) / 2 : 0
+		implicitHeight: Appearance.font.size.normal
+		implicitWidth: fullWidth
+		interactive: false
+		orientation: Qt.Horizontal
+		spacing: Appearance.spacing.small / 2
 
-    ListView {
-        id: charList
+		delegate: CustomRect {
+			id: ch
 
-        readonly property int fullWidth: count * (implicitHeight + spacing) - spacing
+			color: DynamicColors.palette.m3onSurface
+			implicitHeight: charList.implicitHeight
+			implicitWidth: implicitHeight
+			opacity: 0
+			radius: Appearance.rounding.small / 2
+			scale: 0
 
-        function bindImWidth(): void {
-            imWidthBehavior.enabled = false;
-            implicitWidth = Qt.binding(() => fullWidth);
-            imWidthBehavior.enabled = true;
-        }
+			Behavior on opacity {
+				Anim {
+				}
+			}
+			Behavior on scale {
+				Anim {
+					duration: Appearance.anim.durations.expressiveFastSpatial
+					easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+				}
+			}
 
-        anchors.centerIn: parent
-        anchors.horizontalCenterOffset: implicitWidth > root.width ? -(implicitWidth - root.width) / 2 : 0
+			Component.onCompleted: {
+				opacity = 1;
+				scale = 1;
+			}
+			ListView.onRemove: removeAnim.start()
 
-        implicitWidth: fullWidth
-        implicitHeight: Appearance.font.size.normal
+			SequentialAnimation {
+				id: removeAnim
 
-        orientation: Qt.Horizontal
-        spacing: Appearance.spacing.small / 2
-        interactive: false
+				PropertyAction {
+					property: "ListView.delayRemove"
+					target: ch
+					value: true
+				}
 
-        model: ScriptModel {
-            values: root.buffer.split("")
-        }
+				ParallelAnimation {
+					Anim {
+						property: "opacity"
+						target: ch
+						to: 0
+					}
 
-        delegate: CustomRect {
-            id: ch
+					Anim {
+						property: "scale"
+						target: ch
+						to: 0.5
+					}
+				}
 
-            implicitWidth: implicitHeight
-            implicitHeight: charList.implicitHeight
+				PropertyAction {
+					property: "ListView.delayRemove"
+					target: ch
+					value: false
+				}
+			}
+		}
+		Behavior on implicitWidth {
+			id: imWidthBehavior
 
-            color: DynamicColors.palette.m3onSurface
-            radius: Appearance.rounding.small / 2
-
-            opacity: 0
-            scale: 0
-            Component.onCompleted: {
-                opacity = 1;
-                scale = 1;
-            }
-            ListView.onRemove: removeAnim.start()
-
-            SequentialAnimation {
-                id: removeAnim
-
-                PropertyAction {
-                    target: ch
-                    property: "ListView.delayRemove"
-                    value: true
-                }
-                ParallelAnimation {
-                    Anim {
-                        target: ch
-                        property: "opacity"
-                        to: 0
-                    }
-                    Anim {
-                        target: ch
-                        property: "scale"
-                        to: 0.5
-                    }
-                }
-                PropertyAction {
-                    target: ch
-                    property: "ListView.delayRemove"
-                    value: false
-                }
-            }
-
-            Behavior on opacity {
-                Anim {}
-            }
-
-            Behavior on scale {
-                Anim {
-                    duration: Appearance.anim.durations.expressiveFastSpatial
-                    easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
-                }
-            }
-        }
-
-        Behavior on implicitWidth {
-            id: imWidthBehavior
-
-            Anim {}
-        }
-    }
+			Anim {
+			}
+		}
+		model: ScriptModel {
+			values: root.buffer.split("")
+		}
+	}
 }

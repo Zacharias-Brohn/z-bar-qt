@@ -1,13 +1,13 @@
 import Quickshell.Widgets
 import QtQuick
-import qs.Modules
 
 ClippingRectangle {
-    id: root
+	id: root
 
-    color: "transparent"
+	color: "transparent"
 
-    Behavior on color {
-        CAnim {}
-    }
+	Behavior on color {
+		CAnim {
+		}
+	}
 }

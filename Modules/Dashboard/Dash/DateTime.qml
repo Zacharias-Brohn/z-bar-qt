@@ -7,44 +7,44 @@ import qs.Config
 import qs.Helpers
 
 Item {
-    id: root
+	id: root
 
-    anchors.top: parent.top
-    anchors.bottom: parent.bottom
-    implicitWidth: 110
+	anchors.bottom: parent.bottom
+	anchors.top: parent.top
+	implicitWidth: 110
 
-    ColumnLayout {
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        spacing: 0
+	ColumnLayout {
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
+		spacing: 0
 
-        CustomText {
-            Layout.bottomMargin: -(font.pointSize * 0.4)
-            Layout.alignment: Qt.AlignHCenter
-            text: Time.hourStr
-            color: DynamicColors.palette.m3secondary
-            font.pointSize: 18
-            font.family: "Rubik"
-            font.weight: 600
-        }
+		CustomText {
+			Layout.alignment: Qt.AlignHCenter
+			Layout.bottomMargin: -(font.pointSize * 0.4)
+			color: DynamicColors.palette.m3secondary
+			font.family: "Rubik"
+			font.pointSize: 18
+			font.weight: 600
+			text: Time.hourStr
+		}
 
-        CustomText {
-            Layout.alignment: Qt.AlignHCenter
-            text: "•••"
-            color: DynamicColors.palette.m3primary
-            font.pointSize: 18 * 0.9
-            font.family: "Rubik"
-        }
+		CustomText {
+			Layout.alignment: Qt.AlignHCenter
+			color: DynamicColors.palette.m3primary
+			font.family: "Rubik"
+			font.pointSize: 18 * 0.9
+			text: "•••"
+		}
 
-        CustomText {
-            Layout.topMargin: -(font.pointSize * 0.4)
-            Layout.alignment: Qt.AlignHCenter
-            text: Time.minuteStr
-            color: DynamicColors.palette.m3secondary
-            font.pointSize: 18
-            font.family: "Rubik"
-            font.weight: 600
-        }
-    }
+		CustomText {
+			Layout.alignment: Qt.AlignHCenter
+			Layout.topMargin: -(font.pointSize * 0.4)
+			color: DynamicColors.palette.m3secondary
+			font.family: "Rubik"
+			font.pointSize: 18
+			font.weight: 600
+			text: Time.minuteStr
+		}
+	}
 }

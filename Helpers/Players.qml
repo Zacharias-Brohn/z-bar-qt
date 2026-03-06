@@ -9,115 +9,119 @@ import qs.Config
 import qs.Components
 
 Singleton {
-    id: root
+	id: root
 
-    readonly property list<MprisPlayer> list: Mpris.players.values
-    readonly property MprisPlayer active: props.manualActive ?? list.find(p => getIdentity(p) === Config.services.defaultPlayer) ?? list[0] ?? null
-    property alias manualActive: props.manualActive
+	readonly property MprisPlayer active: props.manualActive ?? list.find(p => getIdentity(p) === Config.services.defaultPlayer) ?? list[0] ?? null
+	readonly property list<MprisPlayer> list: Mpris.players.values
+	property alias manualActive: props.manualActive
 
-    function getIdentity(player: MprisPlayer): string {
-        const alias = Config.services.playerAliases.find(a => a.from === player.identity);
-        return alias?.to ?? player.identity;
-    }
+	function getIdentity(player: MprisPlayer): string {
+		const alias = Config.services.playerAliases.find(a => a.from === player.identity);
+		return alias?.to ?? player.identity;
+	}
 
-    Connections {
-        target: active
+	Connections {
+		function onPostTrackChanged() {
+			if (!Config.utilities.toasts.nowPlaying) {
+				return;
+			}
+		}
 
-        function onPostTrackChanged() {
-            if (!Config.utilities.toasts.nowPlaying) {
-                return;
-            }
-        }
-    }
+		target: active
+	}
 
-    PersistentProperties {
-        id: props
+	PersistentProperties {
+		id: props
 
-        property MprisPlayer manualActive
+		property MprisPlayer manualActive
 
-        reloadableId: "players"
-    }
+		reloadableId: "players"
+	}
 
-    CustomShortcut {
-        name: "mediaToggle"
-        description: "Toggle media playback"
-        onPressed: {
-            const active = root.active;
-            if (active && active.canTogglePlaying)
-                active.togglePlaying();
-        }
-    }
+	CustomShortcut {
+		description: "Toggle media playback"
+		name: "mediaToggle"
 
-    CustomShortcut {
-        name: "mediaPrev"
-        description: "Previous track"
-        onPressed: {
-            const active = root.active;
-            if (active && active.canGoPrevious)
-                active.previous();
-        }
-    }
+		onPressed: {
+			const active = root.active;
+			if (active && active.canTogglePlaying)
+				active.togglePlaying();
+		}
+	}
 
-    CustomShortcut {
-        name: "mediaNext"
-        description: "Next track"
-        onPressed: {
-            const active = root.active;
-            if (active && active.canGoNext)
-                active.next();
-        }
-    }
+	CustomShortcut {
+		description: "Previous track"
+		name: "mediaPrev"
 
-    CustomShortcut {
-        name: "mediaStop"
-        description: "Stop media playback"
-        onPressed: root.active?.stop()
-    }
+		onPressed: {
+			const active = root.active;
+			if (active && active.canGoPrevious)
+				active.previous();
+		}
+	}
 
-    IpcHandler {
-        target: "mpris"
+	CustomShortcut {
+		description: "Next track"
+		name: "mediaNext"
 
-        function getActive(prop: string): string {
-            const active = root.active;
-            return active ? active[prop] ?? "Invalid property" : "No active player";
-        }
+		onPressed: {
+			const active = root.active;
+			if (active && active.canGoNext)
+				active.next();
+		}
+	}
 
-        function list(): string {
-            return root.list.map(p => root.getIdentity(p)).join("\n");
-        }
+	CustomShortcut {
+		description: "Stop media playback"
+		name: "mediaStop"
 
-        function play(): void {
-            const active = root.active;
-            if (active?.canPlay)
-                active.play();
-        }
+		onPressed: root.active?.stop()
+	}
 
-        function pause(): void {
-            const active = root.active;
-            if (active?.canPause)
-                active.pause();
-        }
+	IpcHandler {
+		function getActive(prop: string): string {
+			const active = root.active;
+			return active ? active[prop] ?? "Invalid property" : "No active player";
+		}
 
-        function playPause(): void {
-            const active = root.active;
-            if (active?.canTogglePlaying)
-                active.togglePlaying();
-        }
+		function list(): string {
+			return root.list.map(p => root.getIdentity(p)).join("\n");
+		}
 
-        function previous(): void {
-            const active = root.active;
-            if (active?.canGoPrevious)
-                active.previous();
-        }
+		function next(): void {
+			const active = root.active;
+			if (active?.canGoNext)
+				active.next();
+		}
 
-        function next(): void {
-            const active = root.active;
-            if (active?.canGoNext)
-                active.next();
-        }
+		function pause(): void {
+			const active = root.active;
+			if (active?.canPause)
+				active.pause();
+		}
 
-        function stop(): void {
-            root.active?.stop();
-        }
-    }
+		function play(): void {
+			const active = root.active;
+			if (active?.canPlay)
+				active.play();
+		}
+
+		function playPause(): void {
+			const active = root.active;
+			if (active?.canTogglePlaying)
+				active.togglePlaying();
+		}
+
+		function previous(): void {
+			const active = root.active;
+			if (active?.canGoPrevious)
+				active.previous();
+		}
+
+		function stop(): void {
+			root.active?.stop();
+		}
+
+		target: "mpris"
+	}
 }

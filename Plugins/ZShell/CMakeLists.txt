@@ -43,11 +43,13 @@ qml_module(ZShell
         imageanalyser.hpp imageanalyser.cpp
 		requests.hpp requests.cpp
 		toaster.hpp toaster.cpp
+		qalculator.hpp qalculator.cpp
     LIBRARIES
         Qt::Gui
         Qt::Quick
         Qt::Concurrent
         Qt::Sql
+		PkgConfig::Qalculate
 )
 
 add_subdirectory(Models)

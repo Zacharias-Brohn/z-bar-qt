@@ -1,197 +1,218 @@
 pragma ComponentBehavior: Bound
 
-import Quickshell
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
 import QtQuick.Effects
 import qs.Config
 import qs.Helpers
-import qs.Effects
 import qs.Components
-import qs.Modules as Modules
 
 WlSessionLockSurface {
-    id: root
+	id: root
 
-    required property WlSessionLock lock
-    required property Pam pam
+	required property WlSessionLock lock
+	required property Pam pam
+	readonly property alias unlocking: unlockAnim.running
 
-    readonly property alias unlocking: unlockAnim.running
+	color: "transparent"
 
-    color: "transparent"
+	Connections {
+		function onUnlock(): void {
+			unlockAnim.start();
+		}
 
-    Connections {
-        target: root.lock
+		target: root.lock
+	}
 
-        function onUnlock(): void {
-            unlockAnim.start();
-        }
-    }
+	SequentialAnimation {
+		id: unlockAnim
 
-    SequentialAnimation {
-        id: unlockAnim
+		ParallelAnimation {
+			Anim {
+				duration: Appearance.anim.durations.expressiveDefaultSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+				properties: "implicitWidth,implicitHeight"
+				target: lockContent
+				to: lockContent.size
+			}
 
-        ParallelAnimation {
-            Modules.Anim {
-                target: lockContent
-                properties: "implicitWidth,implicitHeight"
-                to: lockContent.size
-                duration: Appearance.anim.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-            }
-            Modules.Anim {
-                target: lockBg
-                property: "radius"
-                to: lockContent.radius
-            }
-            Modules.Anim {
-                target: content
-                property: "scale"
-                to: 0
-                duration: Appearance.anim.durations.expressiveDefaultSpatial
-                easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-            }
-            Modules.Anim {
-                target: content
-                property: "opacity"
-                to: 0
-                duration: Appearance.anim.durations.small
-            }
-            Modules.Anim {
-                target: lockIcon
-                property: "opacity"
-                to: 1
-                duration: Appearance.anim.durations.large
-            }
-            SequentialAnimation {
-                PauseAnimation {
-                    duration: Appearance.anim.durations.small
-                }
-                Modules.Anim {
-                    target: lockContent
-                    property: "opacity"
-                    to: 0
-                }
-            }
-        }
-        PropertyAction {
-            target: root.lock
-            property: "locked"
-            value: false
-        }
-    }
+			Anim {
+				property: "radius"
+				target: lockBg
+				to: lockContent.radius
+			}
 
-    ParallelAnimation {
-        id: initAnim
+			Anim {
+				duration: Appearance.anim.durations.expressiveDefaultSpatial
+				easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+				property: "scale"
+				target: content
+				to: 0
+			}
 
-        running: true
+			Anim {
+				duration: Appearance.anim.durations.small
+				property: "opacity"
+				target: content
+				to: 0
+			}
 
-        SequentialAnimation {
-            ParallelAnimation {
-                Modules.Anim {
-                    target: lockContent
-                    property: "scale"
-                    to: 1
-                    duration: Appearance.anim.durations.expressiveFastSpatial
-                    easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
-                }
-            }
-            ParallelAnimation {
-                Modules.Anim {
-                    target: lockIcon
-                    property: "opacity"
-                    to: 0
-                }
-                Modules.Anim {
-                    target: content
-                    property: "opacity"
-                    to: 1
-                }
-                Modules.Anim {
-                    target: content
-                    property: "scale"
-                    to: 1
-                    duration: Appearance.anim.durations.expressiveDefaultSpatial
-                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-                }
-                Modules.Anim {
-                    target: lockBg
-                    property: "radius"
-                    to: Appearance.rounding.large * 1.5
-                }
-                Modules.Anim {
-                    target: lockContent
-                    property: "implicitWidth"
-                    to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio
-                    duration: Appearance.anim.durations.expressiveDefaultSpatial
-                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-                }
-                Modules.Anim {
-                    target: lockContent
-                    property: "implicitHeight"
-                    to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult
-                    duration: Appearance.anim.durations.expressiveDefaultSpatial
-                    easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
-                }
-            }
-        }
-    }
+			Anim {
+				duration: Appearance.anim.durations.large
+				property: "opacity"
+				target: lockIcon
+				to: 1
+			}
+
+			SequentialAnimation {
+				PauseAnimation {
+					duration: Appearance.anim.durations.small
+				}
+
+				Anim {
+					property: "opacity"
+					target: lockContent
+					to: 0
+				}
+			}
+		}
+
+		PropertyAction {
+			property: "locked"
+			target: root.lock
+			value: false
+		}
+	}
+
+	ParallelAnimation {
+		id: initAnim
+
+		running: true
+
+		SequentialAnimation {
+			ParallelAnimation {
+				Anim {
+					duration: Appearance.anim.durations.expressiveFastSpatial
+					easing.bezierCurve: Appearance.anim.curves.expressiveFastSpatial
+					property: "scale"
+					target: lockContent
+					to: 1
+				}
+			}
+
+			ParallelAnimation {
+				Anim {
+					property: "opacity"
+					target: lockIcon
+					to: 0
+				}
+
+				Anim {
+					property: "opacity"
+					target: content
+					to: 1
+				}
+
+				Anim {
+					duration: Appearance.anim.durations.expressiveDefaultSpatial
+					easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					property: "scale"
+					target: content
+					to: 1
+				}
+
+				Anim {
+					property: "radius"
+					target: lockBg
+					to: Appearance.rounding.large * 1.5
+				}
+
+				Anim {
+					duration: Appearance.anim.durations.expressiveDefaultSpatial
+					easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					property: "implicitWidth"
+					target: lockContent
+					to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio
+				}
+
+				Anim {
+					duration: Appearance.anim.durations.expressiveDefaultSpatial
+					easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+					property: "implicitHeight"
+					target: lockContent
+					to: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult
+				}
+			}
+		}
+	}
 
 	Image {
 		id: background
+
 		anchors.fill: parent
 		source: WallpaperPath.lockscreenBg
 	}
 
-    Item {
-        id: lockContent
+	Item {
+		id: lockContent
 
-        readonly property int size: lockIcon.implicitHeight + Appearance.padding.large * 4
-        readonly property int radius: size / 4 * Appearance.rounding.scale
+		readonly property int radius: size / 4 * Appearance.rounding.scale
+		readonly property int size: lockIcon.implicitHeight + Appearance.padding.large * 4
 
-        anchors.centerIn: parent
-        implicitWidth: size
-        implicitHeight: size
+		anchors.centerIn: parent
+		implicitHeight: size
+		implicitWidth: size
+		scale: 0
 
-        scale: 0
+		// MultiEffect {
+		// 	anchors.fill: lockBg
+		// 	autoPaddingEnabled: false
+		// 	blur: 1
+		// 	blurEnabled: true
+		// 	blurMax: 64
+		// 	maskEnabled: true
+		// 	maskSource: lockBg
+		//
+		// 	source: ShaderEffectSource {
+		// 		sourceItem: background
+		// 		sourceRect: Qt.rect(lockBg.x, lockBg.y, lockBg.width, lockBg, height)
+		// 	}
+		// }
 
-        CustomRect {
-            id: lockBg
+		CustomRect {
+			id: lockBg
 
-            anchors.fill: parent
-            color: DynamicColors.palette.m3surface
+			anchors.fill: parent
+			color: DynamicColors.palette.m3surface
+			layer.enabled: true
+			opacity: DynamicColors.transparency.enabled ? DynamicColors.transparency.base : 1
 			radius: lockContent.radius
-            opacity: DynamicColors.transparency.enabled ? DynamicColors.transparency.base : 1
 
-            layer.enabled: true
-            layer.effect: MultiEffect {
-                shadowEnabled: true
-                blurMax: 15
-                shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 0.7)
-            }
-        }
+			layer.effect: MultiEffect {
+				blurMax: 15
+				shadowColor: Qt.alpha(DynamicColors.palette.m3shadow, 0.7)
+				shadowEnabled: true
+			}
+		}
 
-        MaterialIcon {
-            id: lockIcon
+		MaterialIcon {
+			id: lockIcon
 
-            anchors.centerIn: parent
-            text: "lock"
-            font.pointSize: Appearance.font.size.extraLarge * 4
-            font.bold: true
-        }
+			anchors.centerIn: parent
+			font.bold: true
+			font.pointSize: Appearance.font.size.extraLarge * 4
+			text: "lock"
+		}
 
-        Content {
-            id: content
+		Content {
+			id: content
 
-            anchors.centerIn: parent
-            width: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio - Appearance.padding.large * 2
-            height: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult - Appearance.padding.large * 2
-
-            lock: root
-            opacity: 0
-            scale: 0
-        }
-    }
+			anchors.centerIn: parent
+			height: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult - Appearance.padding.large * 2
+			lock: root
+			opacity: 0
+			scale: 0
+			width: (root.screen?.height ?? 0) * Config.lock.sizes.heightMult * Config.lock.sizes.ratio - Appearance.padding.large * 2
+		}
+	}
 }

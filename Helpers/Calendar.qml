@@ -10,6 +10,53 @@ Singleton {
 	property int displayYear: new Date().getFullYear()
 	readonly property int weekStartDay: 1 // 0 = Sunday, 1 = Monday
 
+	function getISOWeekNumber(date: var): int {
+		const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+		const dayNum = d.getUTCDay() || 7;
+		d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+		const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+		return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+	}
+
+	function getWeekNumbers(month: int, year: int): var {
+		const days = getWeeksForMonth(month, year);
+		const weekNumbers = [];
+		let lastWeekNumber = -1;
+
+		for (let i = 0; i < days.length; i++) {
+			// Only add week numbers for days that belong to the current month
+			if (days[i].isCurrentMonth) {
+				const dayDate = new Date(days[i].year, days[i].month, days[i].day);
+				const weekNumber = getISOWeekNumber(dayDate);
+
+				// Only push if this is a new week
+				if (weekNumber !== lastWeekNumber) {
+					weekNumbers.push(weekNumber);
+					lastWeekNumber = weekNumber;
+				}
+			}
+		}
+
+		return weekNumbers;
+	}
+
+	function getWeekStartIndex(month: int, year: int): int {
+		const today = new Date();
+		if (today.getMonth() !== month || today.getFullYear() !== year) {
+			return 0;
+		}
+
+		const days = getWeeksForMonth(month, year);
+		for (let i = 0; i < days.length; i++) {
+			if (days[i].isToday) {
+				// Return the start index of the week containing today
+				return Math.floor(i / 7) * 7;
+			}
+		}
+
+		return 0;
+	}
+
 	function getWeeksForMonth(month: int, year: int): var {
 		const firstDayOfMonth = new Date(year, month, 1);
 		const lastDayOfMonth = new Date(year, month + 1, 0);
@@ -43,57 +90,8 @@ Singleton {
 		return days;
 	}
 
-	function getWeekNumbers(month: int, year: int): var {
-		const days = getWeeksForMonth(month, year);
-		const weekNumbers = [];
-		let lastWeekNumber = -1;
-
-		for (let i = 0; i < days.length; i++) {
-			// Only add week numbers for days that belong to the current month
-			if (days[i].isCurrentMonth) {
-				const dayDate = new Date(days[i].year, days[i].month, days[i].day);
-				const weekNumber = getISOWeekNumber(dayDate);
-
-				// Only push if this is a new week
-				if (weekNumber !== lastWeekNumber) {
-					weekNumbers.push(weekNumber);
-					lastWeekNumber = weekNumber;
-				}
-			}
-		}
-
-		return weekNumbers;
-	}
-
-	function getISOWeekNumber(date: var): int {
-		const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-		const dayNum = d.getUTCDay() || 7;
-		d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-		const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-		return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-	}
-
 	function isDateToday(date: var): bool {
 		const today = new Date();
-		return date.getDate() === today.getDate() &&
-			   date.getMonth() === today.getMonth() &&
-			   date.getFullYear() === today.getFullYear();
-	}
-
-	function getWeekStartIndex(month: int, year: int): int {
-		const today = new Date();
-		if (today.getMonth() !== month || today.getFullYear() !== year) {
-			return 0;
-		}
-
-		const days = getWeeksForMonth(month, year);
-		for (let i = 0; i < days.length; i++) {
-			if (days[i].isToday) {
-				// Return the start index of the week containing today
-				return Math.floor(i / 7) * 7;
-			}
-		}
-
-		return 0;
+		return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
 	}
 }
