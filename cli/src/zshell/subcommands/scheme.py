@@ -28,7 +28,7 @@ def generate(
     preset: Optional[str] = typer.Option(
         None, help="Name of a premade scheme in this format: <preset_name>:<preset_flavor>"),
     mode: Optional[str] = typer.Option(
-        "dark", help="Mode of the preset scheme (dark or light)."),
+        None, help="Mode of the preset scheme (dark or light)."),
 ):
 
     if preset is not None and image_path is not None:
@@ -69,7 +69,7 @@ def generate(
     WALL_PATH = Path()
     CONFIG = Path(HOME + "/.config/zshell/config.json")
 
-    if not mode:
+    if mode is None:
         with CONFIG.open() as f:
             mode = json.load(f)["general"]["color"]["mode"]
 
