@@ -490,8 +490,8 @@ def generate(
         colors = generate_color_scheme(seed, effective_mode, scheme_class)
 
         if smart and not preset:
-            apply_gtk_mode(mode)
-            apply_qt_mode(mode, HOME)
+            apply_gtk_mode(effective_mode)
+            apply_qt_mode(effective_mode, HOME)
 
         output_dict = {
             "name": name,
