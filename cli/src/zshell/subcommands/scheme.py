@@ -2,6 +2,8 @@ import typer
 import json
 import shutil
 import os
+import re
+import subprocess
 
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, Undefined
 from typing import Any, Optional, Tuple
@@ -240,6 +242,53 @@ def generate(
 
         return is_dark
 
+    def apply_gtk_mode(mode: str) -> None:
+        mode = mode.lower()
+        preference = "prefer-dark" if mode == "dark" else "prefer-light"
+
+        try:
+            subprocess.run(
+                [
+                    "gsettings",
+                    "set",
+                    "org.gnome.desktop.interface",
+                    "color-scheme",
+                    preference,
+                ],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+        except FileNotFoundError:
+            pass
+
+    def apply_qt_mode(mode: str, home: str) -> None:
+        mode = mode.lower()
+        qt_conf = Path(home) / ".config/qt6ct/qt6ct.conf"
+
+        if not qt_conf.exists():
+            return
+
+        try:
+            text = qt_conf.read_text(encoding="utf-8")
+        except OSError:
+            return
+
+        target = "Dark.colors" if mode == "dark" else "Light.colors"
+
+        new_text, count = re.subn(
+            r"^(color_scheme_path=.*?)(?:Light|Dark)\.colors\s*$",
+            rf"\1{target}",
+            text,
+            flags=re.MULTILINE,
+        )
+
+        if count > 0 and new_text != text:
+            try:
+                qt_conf.write_text(new_text, encoding="utf-8")
+            except OSError:
+                pass
+
     def build_template_context(
         *,
         colors: dict[str, str],
@@ -439,6 +488,10 @@ def generate(
                 effective_mode = config_mode
 
         colors = generate_color_scheme(seed, effective_mode, scheme_class)
+
+        if smart and not preset:
+            apply_gtk_mode(mode)
+            apply_qt_mode(mode, HOME)
 
         output_dict = {
             "name": name,
