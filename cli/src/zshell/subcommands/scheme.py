@@ -48,8 +48,6 @@ def generate(
         raise typer.BadParameter(
             "Use either --image-path or --preset, not both.")
 
-    cli_mode = mode is not None
-
     def get_scheme_class(scheme_name: str):
         match scheme_name:
             case "fruit-salad":
@@ -238,7 +236,7 @@ def generate(
         with Image.open(image_path) as img:
             img.thumbnail((1, 1), Image.LANCZOS)
             hct = Hct.from_int(argb_from_rgb(*img.getpixel((0, 0))))
-            is_dark = "light" if hct.tone > 60 else "dark"
+            is_dark = "light" if hct.tone > 50 else "dark"
 
         return is_dark
 
