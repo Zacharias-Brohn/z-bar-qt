@@ -23,6 +23,7 @@ JsonObject {
 		property int scheduleDarkEnd: 0
 		property int scheduleDarkStart: 0
 		property bool schemeGeneration: true
+		property bool smart: false
 		property bool wallust: false
 	}
 	component Idle: JsonObject {
