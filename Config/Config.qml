@@ -169,6 +169,7 @@ Singleton {
 			color: {
 				wallust: general.color.wallust,
 				mode: general.color.mode,
+				smart: general.color.smart,
 				schemeGeneration: general.color.schemeGeneration,
 				scheduleDarkStart: general.color.scheduleDarkStart,
 				scheduleDarkEnd: general.color.scheduleDarkEnd,

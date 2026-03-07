@@ -12,6 +12,7 @@ from materialyoucolor.quantize import QuantizeCelebi
 from materialyoucolor.score.score import Score
 from materialyoucolor.dynamiccolor.material_dynamic_colors import MaterialDynamicColors
 from materialyoucolor.hct.hct import Hct
+from materialyoucolor.utils.color_utils import argb_from_rgb
 from materialyoucolor.utils.math_utils import difference_degrees, rotation_direction, sanitize_degrees_double
 
 app = typer.Typer()
@@ -47,35 +48,40 @@ def generate(
         raise typer.BadParameter(
             "Use either --image-path or --preset, not both.")
 
-    if scheme is None:
-        with CONFIG.open() as f:
-            scheme = json.load(f)["colors"]["schemeType"]
+    cli_mode = mode is not None
 
-    match scheme:
-        case "fruit-salad":
-            from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
-        case 'expressive':
-            from materialyoucolor.scheme.scheme_expressive import SchemeExpressive as Scheme
-        case 'monochrome':
-            from materialyoucolor.scheme.scheme_monochrome import SchemeMonochrome as Scheme
-        case 'rainbow':
-            from materialyoucolor.scheme.scheme_rainbow import SchemeRainbow as Scheme
-        case 'tonal-spot':
-            from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot as Scheme
-        case 'neutral':
-            from materialyoucolor.scheme.scheme_neutral import SchemeNeutral as Scheme
-        case 'fidelity':
-            from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity as Scheme
-        case 'content':
-            from materialyoucolor.scheme.scheme_content import SchemeContent as Scheme
-        case 'vibrant':
-            from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant as Scheme
-        case _:
-            from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
-
-    if mode is None:
-        with CONFIG.open() as f:
-            mode = json.load(f)["general"]["color"]["mode"]
+    def get_scheme_class(scheme_name: str):
+        match scheme_name:
+            case "fruit-salad":
+                from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad
+                return SchemeFruitSalad
+            case "expressive":
+                from materialyoucolor.scheme.scheme_expressive import SchemeExpressive
+                return SchemeExpressive
+            case "monochrome":
+                from materialyoucolor.scheme.scheme_monochrome import SchemeMonochrome
+                return SchemeMonochrome
+            case "rainbow":
+                from materialyoucolor.scheme.scheme_rainbow import SchemeRainbow
+                return SchemeRainbow
+            case "tonal-spot":
+                from materialyoucolor.scheme.scheme_tonal_spot import SchemeTonalSpot
+                return SchemeTonalSpot
+            case "neutral":
+                from materialyoucolor.scheme.scheme_neutral import SchemeNeutral
+                return SchemeNeutral
+            case "fidelity":
+                from materialyoucolor.scheme.scheme_fidelity import SchemeFidelity
+                return SchemeFidelity
+            case "content":
+                from materialyoucolor.scheme.scheme_content import SchemeContent
+                return SchemeContent
+            case "vibrant":
+                from materialyoucolor.scheme.scheme_vibrant import SchemeVibrant
+                return SchemeVibrant
+            case _:
+                from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad
+                return SchemeFruitSalad
 
     def hex_to_hct(hex_color: str) -> Hct:
         s = hex_color.strip()
@@ -226,6 +232,16 @@ def generate(
             except (PermissionError, OSError, BlockingIOError):
                 pass
 
+    def smart_mode(image_path: Path) -> str:
+        is_dark = ""
+
+        with Image.open(image_path) as img:
+            img.thumbnail((1, 1), Image.LANCZOS)
+            hct = Hct.from_int(argb_from_rgb(*img.getpixel((0, 0))))
+            is_dark = "light" if hct.tone > 60 else "dark"
+
+        return is_dark
+
     def build_template_context(
         *,
         colors: dict[str, str],
@@ -375,11 +391,11 @@ def generate(
             raise typer.BadParameter(
                 f"Preset '{name}' not found. Available presets: {', '.join(PRESETS.keys())}")
 
-    def generate_color_scheme(seed: Hct, mode: str) -> dict[str, str]:
+    def generate_color_scheme(seed: Hct, mode: str, scheme_class) -> dict[str, str]:
 
         is_dark = mode.lower() == "dark"
 
-        scheme = Scheme(
+        scheme = scheme_class(
             seed,
             is_dark,
             0.0
@@ -398,36 +414,38 @@ def generate(
         return "#{:06X}".format(argb_int & 0xFFFFFF)
 
     try:
+        with CONFIG.open() as f:
+            config = json.load(f)
+
+        scheme = scheme or config["colors"]["schemeType"]
+        config_mode = config["general"]["color"]["mode"]
+        smart = bool(config["general"]["color"].get("smart", False))
+        scheme_class = get_scheme_class(scheme)
+
         if preset:
             seed = seed_from_preset(preset)
-            colors = generate_color_scheme(seed, mode)
+            effective_mode = mode or config_mode
             name, flavor = preset.split(":")
-        elif image_path:
+        else:
+            image_path = image_path or Path(WALL_PATH)
             generate_thumbnail(image_path, str(THUMB_PATH))
             seed = seed_from_image(THUMB_PATH)
-            colors = generate_color_scheme(seed, mode)
             name = "dynamic"
             flavor = "default"
-        elif mode:
-            generate_thumbnail(WALL_PATH, str(THUMB_PATH))
-            seed = seed_from_image(THUMB_PATH)
-            colors = generate_color_scheme(seed, mode)
-            name = "dynamic"
-            flavor = "default"
-        elif scheme:
-            with OUTPUT.open() as f:
-                js = json.load(f)
-                seed = Hct.from_int(js["seed"])
-                mode = str(js["mode"])
 
-            colors = generate_color_scheme(seed, mode)
-            name = "dynamic"
-            flavor = "default"
+            if smart:
+                effective_mode = smart_mode(THUMB_PATH)
+            elif mode is not None:
+                effective_mode = mode
+            else:
+                effective_mode = config_mode
+
+        colors = generate_color_scheme(seed, effective_mode, scheme_class)
 
         output_dict = {
             "name": name,
             "flavor": flavor,
-            "mode": mode,
+            "mode": effective_mode,
             "variant": scheme,
             "colors": colors,
             "seed": seed.to_int()
@@ -438,7 +456,7 @@ def generate(
             ctx = build_template_context(
                 colors=colors,
                 seed=seed,
-                mode=mode,
+                mode=effective_mode,
                 wallpaper_path=wp,
                 name=name,
                 flavor=flavor,
