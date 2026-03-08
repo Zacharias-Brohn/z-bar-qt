@@ -33,7 +33,7 @@ Singleton {
 	}
 
 	function applyLightMode() {
-		if (Config.general.color.neovimColors) {
+		if (Config.general.color.schemeGeneration) {
 			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--image-path", `${WallpaperPath.currentWallpaperPath}`, "--thumbnail-path", `${Paths.cache}/imagecache/thumbnail.jpg`, "--output", `${Paths.state}/scheme.json`, "--scheme", `${Config.colors.schemeType}`, "--mode", "light"]);
 		} else {
 			Quickshell.execDetached(["zshell-cli", "scheme", "generate", "--preset", `${DynamicColors.scheme}:${DynamicColors.flavour}`, "--output", `${Paths.state}/scheme.json`, "--mode", "light"]);

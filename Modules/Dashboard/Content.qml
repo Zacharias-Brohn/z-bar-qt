@@ -40,7 +40,7 @@ Item {
 		anchors.right: parent.right
 		anchors.top: parent.top
 		color: "transparent"
-		radius: 6
+		radius: Appearance.rounding.normal - anchors.margins
 
 		Item {
 			id: view
