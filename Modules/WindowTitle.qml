@@ -19,7 +19,6 @@ Item {
 		}, 0);
 		return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
 	}
-	required property Brightness.Monitor monitor
 
 	clip: true
 	implicitHeight: current.implicitHeight

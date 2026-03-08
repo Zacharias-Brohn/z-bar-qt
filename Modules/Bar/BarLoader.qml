@@ -166,7 +166,6 @@ RowLayout {
 				delegate: WrappedLoader {
 					sourceComponent: WindowTitle {
 						bar: root
-						monitor: Brightness.getMonitorForScreen(root.screen)
 					}
 				}
 			}
