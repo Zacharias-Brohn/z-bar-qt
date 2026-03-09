@@ -10,7 +10,6 @@ import qs.Config
 Item {
 	id: root
 
-	required property PanelWindow bar
 	readonly property alias items: repeater
 	required property RowLayout loader
 	required property Wrapper popouts
@@ -45,7 +44,6 @@ Item {
 					required property int index
 					required property SystemTrayItem modelData
 
-					bar: root.bar
 					implicitHeight: 34
 					implicitWidth: 34
 					ind: index

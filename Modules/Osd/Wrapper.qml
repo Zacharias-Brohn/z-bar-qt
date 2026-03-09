@@ -113,22 +113,26 @@ Item {
 		}
 	}
 
-	Loader {
-		id: content
+	CustomClippingRect {
+		anchors.fill: parent
 
-		anchors.left: parent.left
-		anchors.verticalCenter: parent.verticalCenter
+		Loader {
+			id: content
 
-		sourceComponent: Content {
-			brightness: root.brightness
-			monitor: root.monitor
-			muted: root.muted
-			sourceMuted: root.sourceMuted
-			sourceVolume: root.sourceVolume
-			visibilities: root.visibilities
-			volume: root.volume
+			anchors.left: parent.left
+			anchors.verticalCenter: parent.verticalCenter
+
+			sourceComponent: Content {
+				brightness: root.brightness
+				monitor: root.monitor
+				muted: root.muted
+				sourceMuted: root.sourceMuted
+				sourceVolume: root.sourceVolume
+				visibilities: root.visibilities
+				volume: root.volume
+			}
+
+			Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
 		}
-
-		Component.onCompleted: active = Qt.binding(() => root.shouldBeActive || root.visible)
 	}
 }

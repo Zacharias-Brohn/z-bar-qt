@@ -20,15 +20,15 @@ CustomMouseArea {
 	required property PersistentProperties visibilities
 
 	function inBottomPanel(panel: Item, x: real, y: real): bool {
-		return y > root.height - panel.height && withinPanelWidth(panel, x, y);
+		return y > root.height - panel.height - Config.barConfig.border && withinPanelWidth(panel, x, y);
 	}
 
 	function inLeftPanel(panel: Item, x: real, y: real): bool {
-		return x < panel.x + panel.width && withinPanelHeight(panel, x, y);
+		return x < panel.x + panel.width + Config.barConfig.border && withinPanelHeight(panel, x, y);
 	}
 
 	function inRightPanel(panel: Item, x: real, y: real): bool {
-		return x > panel.x && withinPanelHeight(panel, x, y);
+		return x > panel.x - Config.barConfig.border && withinPanelHeight(panel, x, y);
 	}
 
 	function inTopPanel(panel: Item, x: real, y: real): bool {
