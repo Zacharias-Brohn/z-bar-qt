@@ -11,6 +11,7 @@ import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
 import qs.Modules.Settings as Settings
+import qs.Modules.Drawing as Drawing
 import qs.Config
 
 Item {
@@ -18,6 +19,8 @@ Item {
 
 	required property Item bar
 	readonly property alias dashboard: dashboard
+	readonly property alias drawing: drawing
+	required property Canvas drawingItem
 	readonly property alias launcher: launcher
 	readonly property alias notifications: notifications
 	readonly property alias osd: osd
@@ -44,6 +47,16 @@ Item {
 
 		anchors.left: parent.left
 		anchors.top: parent.top
+		visibilities: root.visibilities
+	}
+
+	Drawing.Wrapper {
+		id: drawing
+
+		anchors.left: parent.left
+		anchors.verticalCenter: parent.verticalCenter
+		drawing: root.drawingItem
+		screen: root.screen
 		visibilities: root.visibilities
 	}
 

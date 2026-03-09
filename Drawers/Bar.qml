@@ -32,18 +32,8 @@ Variants {
 			WlrLayershell.namespace: "ZShell-Bar"
 			color: "transparent"
 			contentItem.focus: true
+			mask: visibilities.isDrawing ? null : region
 			screen: scope.modelData
-
-			mask: Region {
-				id: region
-
-				height: bar.screen.height - backgroundRect.implicitHeight
-				intersection: Intersection.Xor
-				regions: popoutRegions.instances
-				width: bar.width
-				x: 0
-				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : backgroundRect.height
-			}
 
 			contentItem.Keys.onEscapePressed: {
 				if (Config.barConfig.autoHide)
@@ -53,6 +43,17 @@ Variants {
 				visibilities.osd = false;
 				visibilities.settings = false;
 				visibilities.resources = false;
+			}
+
+			Region {
+				id: region
+
+				height: bar.screen.height - backgroundRect.implicitHeight
+				intersection: Intersection.Xor
+				regions: popoutRegions.instances
+				width: bar.width
+				x: 0
+				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : backgroundRect.height
 			}
 
 			PanelWindow {
@@ -117,6 +118,7 @@ Variants {
 
 				property bool bar
 				property bool dashboard
+				property bool isDrawing
 				property bool launcher
 				property bool notif: NotifServer.popups.length > 0
 				property bool osd
@@ -157,20 +159,42 @@ Variants {
 				}
 			}
 
+			Drawing {
+				id: drawing
+
+				anchors.fill: parent
+				z: 2
+			}
+
+			DrawingInput {
+				id: input
+
+				bar: backgroundRect
+				drawing: drawing
+				panels: panels
+				popout: panels.drawing
+				visibilities: visibilities
+				z: 2
+			}
+
 			Interactions {
 				id: mouseArea
 
 				anchors.fill: parent
 				bar: barLoader
+				drawing: drawing
+				input: input
 				panels: panels
 				popouts: panels.popouts
 				screen: scope.modelData
 				visibilities: visibilities
+				z: 1
 
 				Panels {
 					id: panels
 
 					bar: backgroundRect
+					drawingItem: drawing
 					screen: scope.modelData
 					visibilities: visibilities
 				}

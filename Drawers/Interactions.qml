@@ -10,6 +10,8 @@ CustomMouseArea {
 	required property Item bar
 	property bool dashboardShortcutActive
 	property point dragStart
+	required property Drawing drawing
+	required property DrawingInput input
 	property bool osdShortcutActive
 	required property Panels panels
 	required property BarPopouts.Wrapper popouts
@@ -51,20 +53,10 @@ CustomMouseArea {
 
 	anchors.fill: parent
 	hoverEnabled: true
-
-	//    onPressed: event => {
-	// 	if ( root.popouts.hasCurrent && !inTopPanel( root.popouts, event.x, event.y )) {
-	// 		root.popouts.hasCurrent = false;
-	// 	} else if (root.visibilities.sidebar && !inRightPanel( panels.sidebar, event.x, event.y )) {
-	// 		root.visibilities.sidebar = false;
-	// 	} else if (root.visibilities.dashboard && !inTopPanel( panels.dashboard, event.x, event.y )) {
-	// 		root.visibilities.dashboard = false;
-	// 	}
-	// }
+	propagateComposedEvents: true
 
 	onContainsMouseChanged: {
 		if (!containsMouse) {
-			// Only hide if not activated by shortcut
 			if (!osdShortcutActive) {
 				visibilities.osd = false;
 				root.panels.osd.hovered = false;
@@ -87,120 +79,42 @@ CustomMouseArea {
 		const dragX = x - dragStart.x;
 		const dragY = y - dragStart.y;
 
-		// Show bar in non-exclusive mode on hover
+		if (root.visibilities.isDrawing && !root.inLeftPanel(root.panels.drawing, x, y)) {
+			root.input.z = 2;
+			root.panels.drawing.expanded = false;
+		}
+
 		if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight + bar.anchors.topMargin)
 			visibilities.bar = true;
 
 		if (panels.sidebar.width === 0) {
-			// Show osd on hover
 			const showOsd = inRightPanel(panels.osd, x, y);
 
-			// // Always update visibility based on hover if not in shortcut mode
-			if (!osdShortcutActive) {
-				visibilities.osd = showOsd;
-				root.panels.osd.hovered = showOsd;
-			} else if (showOsd) {
-				// If hovering over OSD area while in shortcut mode, transition to hover control
+			if (showOsd) {
 				osdShortcutActive = false;
 				root.panels.osd.hovered = true;
 			}
-
-			// const showSidebar = pressed && dragStart.x > bar.implicitWidth + panels.sidebar.x;
-			//
-			// // Show/hide session on drag
-			// if (pressed && inRightPanel(panels.session, dragStart.x, dragStart.y) && withinPanelHeight(panels.session, x, y)) {
-			//     if (dragX < -Config.session.dragThreshold)
-			//         visibilities.session = true;
-			//     else if (dragX > Config.session.dragThreshold)
-			//         visibilities.session = false;
-			//
-			//     // Show sidebar on drag if in session area and session is nearly fully visible
-			//     if (showSidebar && panels.session.width >= panels.session.nonAnimWidth && dragX < -Config.sidebar.dragThreshold)
-			//         visibilities.sidebar = true;
-			// } else if (showSidebar && dragX < -Config.sidebar.dragThreshold) {
-			//     // Show sidebar on drag if not in session area
-			//     visibilities.sidebar = true;
-			// }
 		} else {
 			const outOfSidebar = x < width - panels.sidebar.width;
-			// Show osd on hover
 			const showOsd = outOfSidebar && inRightPanel(panels.osd, x, y);
 
-			// Always update visibility based on hover if not in shortcut mode
 			if (!osdShortcutActive) {
 				visibilities.osd = showOsd;
 				root.panels.osd.hovered = showOsd;
 			} else if (showOsd) {
-				// If hovering over OSD area while in shortcut mode, transition to hover control
 				osdShortcutActive = false;
 				root.panels.osd.hovered = true;
 			}
-			//
-			// // Show/hide session on drag
-			// if (pressed && outOfSidebar && inRightPanel(panels.session, dragStart.x, dragStart.y) && withinPanelHeight(panels.session, x, y)) {
-			//     if (dragX < -Config.session.dragThreshold)
-			//         visibilities.session = true;
-			//     else if (dragX > Config.session.dragThreshold)
-			//         visibilities.session = false;
-			// }
-			//
-			// // Hide sidebar on drag
-			// if (pressed && inRightPanel(panels.sidebar, dragStart.x, 0) && dragX > Config.sidebar.dragThreshold)
-			//     visibilities.sidebar = false;
 		}
 
-		// Show launcher on hover, or show/hide on drag if hover is disabled
-		// if (Config.launcher.showOnHover) {
-		//     if (!visibilities.launcher && inBottomPanel(panels.launcher, x, y))
-		//         visibilities.launcher = true;
-		// } else if (pressed && inBottomPanel(panels.launcher, dragStart.x, dragStart.y) && withinPanelWidth(panels.launcher, x, y)) {
-		//     if (dragY < -Config.launcher.dragThreshold)
-		//         visibilities.launcher = true;
-		//     else if (dragY > Config.launcher.dragThreshold)
-		//         visibilities.launcher = false;
-		// }
-		//
-		// // Show dashboard on hover
-		// const showDashboard = Config.dashboard.showOnHover && inTopPanel(panels.dashboard, x, y);
-		//
-		// // Always update visibility based on hover if not in shortcut mode
-		// if (!dashboardShortcutActive) {
-		//     visibilities.dashboard = showDashboard;
-		// } else if (showDashboard) {
-		//     // If hovering over dashboard area while in shortcut mode, transition to hover control
-		//     dashboardShortcutActive = false;
-		// }
-		//
-		// // Show/hide dashboard on drag (for touchscreen devices)
-		// if (pressed && inTopPanel(panels.dashboard, dragStart.x, dragStart.y) && withinPanelWidth(panels.dashboard, x, y)) {
-		//     if (dragY > Config.dashboard.dragThreshold)
-		//         visibilities.dashboard = true;
-		//     else if (dragY < -Config.dashboard.dragThreshold)
-		//         visibilities.dashboard = false;
-		// }
-		//
-		// // Show utilities on hover
-		// const showUtilities = inBottomPanel(panels.utilities, x, y);
-		//
-		// // Always update visibility based on hover if not in shortcut mode
-		// if (!utilitiesShortcutActive) {
-		//     visibilities.utilities = showUtilities;
-		// } else if (showUtilities) {
-		//     // If hovering over utilities area while in shortcut mode, transition to hover control
-		//     utilitiesShortcutActive = false;
-		// }
-
-		// Show popouts on hover
 		if (y < bar.implicitHeight) {
 			bar.checkPopout(x);
 		}
 	}
 
-	// Monitor individual visibility changes
 	Connections {
 		function onDashboardChanged() {
 			if (root.visibilities.dashboard) {
-				// Dashboard became visible, immediately check if this should be shortcut mode
 				const inDashboardArea = root.inTopPanel(root.panels.dashboard, root.mouseX, root.mouseY);
 				if (!inDashboardArea) {
 					root.dashboardShortcutActive = true;
@@ -209,20 +123,21 @@ CustomMouseArea {
 				root.visibilities.sidebar = false;
 				root.popouts.hasCurrent = false;
 			} else {
-				// Dashboard hidden, clear shortcut flag
 				root.dashboardShortcutActive = false;
-				// root.visibilities.bar = false;
 			}
 		}
 
+		function onIsDrawingChanged() {
+			if (!root.visibilities.isDrawing)
+				root.drawing.clear();
+		}
+
 		function onLauncherChanged() {
-			// If launcher is hidden, clear shortcut flags for dashboard and OSD
 			if (!root.visibilities.launcher) {
 				root.dashboardShortcutActive = false;
 				root.osdShortcutActive = false;
 				root.utilitiesShortcutActive = false;
 
-				// Also hide dashboard and OSD if they're not being hovered
 				const inOsdArea = root.inRightPanel(root.panels.osd, root.mouseX, root.mouseY);
 
 				if (!inOsdArea) {
@@ -234,13 +149,11 @@ CustomMouseArea {
 
 		function onOsdChanged() {
 			if (root.visibilities.osd) {
-				// OSD became visible, immediately check if this should be shortcut mode
 				const inOsdArea = root.inRightPanel(root.panels.osd, root.mouseX, root.mouseY);
 				if (!inOsdArea) {
 					root.osdShortcutActive = true;
 				}
 			} else {
-				// OSD hidden, clear shortcut flag
 				root.osdShortcutActive = false;
 			}
 		}
@@ -260,13 +173,11 @@ CustomMouseArea {
 
 		function onUtilitiesChanged() {
 			if (root.visibilities.utilities) {
-				// Utilities became visible, immediately check if this should be shortcut mode
 				const inUtilitiesArea = root.inBottomPanel(root.panels.utilities, root.mouseX, root.mouseY);
 				if (!inUtilitiesArea) {
 					root.utilitiesShortcutActive = true;
 				}
 			} else {
-				// Utilities hidden, clear shortcut flag
 				root.utilitiesShortcutActive = false;
 			}
 		}

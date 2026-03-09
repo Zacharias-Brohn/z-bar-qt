@@ -11,7 +11,7 @@ import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
-
+import qs.Modules.Drawing as Drawing
 import qs.Modules.Settings as Settings
 
 Shape {
@@ -29,6 +29,12 @@ Shape {
 	Behavior on anchors.topMargin {
 		Anim {
 		}
+	}
+
+	Drawing.Background {
+		startX: 0
+		startY: wrapper.y - rounding
+		wrapper: root.panels.drawing
 	}
 
 	Resources.Background {
