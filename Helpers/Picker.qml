@@ -141,7 +141,7 @@ MouseArea {
 			sy = ssy;
 			ex = x;
 			ey = y;
-		} else {
+		} else if (!saveTimer.running) {
 			checkClientRects(x, y);
 		}
 	}
@@ -154,12 +154,22 @@ MouseArea {
 			return;
 
 		if (root.loader.freeze) {
-			save();
+			saveTimer.start();
 		} else {
 			overlay.visible = border.visible = false;
 			screencopy.visible = false;
 			screencopy.active = true;
 		}
+	}
+
+	Timer {
+		id: saveTimer
+
+		interval: 25
+		repeat: false
+		running: false
+
+		onTriggered: root.save()
 	}
 
 	SequentialAnimation {
@@ -217,9 +227,10 @@ MouseArea {
 			paintCursor: false
 
 			onHasContentChanged: {
-				if (hasContent && !root.loader.freeze) {
+				if (hasContent) {
 					overlay.visible = border.visible = true;
-					root.save();
+					if (!root.loader.freeze)
+						root.save();
 				}
 			}
 		}
@@ -233,6 +244,7 @@ MouseArea {
 		layer.enabled: true
 		opacity: 0.3
 		radius: root.realRounding
+		visible: false
 
 		layer.effect: MultiEffect {
 			maskEnabled: true
@@ -270,6 +282,7 @@ MouseArea {
 		implicitHeight: selectionRect.implicitHeight + root.realBorderWidth * 2
 		implicitWidth: selectionRect.implicitWidth + root.realBorderWidth * 2
 		radius: root.realRounding > 0 ? root.realRounding + root.realBorderWidth : 0
+		visible: false
 		x: selectionRect.x - root.realBorderWidth
 		y: selectionRect.y - root.realBorderWidth
 
