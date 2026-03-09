@@ -81,6 +81,8 @@ Singleton {
 		return {
 			autoHide: barConfig.autoHide,
 			rounding: barConfig.rounding,
+			border: barConfig.border,
+			height: barConfig.height,
 			popouts: {
 				tray: barConfig.popouts.tray,
 				audio: barConfig.popouts.audio,

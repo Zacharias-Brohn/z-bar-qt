@@ -22,7 +22,7 @@ Shape {
 	required property PersistentProperties visibilities
 
 	anchors.fill: parent
-	// anchors.margins: 8
+	anchors.margins: Config.barConfig.border
 	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
 	preferredRendererType: Shape.CurveRenderer
 

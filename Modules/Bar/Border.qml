@@ -38,9 +38,11 @@ Item {
 
 		Rectangle {
 			anchors.fill: parent
+			anchors.margins: Config.barConfig.border
 			anchors.topMargin: Config.barConfig.autoHide && !root.visibilities.bar ? 4 : root.bar.implicitHeight
-			topLeftRadius: 8
-			topRightRadius: 8
+			radius: Config.barConfig.border > 0 ? Config.barConfig.rounding : 0
+			topLeftRadius: Config.barConfig.rounding
+			topRightRadius: Config.barConfig.rounding
 
 			Behavior on anchors.topMargin {
 				Anim {

@@ -16,11 +16,6 @@ Item {
 	readonly property bool shouldBeActive: visibilities.isDrawing
 	required property var visibilities
 
-	function show(): void {
-		visibilities.isDrawing = true;
-		timer.restart();
-	}
-
 	implicitHeight: content.implicitHeight
 	implicitWidth: 0
 	visible: width > 0
@@ -101,6 +96,11 @@ Item {
 			}
 		}
 	]
+
+	onVisibleChanged: {
+		if (!visible)
+			root.expanded = true;
+	}
 
 	Loader {
 		id: icon

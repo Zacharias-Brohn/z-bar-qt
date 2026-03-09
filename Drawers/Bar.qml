@@ -56,21 +56,9 @@ Variants {
 				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : backgroundRect.height
 			}
 
-			PanelWindow {
-				id: exclusionZone
-
-				WlrLayershell.exclusionMode: Config.barConfig.autoHide ? ExclusionMode.Ignore : ExclusionMode.Auto
-				WlrLayershell.layer: WlrLayer.Bottom
-				WlrLayershell.namespace: "ZShell-Bar-Exclusion"
-				color: "transparent"
-				implicitHeight: backgroundRect.height
-				screen: bar.screen
-
-				anchors {
-					left: true
-					right: true
-					top: true
-				}
+			Exclusions {
+				bar: barLoader
+				screen: scope.modelData
 			}
 
 			anchors {

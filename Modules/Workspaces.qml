@@ -12,9 +12,9 @@ Item {
 	id: root
 
 	property real activeWorkspaceMargin: Math.ceil(Appearance.padding.small / 2)
-	required property PanelWindow bar
 	readonly property int effectiveActiveWorkspaceId: monitor?.activeWorkspace?.id ?? 1
-	readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.bar.screen)
+	readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.screen)
+	required property ShellScreen screen
 	property int workspaceButtonWidth: bgRect.implicitHeight - root.activeWorkspaceMargin * 2
 	property int workspaceIndexInGroup: (effectiveActiveWorkspaceId - 1) % root.workspacesShown
 	readonly property list<var> workspaces: Hyprland.workspaces.values.filter(w => w.monitor === root.monitor)
