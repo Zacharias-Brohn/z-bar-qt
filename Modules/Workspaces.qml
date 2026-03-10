@@ -91,7 +91,7 @@ Item {
 
 						CustomText {
 							anchors.centerIn: parent
-							color: DynamicColors.palette.m3onSecondaryContainer
+							color: button.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
 							elide: Text.ElideRight
 							horizontalAlignment: Text.AlignHCenter
 							text: button.modelData.name
@@ -149,21 +149,11 @@ Item {
 			}
 		}
 
-		ShaderEffectSource {
-			id: activeTextTex
-
-			anchors.fill: bgRect
-			anchors.margins: root.activeWorkspaceMargin
-			hideSource: true
-			live: true
-			recursive: true
-			sourceItem: activeTextSource
-		}
-
 		Item {
 			id: indicatorMask
 
 			anchors.fill: bgRect
+			layer.enabled: true
 			visible: false
 
 			CustomRect {
@@ -176,21 +166,12 @@ Item {
 			}
 		}
 
-		ShaderEffectSource {
-			id: indicatorMaskEffect
-
-			anchors.fill: activeTextSource
-			live: true
-			sourceItem: indicatorMask
-			visible: false
-		}
-
 		MultiEffect {
 			anchors.fill: activeTextSource
 			maskEnabled: true
 			maskInverted: false
-			maskSource: indicatorMaskEffect
-			source: activeTextTex
+			maskSource: indicatorMask
+			source: activeTextSource
 			z: 5
 		}
 	}
