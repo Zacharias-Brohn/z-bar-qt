@@ -8,32 +8,19 @@ import qs.Modules
 import qs.Config
 import qs.Components
 
-Item {
+CustomRect {
 	id: root
 
 	required property PersistentProperties visibilities
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
 	clip: true
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: rowLayout.implicitWidth + Appearance.padding.small * 2
+	radius: height / 2
 
-	CustomRect {
-		id: backgroundRect
-
-		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
-		radius: height / 2
-
-		anchors {
-			left: parent.left
-			right: parent.right
-			verticalCenter: parent.verticalCenter
-		}
-
-		StateLayer {
-			onClicked: root.visibilities.resources = !root.visibilities.resources
-		}
+	StateLayer {
+		onClicked: root.visibilities.resources = !root.visibilities.resources
 	}
 
 	RowLayout {

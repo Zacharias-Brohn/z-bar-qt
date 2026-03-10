@@ -14,14 +14,13 @@ import qs.Modules.Network
 Item {
 	id: root
 
-	required property PanelWindow bar
 	readonly property int contentHeight: Config.barConfig.height + padding * 2
 	readonly property int exclusiveZone: Config.barConfig.autoHide ? Config.barConfig.border : contentHeight
 	property bool isHovered
 	readonly property int padding: Math.max(Appearance.padding.smaller, Config.barConfig.border)
 	required property Wrapper popouts
 	required property ShellScreen screen
-	readonly property bool shouldBeVisible: (!Config.barConfig.autoHide || visibilities.bar)
+	readonly property bool shouldBeVisible: (!Config.barConfig.autoHide || visibilities.bar || isHovered)
 	readonly property int vPadding: 6
 	required property PersistentProperties visibilities
 
@@ -30,7 +29,7 @@ Item {
 	}
 
 	implicitHeight: Config.barConfig.border
-	visible: width > Config.barConfig.border
+	visible: height > Config.barConfig.border
 
 	states: State {
 		name: "visible"
@@ -46,8 +45,8 @@ Item {
 			to: "visible"
 
 			Anim {
-				duration: Appearance.anim.durations.expressiveDefaultSpatial
-				easing.bezierCurve: Appearance.anim.curves.expressiveDefaultSpatial
+				duration: MaterialEasing.expressiveEffectsTime
+				easing.bezierCurve: MaterialEasing.expressiveEffects
 				property: "implicitHeight"
 				target: root
 			}
@@ -57,7 +56,8 @@ Item {
 			to: ""
 
 			Anim {
-				easing.bezierCurve: Appearance.anim.curves.emphasized
+				duration: MaterialEasing.expressiveEffectsTime
+				easing.bezierCurve: MaterialEasing.expressiveEffects
 				property: "implicitHeight"
 				target: root
 			}
@@ -68,9 +68,9 @@ Item {
 		id: content
 
 		active: root.shouldBeVisible || root.visible
+		anchors.bottom: parent.bottom
 		anchors.left: parent.left
 		anchors.right: parent.right
-		anchors.top: parent.top
 
 		sourceComponent: Bar {
 			height: root.contentHeight

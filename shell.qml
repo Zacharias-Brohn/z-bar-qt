@@ -11,7 +11,7 @@ import qs.Helpers
 import qs.Modules.Polkit
 
 ShellRoot {
-	Bar {
+	Windows {
 	}
 
 	Wallpaper {

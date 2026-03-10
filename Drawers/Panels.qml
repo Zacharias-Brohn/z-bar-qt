@@ -35,12 +35,7 @@ Item {
 
 	anchors.fill: parent
 	anchors.margins: Config.barConfig.border
-	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
-
-	Behavior on anchors.topMargin {
-		Anim {
-		}
-	}
+	anchors.topMargin: bar.implicitHeight
 
 	Resources.Wrapper {
 		id: resources

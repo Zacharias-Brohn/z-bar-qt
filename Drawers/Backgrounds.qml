@@ -23,13 +23,8 @@ Shape {
 
 	anchors.fill: parent
 	anchors.margins: Config.barConfig.border
-	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
+	anchors.topMargin: bar.implicitHeight
 	preferredRendererType: Shape.CurveRenderer
-
-	Behavior on anchors.topMargin {
-		Anim {
-		}
-	}
 
 	Drawing.Background {
 		startX: 0

@@ -71,6 +71,7 @@ JsonObject {
 		property real scale: 1
 		property int small: 5 * scale
 		property int smaller: 7 * scale
+		property int smallest: 2 * scale
 	}
 	component Rounding: JsonObject {
 		property int full: 1000 * scale

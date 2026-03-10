@@ -5,7 +5,7 @@ CustomText {
 	property int grade: DynamicColors.light ? 0 : -25
 
 	font.family: "Material Symbols Rounded"
-	font.pointSize: 15
+	font.pointSize: Appearance.font.size.larger
 	font.variableAxes: ({
 			FILL: fill.toFixed(1),
 			GRAD: grade,

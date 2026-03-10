@@ -19,7 +19,7 @@ RowLayout {
 	required property PersistentProperties visibilities
 
 	function checkPopout(x: real): void {
-		const ch = childAt(x, 2) as WrappedLoader;
+		const ch = childAt(x, height / 2) as WrappedLoader;
 
 		if (!ch || ch?.id === "spacer") {
 			if (!popouts.currentName.startsWith("traymenu"))
@@ -205,7 +205,6 @@ RowLayout {
 		}
 
 		Layout.alignment: Qt.AlignVCenter
-		Layout.fillHeight: true
 		Layout.leftMargin: findFirstEnabled() === this ? root.vPadding : 0
 		Layout.rightMargin: findLastEnabled() === this ? root.vPadding : 0
 		active: enabled

@@ -5,20 +5,13 @@ import qs.Components
 import qs.Config
 import qs.Helpers as Helpers
 
-Item {
+CustomRect {
 	id: root
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
-	implicitWidth: layout.childrenRect.width + 10 * 2
-
-	CustomRect {
-		anchors.bottomMargin: 4
-		anchors.fill: parent
-		anchors.topMargin: 4
-		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: 1000
-	}
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitWidth: layout.implicitWidth + Appearance.padding.normal * 2
+	radius: Appearance.rounding.full
 
 	RowLayout {
 		id: layout

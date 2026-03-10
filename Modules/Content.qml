@@ -5,7 +5,6 @@ import Quickshell.Services.SystemTray
 import QtQuick
 import qs.Config
 import qs.Components
-import qs.Modules.Calendar
 import qs.Modules.WSOverview
 import qs.Modules.Network
 import qs.Modules.UPower
@@ -66,14 +65,6 @@ Item {
 						trayItem: trayMenu.modelData.menu
 					}
 				}
-			}
-		}
-
-		Popout {
-			name: "calendar"
-
-			sourceComponent: CalendarPopup {
-				wrapper: root.wrapper
 			}
 		}
 

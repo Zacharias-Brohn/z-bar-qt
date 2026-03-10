@@ -21,18 +21,23 @@ Variants {
 
 		required property var modelData
 
-		PanelWindow {
-			id: bar
+		Exclusions {
+			bar: bar
+			screen: scope.modelData
+		}
 
+		CustomWindow {
+			id: win
+
+			readonly property bool hasFullscreen: Hypr.monitorFor(screen)?.activeWorkspace?.toplevels.values.some(t => t.lastIpcObject.fullscreen === 2)
 			property var root: Quickshell.shellDir
-			property bool trayMenuVisible: false
 
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore
 			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-			WlrLayershell.namespace: "ZShell-Bar"
 			color: "transparent"
 			contentItem.focus: true
 			mask: visibilities.isDrawing ? null : region
+			name: "Bar"
 			screen: scope.modelData
 
 			contentItem.Keys.onEscapePressed: {
@@ -44,21 +49,23 @@ Variants {
 				visibilities.settings = false;
 				visibilities.resources = false;
 			}
+			onHasFullscreenChanged: {
+				visibilities.launcher = false;
+				visibilities.dashboard = false;
+				visibilities.osd = false;
+				visibilities.settings = false;
+				visibilities.resources = false;
+			}
 
 			Region {
 				id: region
 
-				height: bar.screen.height - backgroundRect.implicitHeight
+				height: win.height - bar.implicitHeight - Config.barConfig.border
 				intersection: Intersection.Xor
 				regions: popoutRegions.instances
-				width: bar.width
-				x: 0
-				y: Config.barConfig.autoHide && !visibilities.bar ? 4 : backgroundRect.height
-			}
-
-			Exclusions {
-				bar: barLoader
-				screen: scope.modelData
+				width: win.width - Config.barConfig.border * 2
+				x: Config.barConfig.border
+				y: bar.implicitHeight
 			}
 
 			anchors {
@@ -79,8 +86,8 @@ Variants {
 					height: modelData.height
 					intersection: Intersection.Subtract
 					width: modelData.width
-					x: modelData.x
-					y: modelData.y + backgroundRect.implicitHeight
+					x: modelData.x + Config.barConfig.border
+					y: modelData.y + bar.implicitHeight
 				}
 			}
 
@@ -88,7 +95,7 @@ Variants {
 				id: focusGrab
 
 				active: visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
-				windows: [bar]
+				windows: [win]
 
 				onCleared: {
 					visibilities.launcher = false;
@@ -136,12 +143,12 @@ Variants {
 				}
 
 				Border {
-					bar: backgroundRect
+					bar: bar
 					visibilities: visibilities
 				}
 
 				Backgrounds {
-					bar: backgroundRect
+					bar: bar
 					panels: panels
 					visibilities: visibilities
 				}
@@ -157,7 +164,7 @@ Variants {
 			DrawingInput {
 				id: input
 
-				bar: backgroundRect
+				bar: bar
 				drawing: drawing
 				panels: panels
 				popout: panels.drawing
@@ -169,7 +176,7 @@ Variants {
 				id: mouseArea
 
 				anchors.fill: parent
-				bar: barLoader
+				bar: bar
 				drawing: drawing
 				input: input
 				panels: panels
@@ -181,45 +188,20 @@ Variants {
 				Panels {
 					id: panels
 
-					bar: backgroundRect
+					bar: bar
 					drawingItem: drawing
 					screen: scope.modelData
 					visibilities: visibilities
 				}
 
-				CustomRect {
-					id: backgroundRect
-
-					property Wrapper popouts: panels.popouts
+				BarLoader {
+					id: bar
 
 					anchors.left: parent.left
 					anchors.right: parent.right
-					anchors.top: parent.top
-					anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? -30 : 0
-					color: "transparent"
-					implicitHeight: barLoader.implicitHeight
-					radius: 0
-
-					Behavior on anchors.topMargin {
-						Anim {
-						}
-					}
-					Behavior on color {
-						CAnim {
-						}
-					}
-
-					BarLoader {
-						id: barLoader
-
-						anchors.left: parent.left
-						anchors.right: parent.right
-						anchors.verticalCenter: parent.verticalCenter
-						bar: bar
-						popouts: panels.popouts
-						screen: scope.modelData
-						visibilities: visibilities
-					}
+					popouts: panels.popouts
+					screen: scope.modelData
+					visibilities: visibilities
 				}
 			}
 		}

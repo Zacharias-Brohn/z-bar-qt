@@ -47,7 +47,7 @@ Item {
 		elide: Qt.ElideRight
 		elideWidth: root.maxWidth
 		font.family: "Rubik"
-		font.pointSize: 12
+		font.pointSize: Appearance.font.size.normal
 		text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
 
 		onElideWidthChanged: root.current.text = elidedText

@@ -112,7 +112,7 @@ Item {
 		opacity: 1
 
 		sourceComponent: MaterialIcon {
-			font.pointSize: 14
+			font.pointSize: Appearance.font.size.larger
 			text: "arrow_forward_ios"
 		}
 	}

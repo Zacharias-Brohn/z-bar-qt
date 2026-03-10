@@ -20,8 +20,8 @@ Item {
 	readonly property list<var> workspaces: Hyprland.workspaces.values.filter(w => w.monitor === root.monitor)
 	readonly property int workspacesShown: workspaces.length
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
+	height: implicitHeight
+	implicitHeight: Config.barConfig.height + Math.max(Appearance.padding.smaller, Config.barConfig.border) * 2
 	implicitWidth: (root.workspaceButtonWidth * root.workspacesShown) + root.activeWorkspaceMargin * 2
 
 	Behavior on implicitWidth {
@@ -36,7 +36,7 @@ Item {
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
+		implicitHeight: root.implicitHeight - ((Appearance.padding.small - 1) * 2)
 		radius: height / 2
 
 		CustomRect {

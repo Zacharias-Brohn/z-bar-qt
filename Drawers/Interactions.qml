@@ -66,8 +66,8 @@ CustomMouseArea {
 				popouts.hasCurrent = false;
 			}
 
-			if (Config.barConfig.autoHide && !root.visibilities.sidebar && !root.visibilities.dashboard)
-				root.visibilities.bar = false;
+			if (Config.barConfig.autoHide)
+				bar.isHovered = false;
 		}
 	}
 	onPositionChanged: event => {
@@ -84,8 +84,8 @@ CustomMouseArea {
 			root.panels.drawing.expanded = false;
 		}
 
-		if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight + bar.anchors.topMargin)
-			visibilities.bar = true;
+		if (!visibilities.bar && Config.barConfig.autoHide && y < bar.implicitHeight)
+			bar.isHovered = true;
 
 		if (panels.sidebar.width === 0) {
 			const showOsd = inRightPanel(panels.osd, x, y);
@@ -107,8 +107,8 @@ CustomMouseArea {
 			}
 		}
 
-		if (y < bar.implicitHeight) {
-			bar.checkPopout(x);
+		if (y < root.bar.implicitHeight) {
+			root.bar.checkPopout(x);
 		}
 	}
 

@@ -194,6 +194,8 @@ StackView {
 		}
 
 		Loader {
+			id: loader
+
 			active: menu.isSubMenu
 			asynchronous: true
 

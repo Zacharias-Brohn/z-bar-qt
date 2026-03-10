@@ -5,28 +5,20 @@ import qs.Daemons
 import qs.Config
 import qs.Helpers
 
-Item {
+CustomRect {
 	id: root
 
 	readonly property string currentMedia: (Players.active?.trackTitle ?? qsTr("No media")) || qsTr("Unknown title")
 	readonly property int textWidth: Math.min(metrics.width, 200)
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: layout.implicitWidth + Appearance.padding.normal * 2
+	radius: Appearance.rounding.full
 
 	Behavior on implicitWidth {
 		Anim {
 		}
-	}
-
-	CustomRect {
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.verticalCenter: parent.verticalCenter
-		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
-		radius: Appearance.rounding.full
 	}
 
 	TextMetrics {
@@ -39,11 +31,7 @@ Item {
 	RowLayout {
 		id: layout
 
-		anchors.bottom: parent.bottom
-		anchors.horizontalCenter: parent.horizontalCenter
-		anchors.left: parent.left
-		anchors.leftMargin: Appearance.padding.normal
-		anchors.top: parent.top
+		anchors.centerIn: parent
 
 		Behavior on implicitWidth {
 			Anim {
@@ -53,7 +41,7 @@ Item {
 		MaterialIcon {
 			animate: true
 			color: Players.active?.isPlaying ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
-			font.pointSize: 14
+			font.pointSize: Appearance.font.size.normal
 			text: Players.active?.isPlaying ? "music_note" : "music_off"
 		}
 
