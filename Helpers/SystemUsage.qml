@@ -80,8 +80,9 @@ Singleton {
 		onTriggered: {
 			stat.reload();
 			meminfo.reload();
-			storage.running = true;
-			gpuUsage.running = true;
+			storage.running = false;
+			if (root.gpuName === "GENERIC")
+				gpuUsage.running = true;
 			sensors.running = true;
 		}
 	}
@@ -275,12 +276,40 @@ Singleton {
 	}
 
 	Process {
+		id: gpuUsageNvidia
+
+		command: ["/usr/bin/nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu,memory.used", "--format=csv,noheader,nounits", "-lms", "1000"]
+		running: true
+
+		stderr: SplitParser {
+			onRead: data => {
+				console.log("nvidia-smi stderr:", String(data).trim());
+			}
+		}
+		stdout: SplitParser {
+			onRead: data => {
+				const [usage, temp, mem] = String(data).trim().split(/\s*,\s*/);
+
+				root.gpuPerc = parseInt(usage, 10) / 100;
+				root.gpuTemp = parseInt(temp, 10);
+				root.gpuMemUsed = parseInt(mem, 10) / root.gpuMemTotal;
+			}
+		}
+
+		onExited: (exitCode, exitStatus) => {
+			console.log("gpuUsageNvidia exited:", exitCode, exitStatus);
+		}
+		onStarted: console.log("gpuUsageNvidia started, pid =", processId)
+	}
+
+	Process {
 		id: gpuUsage
 
-		command: root.gpuType === "GENERIC" ? ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent"] : root.gpuType === "NVIDIA" ? ["nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu,memory.used", "--format=csv,noheader,nounits"] : ["echo"]
+		command: root.gpuType === "GENERIC" ? ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent"] : ["echo"]
 
 		stdout: StdioCollector {
 			onStreamFinished: {
+				console.log("this is running");
 				if (root.gpuType === "GENERIC") {
 					const percs = text.trim().split("\n");
 					const sum = percs.reduce((acc, d) => acc + parseInt(d, 10), 0);

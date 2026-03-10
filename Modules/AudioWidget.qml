@@ -39,7 +39,7 @@ CustomRect {
 			Layout.alignment: Qt.AlignVCenter
 			animate: true
 			color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
-			font.pointSize: Appearance.font.size.normal
+			font.pointSize: Appearance.font.size.larger
 			text: Audio.muted ? "volume_off" : "volume_up"
 		}
 
@@ -68,7 +68,7 @@ CustomRect {
 			Layout.alignment: Qt.AlignVCenter
 			animate: true
 			color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor
-			font.pointSize: Appearance.font.size.normal
+			font.pointSize: Appearance.font.size.larger
 			text: Audio.sourceMuted ? "mic_off" : "mic"
 		}
 
