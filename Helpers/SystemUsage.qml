@@ -79,9 +79,19 @@ Singleton {
 		onTriggered: {
 			stat.reload();
 			meminfo.reload();
-			storage.running = true;
 			if (root.gpuType === "GENERIC")
 				gpuUsage.running = true;
+		}
+	}
+
+	Timer {
+		interval: 60000 * 120
+		repeat: true
+		running: true
+		triggeredOnStart: true
+
+		onTriggered: {
+			storage.running = true;
 		}
 	}
 

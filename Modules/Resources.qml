@@ -16,7 +16,7 @@ CustomRect {
 	clip: true
 	color: DynamicColors.tPalette.m3surfaceContainer
 	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
-	implicitWidth: rowLayout.implicitWidth + Appearance.padding.small * 2
+	implicitWidth: rowLayout.implicitWidth + Appearance.padding.normal * 2
 	radius: height / 2
 
 	StateLayer {
@@ -27,7 +27,8 @@ CustomRect {
 		id: rowLayout
 
 		anchors.centerIn: parent
-		spacing: 0
+		implicitHeight: root.implicitHeight
+		spacing: Appearance.spacing.smaller
 
 		Ref {
 			service: SystemUsage
@@ -35,6 +36,7 @@ CustomRect {
 
 		Resource {
 			Layout.alignment: Qt.AlignVCenter
+			Layout.fillHeight: true
 			icon: "memory"
 			mainColor: DynamicColors.palette.m3primary
 			percentage: SystemUsage.cpuPerc
@@ -42,6 +44,7 @@ CustomRect {
 		}
 
 		Resource {
+			Layout.fillHeight: true
 			icon: "memory_alt"
 			mainColor: DynamicColors.palette.m3secondary
 			percentage: SystemUsage.memPerc
@@ -49,12 +52,14 @@ CustomRect {
 		}
 
 		Resource {
+			Layout.fillHeight: true
 			icon: "gamepad"
 			mainColor: DynamicColors.palette.m3tertiary
 			percentage: SystemUsage.gpuPerc
 		}
 
 		Resource {
+			Layout.fillHeight: true
 			icon: "developer_board"
 			mainColor: DynamicColors.palette.m3primary
 			percentage: SystemUsage.gpuMemUsed
