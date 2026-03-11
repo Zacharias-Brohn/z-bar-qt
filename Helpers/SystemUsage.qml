@@ -17,7 +17,6 @@ Singleton {
 	property var disks: []
 	property real gpuMemTotal: 0
 	property real gpuMemUsed
-	property string gpuName: ""
 	property real gpuPerc
 	property real gpuTemp
 	readonly property string gpuType: Config.services.gpuType.toUpperCase() || autoGpuType
@@ -80,9 +79,19 @@ Singleton {
 		onTriggered: {
 			stat.reload();
 			meminfo.reload();
-			storage.running = false;
-			if (root.gpuName === "GENERIC")
+			storage.running = true;
+			if (root.gpuType === "GENERIC")
 				gpuUsage.running = true;
+		}
+	}
+
+	Timer {
+		interval: Config.dashboard.resourceUpdateInterval * 5
+		repeat: true
+		running: root.refCount > 0
+		triggeredOnStart: true
+
+		onTriggered: {
 			sensors.running = true;
 		}
 	}
@@ -113,10 +122,13 @@ Singleton {
 
 				const totalDiff = total - root.lastCpuTotal;
 				const idleDiff = idle - root.lastCpuIdle;
-				root.cpuPerc = totalDiff > 0 ? (1 - idleDiff / totalDiff) : 0;
+				const newCpuPerc = totalDiff > 0 ? (1 - idleDiff / totalDiff) : 0;
 
 				root.lastCpuTotal = total;
 				root.lastCpuIdle = idle;
+
+				if (Math.abs(newCpuPerc - root.cpuPerc) >= 0.01)
+					root.cpuPerc = newCpuPerc;
 			}
 		}
 	}
@@ -128,8 +140,14 @@ Singleton {
 
 		onLoaded: {
 			const data = text();
-			root.memTotal = parseInt(data.match(/MemTotal: *(\d+)/)[1], 10) || 1;
-			root.memUsed = (root.memTotal - parseInt(data.match(/MemAvailable: *(\d+)/)[1], 10)) || 0;
+			const total = parseInt(data.match(/MemTotal: *(\d+)/)[1], 10) || 1;
+			const used = (root.memTotal - parseInt(data.match(/MemAvailable: *(\d+)/)[1], 10)) || 0;
+
+			if (root.memTotal !== total)
+				root.memTotal = total;
+
+			if (Math.abs(used - root.memUsed) >= 16384)
+				root.memUsed = used;
 		}
 	}
 
@@ -279,27 +297,36 @@ Singleton {
 		id: gpuUsageNvidia
 
 		command: ["/usr/bin/nvidia-smi", "--query-gpu=utilization.gpu,temperature.gpu,memory.used", "--format=csv,noheader,nounits", "-lms", "1000"]
-		running: true
+		running: root.refCount > 0 && root.gpuType === "NVIDIA"
 
-		stderr: SplitParser {
-			onRead: data => {
-				console.log("nvidia-smi stderr:", String(data).trim());
-			}
-		}
 		stdout: SplitParser {
 			onRead: data => {
-				const [usage, temp, mem] = String(data).trim().split(/\s*,\s*/);
+				const parts = String(data).trim().split(/\s*,\s*/);
+				if (parts.length < 3)
+					return;
 
-				root.gpuPerc = parseInt(usage, 10) / 100;
-				root.gpuTemp = parseInt(temp, 10);
-				root.gpuMemUsed = parseInt(mem, 10) / root.gpuMemTotal;
+				const usageRaw = parseInt(parts[0], 10);
+				const tempRaw = parseInt(parts[1], 10);
+				const memRaw = parseInt(parts[2], 10);
+
+				if (!Number.isFinite(usageRaw) || !Number.isFinite(tempRaw) || !Number.isFinite(memRaw))
+					return;
+
+				const newGpuPerc = Math.max(0, Math.min(1, usageRaw / 100));
+				const newGpuTemp = tempRaw;
+				const newGpuMemUsed = root.gpuMemTotal > 0 ? Math.max(0, Math.min(1, memRaw / root.gpuMemTotal)) : 0;
+
+				// Only publish meaningful changes to avoid needless binding churn / repaints
+				if (Math.abs(root.gpuPerc - newGpuPerc) >= 0.01)
+					root.gpuPerc = newGpuPerc;
+
+				if (Math.abs(root.gpuTemp - newGpuTemp) >= 1)
+					root.gpuTemp = newGpuTemp;
+
+				if (Math.abs(root.gpuMemUsed - newGpuMemUsed) >= 0.01)
+					root.gpuMemUsed = newGpuMemUsed;
 			}
 		}
-
-		onExited: (exitCode, exitStatus) => {
-			console.log("gpuUsageNvidia exited:", exitCode, exitStatus);
-		}
-		onStarted: console.log("gpuUsageNvidia started, pid =", processId)
 	}
 
 	Process {
@@ -314,11 +341,6 @@ Singleton {
 					const percs = text.trim().split("\n");
 					const sum = percs.reduce((acc, d) => acc + parseInt(d, 10), 0);
 					root.gpuPerc = sum / percs.length / 100;
-				} else if (root.gpuType === "NVIDIA") {
-					const [usage, temp, mem] = text.trim().split(",");
-					root.gpuPerc = parseInt(usage, 10) / 100;
-					root.gpuTemp = parseInt(temp, 10);
-					root.gpuMemUsed = parseInt(mem, 10) / root.gpuMemTotal;
 				} else {
 					root.gpuPerc = 0;
 					root.gpuTemp = 0;
@@ -343,7 +365,7 @@ Singleton {
 					// If AMD Tdie pattern failed, try fallback on Tctl
 					cpuTemp = text.match(/Tctl:\s+((\+|-)[0-9.]+)(°| )C/);
 
-				if (cpuTemp)
+				if (cpuTemp && Math.abs(parseFloat(cpuTemp[1]) - root.cpuTemp) >= 0.5)
 					root.cpuTemp = parseFloat(cpuTemp[1]);
 
 				if (root.gpuType !== "GENERIC")

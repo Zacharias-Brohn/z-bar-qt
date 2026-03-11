@@ -36,75 +36,58 @@ Item {
 	Component.onCompleted: animatedPercentage = percentage
 	onPercentageChanged: animatedPercentage = percentage
 
-	// Canvas {
-	// 	id: gaugeCanvas
-	//
-	// 	anchors.centerIn: parent
-	// 	height: width
-	// 	width: Math.min(parent.width, parent.height)
-	//
-	// 	Component.onCompleted: requestPaint()
-	// 	onPaint: {
-	// 		const ctx = getContext("2d");
-	// 		ctx.reset();
-	// 		const cx = width / 2;
-	// 		const cy = (height / 2) + 1;
-	// 		const radius = (Math.min(width, height) - 12) / 2;
-	// 		const lineWidth = 3;
-	// 		ctx.beginPath();
-	// 		ctx.arc(cx, cy, radius, root.arcStartAngle, root.arcStartAngle + root.arcSweep);
-	// 		ctx.lineWidth = lineWidth;
-	// 		ctx.lineCap = "round";
-	// 		ctx.strokeStyle = DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2);
-	// 		ctx.stroke();
-	// 		if (root.animatedPercentage > 0) {
-	// 			ctx.beginPath();
-	// 			ctx.arc(cx, cy, radius, root.arcStartAngle, root.arcStartAngle + root.arcSweep * root.animatedPercentage);
-	// 			ctx.lineWidth = lineWidth;
-	// 			ctx.lineCap = "round";
-	// 			ctx.strokeStyle = root.accentColor;
-	// 			ctx.stroke();
-	// 		}
-	// 	}
-	//
-	// 	Connections {
-	// 		function onAnimatedPercentageChanged() {
-	// 			gaugeCanvas.requestPaint();
-	// 		}
-	//
-	// 		target: root
-	// 	}
-	//
-	// 	Connections {
-	// 		function onPaletteChanged() {
-	// 			gaugeCanvas.requestPaint();
-	// 		}
-	//
-	// 		target: DynamicColors
-	// 	}
-	// }
+	Canvas {
+		id: gaugeCanvas
+
+		anchors.centerIn: parent
+		height: width
+		width: Math.min(parent.width, parent.height)
+
+		Component.onCompleted: requestPaint()
+		onPaint: {
+			const ctx = getContext("2d");
+			ctx.reset();
+			const cx = width / 2;
+			const cy = (height / 2) + 1;
+			const radius = (Math.min(width, height) - 12) / 2;
+			const lineWidth = 3;
+			ctx.beginPath();
+			ctx.arc(cx, cy, radius, root.arcStartAngle, root.arcStartAngle + root.arcSweep);
+			ctx.lineWidth = lineWidth;
+			ctx.lineCap = "round";
+			ctx.strokeStyle = DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2);
+			ctx.stroke();
+			if (root.animatedPercentage > 0) {
+				ctx.beginPath();
+				ctx.arc(cx, cy, radius, root.arcStartAngle, root.arcStartAngle + root.arcSweep * root.animatedPercentage);
+				ctx.lineWidth = lineWidth;
+				ctx.lineCap = "round";
+				ctx.strokeStyle = root.accentColor;
+				ctx.stroke();
+			}
+		}
+
+		Connections {
+			function onAnimatedPercentageChanged() {
+				gaugeCanvas.requestPaint();
+			}
+
+			target: root
+		}
+
+		Connections {
+			function onPaletteChanged() {
+				gaugeCanvas.requestPaint();
+			}
+
+			target: DynamicColors
+		}
+	}
 
 	MaterialIcon {
-		id: icon
-
 		anchors.centerIn: parent
 		color: DynamicColors.palette.m3onSurface
 		font.pointSize: 12
 		text: root.icon
-	}
-
-	CustomRect {
-		anchors.left: icon.right
-		color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
-		implicitHeight: parent.height
-		implicitWidth: 5
-		radius: Appearance.rounding.full
-
-		CustomRect {
-			anchors.bottom: parent.bottom
-			anchors.left: parent.left
-			anchors.right: parent.right
-			color: root.mainColor
-		}
 	}
 }
