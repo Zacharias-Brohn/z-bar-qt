@@ -45,7 +45,7 @@ CustomRect {
 
 		CustomRect {
 			Layout.fillWidth: true
-			color: "#50ffffff"
+			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 			implicitHeight: 4
 			radius: 20
 
@@ -74,7 +74,7 @@ CustomRect {
 
 		CustomRect {
 			Layout.fillWidth: true
-			color: "#50ffffff"
+			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 			implicitHeight: 4
 			radius: 20
 
