@@ -168,6 +168,7 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
+			desktopIcons: general.desktopIcons,
 			color: {
 				wallust: general.color.wallust,
 				mode: general.color.mode,

@@ -10,7 +10,7 @@ Singleton {
 	readonly property string cache: `${Quickshell.env("XDG_CACHE_HOME") || `${home}/.cache`}/zshell`
 	readonly property string config: `${Quickshell.env("XDG_CONFIG_HOME") || `${home}/.config`}/zshell`
 	readonly property string data: `${Quickshell.env("XDG_DATA_HOME") || `${home}/.local/share`}/zshell`
-	readonly property string desktop: `${Quickshell.env("XDG_DATA_HOME") || `${home}/Desktop`}`
+	readonly property string desktop: `${Quickshell.env("HOME")}/Desktop`
 	readonly property string home: Quickshell.env("HOME")
 	readonly property string imagecache: `${cache}/imagecache`
 	readonly property string libdir: Quickshell.env("ZSHELL_LIB_DIR") || "/usr/lib/zshell"

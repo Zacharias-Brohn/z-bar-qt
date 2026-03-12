@@ -2,6 +2,8 @@ import QtQuick
 import Quickshell
 import qs.Modules
 import qs.Helpers
+import qs.Config
+import qs.Components
 import qs.Paths
 import ZShell.Services
 
@@ -15,6 +17,7 @@ Item {
 	property string editingFilePath: ""
 	property real groupDragX: 0
 	property real groupDragY: 0
+	property bool lassoActive: false
 	property var selectedIcons: []
 	property real startX: 0
 	property real startY: 0
@@ -54,7 +57,6 @@ Item {
 		root.groupDragY = 0;
 	}
 
-	anchors.fill: parent
 	focus: true
 
 	Keys.onPressed: event => {
@@ -68,15 +70,55 @@ Item {
 		Component.onCompleted: loadDirectory(FileUtils.trimFileProtocol(Paths.desktop))
 	}
 
-	Rectangle {
+	CustomRect {
 		id: lasso
 
-		border.color: Appearance.colors.colPrimary
+		function hideLasso() {
+			fadeIn.stop();
+			fadeOut.start();
+			root.lassoActive = false;
+		}
+
+		function showLasso() {
+			root.lassoActive = true;
+			fadeOut.stop();
+			visible = true;
+			fadeIn.start();
+		}
+
+		border.color: DynamicColors.palette.m3primary
 		border.width: 1
 		color: DynamicColors.tPalette.m3primary
+		opacity: 0
 		radius: Appearance.rounding.small
 		visible: false
 		z: 99
+
+		NumberAnimation {
+			id: fadeIn
+
+			duration: 120
+			from: 0
+			property: "opacity"
+			target: lasso
+			to: 1
+		}
+
+		SequentialAnimation {
+			id: fadeOut
+
+			NumberAnimation {
+				duration: 120
+				from: lasso.opacity
+				property: "opacity"
+				target: lasso
+				to: 0
+			}
+
+			ScriptAction {
+				script: lasso.visible = false
+			}
+		}
 	}
 
 	MouseArea {
@@ -85,10 +127,10 @@ Item {
 
 		onPositionChanged: mouse => {
 			if (lasso.visible) {
-				lasso.x = Math.min(mouse.x, root.startX);
-				lasso.y = Math.min(mouse.y, root.startY);
-				lasso.width = Math.abs(mouse.x - root.startX);
-				lasso.height = Math.abs(mouse.y - root.startY);
+				lasso.x = Math.floor(Math.min(mouse.x, root.startX));
+				lasso.y = Math.floor(Math.min(mouse.y, root.startY));
+				lasso.width = Math.floor(Math.abs(mouse.x - root.startX));
+				lasso.height = Math.floor(Math.abs(mouse.y - root.startY));
 
 				let minCol = Math.floor((lasso.x - gridArea.x) / cellWidth);
 				let maxCol = Math.floor((lasso.x + lasso.width - gridArea.x) / cellWidth);
@@ -115,17 +157,17 @@ Item {
 			} else {
 				bgContextMenu.close();
 				root.selectedIcons = [];
-				root.startX = mouse.x;
-				root.startY = mouse.y;
-				lasso.x = mouse.x;
-				lasso.y = mouse.y;
+				root.startX = Math.floor(mouse.x);
+				root.startY = Math.floor(mouse.y);
+				lasso.x = Math.floor(mouse.x);
+				lasso.y = Math.floor(mouse.y);
 				lasso.width = 0;
 				lasso.height = 0;
-				lasso.visible = true;
+				lasso.showLasso();
 			}
 		}
 		onReleased: {
-			lasso.visible = false;
+			lasso.hideLasso();
 		}
 	}
 
@@ -142,6 +184,8 @@ Item {
 
 			delegate: DesktopIconDelegate {
 				property int itemIndex: index
+
+				lassoActive: root.lassoActive
 			}
 		}
 	}

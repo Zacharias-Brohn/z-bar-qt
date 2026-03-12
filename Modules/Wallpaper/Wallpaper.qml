@@ -32,7 +32,14 @@ Loader {
 			WallBackground {
 			}
 
-			DesktopIcons {
+			Loader {
+				id: loader
+
+				active: Config.general.desktopIcons
+				anchors.fill: parent
+
+				sourceComponent: DesktopIcons {
+				}
 			}
 		}
 	}

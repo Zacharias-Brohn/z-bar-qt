@@ -6,6 +6,7 @@ JsonObject {
 	}
 	property Color color: Color {
 	}
+	property bool desktopIcons: false
 	property Idle idle: Idle {
 	}
 	property string logo: ""

@@ -15,6 +15,7 @@ Item {
 	property int gridX: model.gridX
 	property int gridY: model.gridY
 	property bool isSnapping: snapAnimX.running || snapAnimY.running
+	property bool lassoActive
 	property string resolvedIcon: {
 		if (fileName.endsWith(".desktop")) {
 			if (appEntry && appEntry.icon && appEntry.icon !== "")
@@ -214,7 +215,7 @@ Item {
 
 			acceptedButtons: Qt.LeftButton | Qt.RightButton
 			anchors.fill: parent
-			cursorShape: Qt.PointingHandCursor
+			cursorShape: root.lassoActive ? undefined : Qt.PointingHandCursor
 			drag.target: dragContainer
 			hoverEnabled: true
 
