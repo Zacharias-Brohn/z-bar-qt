@@ -9,64 +9,82 @@ Singleton {
 	id: root
 
 	property list<var> apps: {
-		var map = new Map();
+		const pinnedApps = uniq((Config.dock.pinnedApps ?? []).map(normalizeId));
+		const openMap = buildOpenMap();
+		const openIds = [...openMap.keys()];
+		const sessionOrder = uniq(root.unpinnedOrder.map(normalizeId));
 
-		// Pinned apps
-		const pinnedApps = Config.dock.pinnedApps ?? [];
-		for (const appId of pinnedApps) {
-			if (!map.has(appId.toLowerCase()))
-				map.set(appId.toLowerCase(), ({
-						pinned: true,
-						toplevels: []
-					}));
-		}
+		const orderedUnpinned = sessionOrder.filter(id => openIds.includes(id) && !pinnedApps.includes(id)).concat(openIds.filter(id => !pinnedApps.includes(id) && !sessionOrder.includes(id)));
 
-		// Separator
-		if (pinnedApps.length > 0) {
-			map.set("SEPARATOR", {
+		return [].concat(pinnedApps.map(appId => appEntryComp.createObject(null, {
+				appId,
+				pinned: true,
+				toplevels: openMap.get(appId) ?? []
+			}))).concat(pinnedApps.length > 0 ? [appEntryComp.createObject(null, {
+				appId: root.separatorId,
 				pinned: false,
 				toplevels: []
-			});
-		}
+			})] : []).concat(orderedUnpinned.map(appId => appEntryComp.createObject(null, {
+				appId,
+				pinned: false,
+				toplevels: openMap.get(appId) ?? []
+			})));
+	}
+	readonly property string separatorId: "__dock_separator__"
+	property var unpinnedOrder: []
 
-		// Ignored apps
-		const ignoredRegexStrings = Config.dock.ignoredAppRegexes ?? [];
-		const ignoredRegexes = ignoredRegexStrings.map(pattern => new RegExp(pattern, "i"));
-		// Open windows
-		for (const toplevel of ToplevelManager.toplevels.values) {
+	function buildOpenMap() {
+		const ignoredRegexes = (Config.dock.ignoredAppRegexes ?? []).map(pattern => new RegExp(pattern, "i"));
+
+		return ToplevelManager.toplevels.values.reduce((map, toplevel) => {
 			if (ignoredRegexes.some(re => re.test(toplevel.appId)))
-				continue;
-			if (!map.has(toplevel.appId.toLowerCase()))
-				map.set(toplevel.appId.toLowerCase(), ({
-						pinned: false,
-						toplevels: []
-					}));
-			map.get(toplevel.appId.toLowerCase()).toplevels.push(toplevel);
-		}
+				return map;
 
-		var values = [];
+			const appId = normalizeId(toplevel.appId);
+			if (!appId)
+				return map;
 
-		for (const [key, value] of map) {
-			values.push(appEntryComp.createObject(null, {
-				appId: key,
-				toplevels: value.toplevels,
-				pinned: value.pinned
-			}));
-		}
+			map.set(appId, (map.get(appId) ?? []).concat([toplevel]));
+			return map;
+		}, new Map());
+	}
 
-		return values;
+	function commitVisualOrder(ids) {
+		const orderedIds = uniq(ids.map(normalizeId));
+		const separatorIndex = orderedIds.indexOf(root.separatorId);
+
+		const pinnedApps = (separatorIndex === -1 ? [] : orderedIds.slice(0, separatorIndex)).filter(id => id !== root.separatorId);
+
+		const visibleUnpinned = orderedIds.slice(separatorIndex === -1 ? 0 : separatorIndex + 1).filter(id => id !== root.separatorId);
+
+		Config.dock.pinnedApps = pinnedApps;
+		root.unpinnedOrder = visibleUnpinned.concat(root.unpinnedOrder.map(normalizeId).filter(id => !pinnedApps.includes(id) && !visibleUnpinned.includes(id)));
+		Config.saveNoToast();
 	}
 
 	function isPinned(appId) {
-		return Config.dock.pinnedApps.indexOf(appId) !== -1;
+		return uniq((Config.dock.pinnedApps ?? []).map(normalizeId)).includes(normalizeId(appId));
+	}
+
+	function normalizeId(appId) {
+		if (appId === root.separatorId)
+			return root.separatorId;
+
+		return String(appId ?? "").toLowerCase();
 	}
 
 	function togglePin(appId) {
-		if (root.isPinned(appId)) {
-			Config.dock.pinnedApps = Config.dock.pinnedApps.filter(id => id !== appId);
-		} else {
-			Config.dock.pinnedApps = Config.dock.pinnedApps.concat([appId]);
-		}
+		const id = normalizeId(appId);
+		const pinnedApps = uniq((Config.dock.pinnedApps ?? []).map(normalizeId));
+		const pinned = pinnedApps.includes(id);
+
+		Config.dock.pinnedApps = pinned ? pinnedApps.filter(x => x !== id) : pinnedApps.concat([id]);
+
+		root.unpinnedOrder = pinned ? [id].concat(root.unpinnedOrder.map(normalizeId).filter(x => x !== id)) : root.unpinnedOrder.map(normalizeId).filter(x => x !== id);
+	}
+
+	function uniq(ids) {
+		return (ids ?? []).filter((id, i, arr) => id && arr.indexOf(id) === i);
 	}
 
 	Component {
@@ -77,8 +95,6 @@ Singleton {
 	}
 
 	component TaskbarAppEntry: QtObject {
-		id: wrapper
-
 		required property string appId
 		required property bool pinned
 		required property list<var> toplevels

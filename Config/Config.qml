@@ -33,6 +33,10 @@ Singleton {
 		recentSaveCooldown.restart();
 	}
 
+	function saveNoToast(): void {
+		saveTimer.restart();
+	}
+
 	function serializeAppearance(): var {
 		return {
 			rounding: {

@@ -96,7 +96,8 @@ Item {
                     anchors.fill: parent
 
                     onClicked: {
-                        Quickshell.execDetached(["qs", "-p", "/usr/share/sleex/settings.qml"])
+                        const visibilities = Visibilities.getForActive();
+						visibilities.settings = true;
                         root.close()
                     }
                 }
