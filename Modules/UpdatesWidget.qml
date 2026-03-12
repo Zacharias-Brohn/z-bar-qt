@@ -22,7 +22,7 @@ CustomRect {
 		spacing: Appearance.spacing.small
 
 		MaterialIcon {
-			font.pointSize: Appearance.font.size.normal
+			font.pointSize: Appearance.font.size.larger
 			text: "package_2"
 		}
 

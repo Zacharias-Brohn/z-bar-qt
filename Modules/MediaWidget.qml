@@ -41,7 +41,7 @@ CustomRect {
 		MaterialIcon {
 			animate: true
 			color: Players.active?.isPlaying ? DynamicColors.palette.m3primary : DynamicColors.palette.m3onSurface
-			font.pointSize: Appearance.font.size.normal
+			font.pointSize: Appearance.font.size.larger
 			text: Players.active?.isPlaying ? "music_note" : "music_off"
 		}
 
