@@ -33,7 +33,7 @@ Variants {
 			property var root: Quickshell.shellDir
 
 			WlrLayershell.exclusionMode: ExclusionMode.Ignore
-			WlrLayershell.keyboardFocus: visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+			WlrLayershell.keyboardFocus: visibilities.dock || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || visibilities.resources ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 			color: "transparent"
 			contentItem.focus: true
 			mask: visibilities.isDrawing ? null : region
@@ -94,7 +94,7 @@ Variants {
 			HyprlandFocusGrab {
 				id: focusGrab
 
-				active: visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
+				active: visibilities.dock || visibilities.resources || visibilities.launcher || visibilities.sidebar || visibilities.dashboard || visibilities.settings || (panels.popouts.hasCurrent && panels.popouts.currentName.startsWith("traymenu"))
 				windows: [win]
 
 				onCleared: {
@@ -104,6 +104,7 @@ Variants {
 					visibilities.osd = false;
 					visibilities.settings = false;
 					visibilities.resources = false;
+					visibilities.dock = false;
 					panels.popouts.hasCurrent = false;
 				}
 			}
@@ -113,6 +114,7 @@ Variants {
 
 				property bool bar
 				property bool dashboard
+				property bool dock
 				property bool isDrawing
 				property bool launcher
 				property bool notif: NotifServer.popups.length > 0

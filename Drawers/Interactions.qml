@@ -107,6 +107,9 @@ CustomMouseArea {
 			}
 		}
 
+		if (!visibilities.dock && !visibilities.launcher && inBottomPanel(panels.dock, x, y))
+			visibilities.dock = true;
+
 		if (y < root.bar.implicitHeight) {
 			root.bar.checkPopout(x);
 		}
@@ -145,6 +148,9 @@ CustomMouseArea {
 					root.panels.osd.hovered = false;
 				}
 			}
+
+			if (root.visibilities.launcher)
+				root.visibilities.dock = false;
 		}
 
 		function onOsdChanged() {

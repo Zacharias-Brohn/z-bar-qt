@@ -12,6 +12,7 @@ import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
 import qs.Modules.Settings as Settings
 import qs.Modules.Drawing as Drawing
+import qs.Modules.Dock as Dock
 import qs.Config
 
 Item {
@@ -19,6 +20,7 @@ Item {
 
 	required property Item bar
 	readonly property alias dashboard: dashboard
+	readonly property alias dock: dock
 	readonly property alias drawing: drawing
 	required property Canvas drawingItem
 	readonly property alias launcher: launcher
@@ -141,6 +143,16 @@ Item {
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: parent.top
 		panels: root
+		visibilities: root.visibilities
+	}
+
+	Dock.Wrapper {
+		id: dock
+
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		panels: root
+		screen: root.screen
 		visibilities: root.visibilities
 	}
 }

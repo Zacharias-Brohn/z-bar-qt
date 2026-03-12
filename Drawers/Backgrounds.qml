@@ -13,6 +13,7 @@ import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
 import qs.Modules.Drawing as Drawing
 import qs.Modules.Settings as Settings
+import qs.Modules.Dock as Dock
 
 Shape {
 	id: root
@@ -24,6 +25,7 @@ Shape {
 	anchors.fill: parent
 	anchors.margins: Config.barConfig.border
 	anchors.topMargin: bar.implicitHeight
+	asynchronous: true
 	preferredRendererType: Shape.CurveRenderer
 
 	Drawing.Background {
@@ -92,5 +94,13 @@ Shape {
 		startX: (root.width - wrapper.width) / 2 - rounding
 		startY: 0
 		wrapper: root.panels.settings
+	}
+
+	Dock.Background {
+		id: dock
+
+		startX: (root.width - wrapper.width) / 2 - rounding
+		startY: root.height
+		wrapper: root.panels.dock
 	}
 }
