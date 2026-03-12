@@ -157,7 +157,6 @@ Singleton {
 		return {
 			enable: dock.enable,
 			height: dock.height,
-			hoverRegionHeight: dock.hoverRegionHeight,
 			hoverToReveal: dock.hoverToReveal,
 			pinnedApps: dock.pinnedApps,
 			pinnedOnStartup: dock.pinnedOnStartup,
