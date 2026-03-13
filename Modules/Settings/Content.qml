@@ -12,8 +12,8 @@ Item {
 	id: root
 
 	property string currentCategory: "general"
-	readonly property real nonAnimHeight: (screen.height - 400) + viewWrapper.anchors.margins * 2
-	readonly property real nonAnimWidth: view.implicitWidth + (screen.width - 400 * 2) + viewWrapper.anchors.margins * 2
+	readonly property real nonAnimHeight: Math.floor(screen.height / 1.5) + viewWrapper.anchors.margins * 2
+	readonly property real nonAnimWidth: view.implicitWidth + Math.floor(screen.width / 2) + viewWrapper.anchors.margins * 2
 	required property ShellScreen screen
 	required property PersistentProperties visibilities
 
@@ -35,12 +35,12 @@ Item {
 		target: root
 	}
 
-	ClippingRectangle {
+	CustomClippingRect {
 		id: viewWrapper
 
 		anchors.fill: parent
 		anchors.margins: Appearance.padding.smaller
-		color: "transparent"
+		radius: Appearance.rounding.large - Appearance.padding.smaller
 
 		Item {
 			id: view
@@ -68,7 +68,7 @@ Item {
 			anchors.right: parent.right
 			anchors.top: parent.top
 			color: DynamicColors.tPalette.m3surfaceContainer
-			radius: 4
+			radius: Appearance.rounding.normal
 
 			StackView {
 				id: stack

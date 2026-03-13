@@ -20,10 +20,11 @@ CustomFlickable {
 		anchors.left: parent.left
 		anchors.right: parent.right
 
-		CustomRect {
+		CustomClippingRect {
 			Layout.fillWidth: true
 			Layout.preferredHeight: colorLayout.implicitHeight + Appearance.padding.normal * 2
 			color: DynamicColors.tPalette.m3surfaceContainer
+			radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 			ColumnLayout {
 				id: colorLayout
@@ -106,10 +107,11 @@ CustomFlickable {
 			}
 		}
 
-		CustomRect {
+		CustomClippingRect {
 			Layout.fillWidth: true
 			Layout.preferredHeight: idleLayout.implicitHeight + Appearance.padding.normal * 2
 			color: DynamicColors.tPalette.m3surfaceContainer
+			radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 			Idle {
 				id: idleLayout
@@ -129,7 +131,6 @@ CustomFlickable {
 
 		Layout.preferredHeight: 60
 		Layout.preferredWidth: 200
-		radius: 4
 
 		CustomText {
 			id: text

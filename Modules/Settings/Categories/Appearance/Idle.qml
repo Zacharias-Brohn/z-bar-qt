@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import qs.Components
@@ -35,7 +37,7 @@ ColumnLayout {
 	spacing: Appearance.spacing.smaller
 
 	Repeater {
-		model: Config.general.idle.timeouts
+		model: [...Config.general.idle.timeouts]
 
 		SettingList {
 			Layout.fillWidth: true
@@ -49,8 +51,9 @@ ColumnLayout {
 		}
 	}
 
-	CustomButton {
-		text: qsTr("Add timeout entry")
+	IconButton {
+		font.pointSize: Appearance.font.size.large
+		icon: "add"
 
 		onClicked: root.addTimeoutEntry()
 	}

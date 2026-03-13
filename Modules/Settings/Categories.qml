@@ -86,10 +86,10 @@ Item {
 		}
 	}
 
-	CustomRect {
+	CustomClippingRect {
 		anchors.fill: parent
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: 4
+		radius: Appearance.rounding.normal
 
 		CustomListView {
 			id: clayout

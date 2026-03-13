@@ -34,11 +34,86 @@ Item {
 		anchors.verticalCenter: parent.verticalCenter
 		spacing: Appearance.spacing.large
 
-		CustomText {
-			Layout.alignment: Qt.AlignLeft
+		Item {
+			id: nameCell
+
+			property string draftName: ""
+			property bool editing: false
+
+			function beginEdit() {
+				draftName = root.modelData.name ?? "";
+				editing = true;
+				nameEditor.forceActiveFocus();
+			}
+
+			function cancelEdit() {
+				draftName = root.modelData.name ?? "";
+				editing = false;
+			}
+
+			function commitEdit() {
+				editing = false;
+
+				if (draftName !== (root.modelData.name ?? "")) {
+					root.fieldEdited("name", draftName);
+				}
+			}
+
+			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+			Layout.fillHeight: true
 			Layout.preferredWidth: root.width / 2
-			font.pointSize: Appearance.font.size.larger
-			text: root.modelData.name
+
+			HoverHandler {
+				id: nameHover
+
+			}
+
+			CustomText {
+				anchors.left: parent.left
+				anchors.right: editButton.left
+				anchors.rightMargin: Appearance.spacing.small
+				anchors.verticalCenter: parent.verticalCenter
+				elide: Text.ElideRight    // enable if CustomText supports it
+				font.pointSize: Appearance.font.size.larger
+				text: root.modelData.name
+				visible: !nameCell.editing
+			}
+
+			IconButton {
+				id: editButton
+
+				anchors.right: parent.right
+				anchors.verticalCenter: parent.verticalCenter
+				font.pointSize: Appearance.font.size.large
+				icon: "edit"
+				visible: nameHover.hovered && !nameCell.editing
+
+				onClicked: nameCell.beginEdit()
+			}
+
+			CustomRect {
+				anchors.fill: parent
+				color: DynamicColors.tPalette.m3surface
+				radius: Appearance.rounding.small
+				visible: nameCell.editing
+
+				CustomTextField {
+					id: nameEditor
+
+					anchors.fill: parent
+					text: nameCell.draftName
+
+					Keys.onEscapePressed: {
+						nameCell.cancelEdit();
+					}
+					onEditingFinished: {
+						nameCell.commitEdit();
+					}
+					onTextEdited: {
+						nameCell.draftName = nameEditor.text;
+					}
+				}
+			}
 		}
 
 		VSeparator {
