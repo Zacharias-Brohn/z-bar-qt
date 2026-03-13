@@ -8,7 +8,7 @@ import qs.Config
 Singleton {
 	id: root
 
-	property list<var> apps: {
+	property var apps: {
 		const pinnedApps = uniq((Config.dock.pinnedApps ?? []).map(normalizeId));
 		const openMap = buildOpenMap();
 		const openIds = [...openMap.keys()];
@@ -16,19 +16,33 @@ Singleton {
 
 		const orderedUnpinned = sessionOrder.filter(id => openIds.includes(id) && !pinnedApps.includes(id)).concat(openIds.filter(id => !pinnedApps.includes(id) && !sessionOrder.includes(id)));
 
-		return [].concat(pinnedApps.map(appId => appEntryComp.createObject(null, {
+		const out = [];
+
+		for (const appId of pinnedApps) {
+			out.push({
 				appId,
 				pinned: true,
 				toplevels: openMap.get(appId) ?? []
-			}))).concat(pinnedApps.length > 0 ? [appEntryComp.createObject(null, {
+			});
+		}
+
+		if (pinnedApps.length > 0) {
+			out.push({
 				appId: root.separatorId,
 				pinned: false,
 				toplevels: []
-			})] : []).concat(orderedUnpinned.map(appId => appEntryComp.createObject(null, {
+			});
+		}
+
+		for (const appId of orderedUnpinned) {
+			out.push({
 				appId,
 				pinned: false,
 				toplevels: openMap.get(appId) ?? []
-			})));
+			});
+		}
+
+		return out;
 	}
 	readonly property string separatorId: "__dock_separator__"
 	property var unpinnedOrder: []
@@ -85,18 +99,5 @@ Singleton {
 
 	function uniq(ids) {
 		return (ids ?? []).filter((id, i, arr) => id && arr.indexOf(id) === i);
-	}
-
-	Component {
-		id: appEntryComp
-
-		TaskbarAppEntry {
-		}
-	}
-
-	component TaskbarAppEntry: QtObject {
-		required property string appId
-		required property bool pinned
-		required property list<var> toplevels
 	}
 }

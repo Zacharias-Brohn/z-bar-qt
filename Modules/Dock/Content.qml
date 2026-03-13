@@ -24,6 +24,7 @@ Item {
 	readonly property int padding: Appearance.padding.small
 	required property var panels
 	readonly property int rounding: Appearance.rounding.large
+	required property ShellScreen screen
 	required property PersistentProperties visibilities
 	property var visualIds: []
 
@@ -87,6 +88,7 @@ Item {
 			readonly property string appId: modelData.appId
 			readonly property bool isSeparator: appId === TaskbarApps.separatorId
 			required property var modelData
+			property bool removing: false
 
 			function previewReorder(drag) {
 				const source = drag.source;
@@ -102,11 +104,51 @@ Item {
 				root.previewVisualMove(from, hovered, drag.x < width / 2);
 			}
 
-			height: Config.dock.height
-			width: isSeparator ? 1 : Config.dock.height
+			function startDetachedRemove() {
+				const p = mapToItem(removalLayer, 0, 0);
 
+				removing = true;
+				ListView.delayRemove = true;
+
+				parent = removalLayer;
+				x = p.x;
+				y = p.y;
+
+				removeAnim.start();
+			}
+
+			height: Config.dock.height
+			transformOrigin: Item.Center
+			width: isSeparator ? 1 : Config.dock.height
+			z: removing ? 1 : 0
+
+			ListView.onRemove: startDetachedRemove()
 			onEntered: drag => previewReorder(drag)
 			onPositionChanged: drag => previewReorder(drag)
+
+			SequentialAnimation {
+				id: removeAnim
+
+				ParallelAnimation {
+					Anim {
+						property: "opacity"
+						target: slot
+						to: 0
+					}
+
+					Anim {
+						property: "scale"
+						target: slot
+						to: 0.5
+					}
+				}
+
+				ScriptAction {
+					script: {
+						slot.ListView.delayRemove = false;
+					}
+				}
+			}
 
 			DockAppButton {
 				id: button
@@ -121,7 +163,7 @@ Item {
 			DragHandler {
 				id: dragHandler
 
-				enabled: !slot.isSeparator
+				enabled: !slot.isSeparator && !slot.removing
 				grabPermissions: PointerHandler.CanTakeOverFromAnything
 				target: null
 				xAxis.enabled: true
@@ -160,24 +202,72 @@ Item {
 	CustomListView {
 		id: dockRow
 
-		anchors.centerIn: parent
+		property bool enableAddAnimation: false
+
+		anchors.left: parent.left
+		anchors.margins: Appearance.padding.small
+		anchors.top: parent.top
 		boundsBehavior: Flickable.StopAtBounds
-		implicitHeight: Config.dock.height
-		implicitWidth: root.dockContentWidth
+		height: Config.dock.height
+		implicitWidth: root.dockContentWidth + Config.dock.height
 		interactive: !root.dragActive
 		model: visualModel
 		orientation: ListView.Horizontal
 		spacing: Appearance.padding.smaller
 
-		Behavior on implicitWidth {
-			Anim {
+		add: Transition {
+			ParallelAnimation {
+				Anim {
+					duration: dockRow.enableAddAnimation ? Appearance.anim.durations.normal : 0
+					from: 0
+					property: "opacity"
+					to: 1
+				}
+
+				Anim {
+					duration: dockRow.enableAddAnimation ? Appearance.anim.durations.normal : 0
+					from: 0.5
+					property: "scale"
+					to: 1
+				}
 			}
 		}
-		moveDisplaced: Transition {
+		displaced: Transition {
 			Anim {
+				duration: Appearance.anim.durations.small
 				properties: "x,y"
 			}
 		}
+		move: Transition {
+			Anim {
+				duration: Appearance.anim.durations.small
+				properties: "x,y"
+			}
+		}
+		remove: Transition {
+			ParallelAnimation {
+				Anim {
+					property: "opacity"
+					to: 0
+				}
+
+				Anim {
+					property: "scale"
+					to: 0.5
+				}
+			}
+		}
+
+		Component.onCompleted: {
+			Qt.callLater(() => enableAddAnimation = true);
+		}
+	}
+
+	Item {
+		id: removalLayer
+
+		anchors.fill: parent
+		z: 9998
 	}
 
 	Item {

@@ -9,7 +9,11 @@ import qs.Config
 Singleton {
 	id: root
 
-	readonly property list<DesktopEntry> list: Array.from(DesktopEntries.applications.values).sort((a, b) => a.name.localeCompare(b.name))
+	readonly property list<DesktopEntry> list: Array.from(DesktopEntries.applications.values).filter((app, index, self) => index === self.findIndex(t => (t.id === app.id)))
+	readonly property var preppedIcons: list.map(a => ({
+				name: Fuzzy.prepare(`${a.icon} `),
+				entry: a
+			}))
 	readonly property var preppedNames: list.map(a => ({
 				name: Fuzzy.prepare(`${a.name} `),
 				entry: a
@@ -32,8 +36,8 @@ Singleton {
 			"replace": "system-lock-screen"
 		}
 	]
-	property real scoreThreshold: 0.2
-	property bool sloppySearch: Config.options?.search.sloppy ?? false
+	readonly property real scoreGapThreshold: 0.1
+	readonly property real scoreThreshold: 0.6
 	property var substitutions: ({
 			"code-url-handler": "visual-studio-code",
 			"Code": "visual-studio-code",
@@ -41,46 +45,65 @@ Singleton {
 			"pavucontrol-qt": "pavucontrol",
 			"wps": "wps-office2019-kprometheus",
 			"wpsoffice": "wps-office2019-kprometheus",
-			"footclient": "foot",
-			"zen": "zen-browser"
+			"footclient": "foot"
 		})
 
-	signal reload
-
-	function computeScore(...args) {
-		return Levendist.computeScore(...args);
-	}
-
-	function computeTextMatchScore(...args) {
-		return Levendist.computeTextMatchScore(...args);
-	}
-
-	function fuzzyQuery(search: string): var { // Idk why list<DesktopEntry> doesn't work
-		if (root.sloppySearch) {
-			const results = list.map(obj => ({
-						entry: obj,
-						score: computeScore(obj.name.toLowerCase(), search.toLowerCase())
-					})).filter(item => item.score > root.scoreThreshold).sort((a, b) => b.score - a.score);
-			return results.map(item => item.entry);
-		}
-
-		return Fuzzy.go(search, preppedNames, {
-			all: true,
-			key: "name"
-		}).map(r => {
-			return r.obj.entry;
+	function bestFuzzyEntry(search: string, preppedList: list<var>, key: string): var {
+		const results = Fuzzy.go(search, preppedList, {
+			key: key,
+			threshold: root.scoreThreshold,
+			limit: 2
 		});
+
+		if (!results || results.length === 0)
+			return null;
+
+		const best = results[0];
+		const second = results.length > 1 ? results[1] : null;
+
+		if (second && (best.score - second.score) < root.scoreGapThreshold)
+			return null;
+
+		return best.obj.entry;
+	}
+
+	function fuzzyQuery(search: string, preppedList: list<var>): var {
+		const entry = bestFuzzyEntry(search, preppedList, "name");
+		return entry ? [entry] : [];
+	}
+
+	function getKebabNormalizedAppName(str: string): string {
+		return str.toLowerCase().replace(/\s+/g, "-");
+	}
+
+	function getReverseDomainNameAppName(str: string): string {
+		return str.split('.').slice(-1)[0];
+	}
+
+	function getUndescoreToKebabAppName(str: string): string {
+		return str.toLowerCase().replace(/_/g, "-");
 	}
 
 	function guessIcon(str) {
 		if (!str || str.length == 0)
 			return "image-missing";
 
-		// Normal substitutions
+		if (iconExists(str))
+			return str;
+
+		const entry = DesktopEntries.byId(str);
+		if (entry)
+			return entry.icon;
+
+		const heuristicEntry = DesktopEntries.heuristicLookup(str);
+		if (heuristicEntry)
+			return heuristicEntry.icon;
+
 		if (substitutions[str])
 			return substitutions[str];
+		if (substitutions[str.toLowerCase()])
+			return substitutions[str.toLowerCase()];
 
-		// Regex substitutions
 		for (let i = 0; i < regexSubstitutions.length; i++) {
 			const substitution = regexSubstitutions[i];
 			const replacedName = str.replace(substitution.regex, substitution.replace);
@@ -88,30 +111,35 @@ Singleton {
 				return replacedName;
 		}
 
-		// If it gets detected normally, no need to guess
-		if (iconExists(str))
-			return str;
+		const lowercased = str.toLowerCase();
+		if (iconExists(lowercased))
+			return lowercased;
 
-		let guessStr = str;
-		// Guess: Take only app name of reverse domain name notation
-		guessStr = str.split('.').slice(-1)[0].toLowerCase();
-		if (iconExists(guessStr))
-			return guessStr;
-		// Guess: normalize to kebab case
-		guessStr = str.toLowerCase().replace(/\s+/g, "-");
-		if (iconExists(guessStr))
-			return guessStr;
-		// Guess: First fuzze desktop entry match
-		const searchResults = root.fuzzyQuery(str);
-		if (searchResults.length > 0) {
-			const firstEntry = searchResults[0];
-			guessStr = firstEntry.icon;
-			if (iconExists(guessStr))
-				return guessStr;
-		}
+		const reverseDomainNameAppName = getReverseDomainNameAppName(str);
+		if (iconExists(reverseDomainNameAppName))
+			return reverseDomainNameAppName;
 
-		// Give up
-		return str;
+		const lowercasedDomainNameAppName = reverseDomainNameAppName.toLowerCase();
+		if (iconExists(lowercasedDomainNameAppName))
+			return lowercasedDomainNameAppName;
+
+		const kebabNormalizedGuess = getKebabNormalizedAppName(str);
+		if (iconExists(kebabNormalizedGuess))
+			return kebabNormalizedGuess;
+
+		const undescoreToKebabGuess = getUndescoreToKebabAppName(str);
+		if (iconExists(undescoreToKebabGuess))
+			return undescoreToKebabGuess;
+
+		const iconSearchResult = fuzzyQuery(str, preppedIcons);
+		if (iconSearchResult && iconExists(iconSearchResult.icon))
+			return iconSearchResult.icon;
+
+		const nameSearchResult = root.fuzzyQuery(str, preppedNames);
+		if (nameSearchResult && iconExists(nameSearchResult.icon))
+			return nameSearchResult.icon;
+
+		return "application-x-executable";
 	}
 
 	function iconExists(iconName) {

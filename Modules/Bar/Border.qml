@@ -17,7 +17,7 @@ Item {
 
 	CustomRect {
 		anchors.fill: parent
-		color: Config.barConfig.border === 1 ? "transparent" : DynamicColors.palette.m3surface
+		color: !root.bar.isHovered && Config.barConfig.autoHide ? "transparent" : DynamicColors.palette.m3surface
 		layer.enabled: true
 
 		layer.effect: MultiEffect {
