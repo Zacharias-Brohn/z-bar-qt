@@ -143,6 +143,7 @@ Item {
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: parent.top
 		panels: root
+		screen: root.screen
 		visibilities: root.visibilities
 	}
 

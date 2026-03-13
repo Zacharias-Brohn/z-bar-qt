@@ -12,8 +12,9 @@ Item {
 	id: root
 
 	property string currentCategory: "general"
-	readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
-	readonly property real nonAnimWidth: view.implicitWidth + 700 + viewWrapper.anchors.margins * 2
+	readonly property real nonAnimHeight: (screen.height - 400) + viewWrapper.anchors.margins * 2
+	readonly property real nonAnimWidth: view.implicitWidth + (screen.width - 400 * 2) + viewWrapper.anchors.margins * 2
+	required property ShellScreen screen
 	required property PersistentProperties visibilities
 
 	implicitHeight: nonAnimHeight

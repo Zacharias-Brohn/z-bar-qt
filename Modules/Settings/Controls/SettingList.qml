@@ -6,11 +6,24 @@ import qs.Config
 Item {
 	id: root
 
-	required property list<var> modelData
-	required property string name
+	required property int index
+	required property var modelData
+
+	signal addActiveActionRequested
+	signal fieldEdited(string key, var value)
 
 	Layout.fillWidth: true
 	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
+
+	CustomRect {
+		anchors.left: parent.left
+		anchors.right: parent.right
+		anchors.top: parent.top
+		anchors.topMargin: -(Appearance.spacing.smaller / 2)
+		color: DynamicColors.tPalette.m3outlineVariant
+		implicitHeight: 1
+		visible: root.index !== 0
+	}
 
 	RowLayout {
 		id: row
@@ -19,14 +32,13 @@ Item {
 		anchors.margins: Appearance.padding.small
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
+		spacing: Appearance.spacing.large
 
 		CustomText {
-			id: text
-
 			Layout.alignment: Qt.AlignLeft
-			Layout.fillWidth: true
+			Layout.preferredWidth: root.width / 2
 			font.pointSize: Appearance.font.size.larger
-			text: root.name
+			text: root.modelData.name
 		}
 
 		VSeparator {
@@ -35,21 +47,17 @@ Item {
 		ColumnLayout {
 			id: cLayout
 
-			RowLayout {
-				id: timeLayout
+			Layout.fillWidth: true
 
+			RowLayout {
 				Layout.fillWidth: true
 
 				CustomText {
-					id: timeText
-
 					Layout.fillWidth: true
-					text: root.modelData.name
+					text: qsTr("Timeout")
 				}
 
 				CustomRect {
-					id: timeRect
-
 					Layout.preferredHeight: 33
 					Layout.preferredWidth: Math.max(Math.min(timeField.contentWidth + Appearance.padding.normal * 3, 200), 50)
 					color: DynamicColors.tPalette.m3surface
@@ -60,11 +68,10 @@ Item {
 
 						anchors.centerIn: parent
 						horizontalAlignment: Text.AlignHCenter
-						text: root.modelData.timeout
+						text: String(root.modelData.timeout ?? "")
 
 						onEditingFinished: {
-							root.modelData.timeout = timeField.text;
-							Config.save();
+							root.fieldEdited("timeout", Number(text));
 						}
 					}
 				}
@@ -74,20 +81,14 @@ Item {
 			}
 
 			RowLayout {
-				id: idleLayout
-
 				Layout.fillWidth: true
 
 				CustomText {
-					id: idleText
-
 					Layout.fillWidth: true
-					text: root.modelData.name
+					text: qsTr("Idle Action")
 				}
 
 				CustomRect {
-					id: idleRect
-
 					Layout.preferredHeight: 33
 					Layout.preferredWidth: Math.max(Math.min(idleField.contentWidth + Appearance.padding.normal * 3, 200), 50)
 					color: DynamicColors.tPalette.m3surface
@@ -98,11 +99,10 @@ Item {
 
 						anchors.centerIn: parent
 						horizontalAlignment: Text.AlignHCenter
-						text: root.modelData.idleAction
+						text: root.modelData.idleAction ?? ""
 
 						onEditingFinished: {
-							root.modelData.idleAction = idleField.text;
-							Config.save();
+							root.fieldEdited("idleAction", text);
 						}
 					}
 				}
@@ -111,25 +111,23 @@ Item {
 			Separator {
 			}
 
-			Loader {
-				id: loader
-
+			Item {
 				Layout.fillWidth: true
-				active: root.modelData.activeAction ?? false
+				implicitHeight: activeActionRow.visible ? activeActionRow.implicitHeight : addButtonRow.implicitHeight
 
 				RowLayout {
-					id: actionLayout
+					id: activeActionRow
+
+					anchors.left: parent.left
+					anchors.right: parent.right
+					visible: root.modelData.activeAction !== undefined
 
 					CustomText {
-						id: actionText
-
 						Layout.fillWidth: true
-						text: root.modelData.name
+						text: qsTr("Active Action")
 					}
 
 					CustomRect {
-						id: actionRect
-
 						Layout.preferredHeight: 33
 						Layout.preferredWidth: Math.max(Math.min(actionField.contentWidth + Appearance.padding.normal * 3, 200), 50)
 						color: DynamicColors.tPalette.m3surface
@@ -140,13 +138,30 @@ Item {
 
 							anchors.centerIn: parent
 							horizontalAlignment: Text.AlignHCenter
-							text: root.modelData.activeAction
+							text: root.modelData.activeAction ?? ""
 
 							onEditingFinished: {
-								root.modelData.activeAction = actionField.text;
-								Config.save();
+								root.fieldEdited("activeAction", text);
 							}
 						}
+					}
+				}
+
+				RowLayout {
+					id: addButtonRow
+
+					anchors.left: parent.left
+					anchors.right: parent.right
+					visible: root.modelData.activeAction === undefined
+
+					Item {
+						Layout.fillWidth: true
+					}
+
+					CustomButton {
+						text: qsTr("Add active action")
+
+						onClicked: root.addActiveActionRequested()
 					}
 				}
 			}

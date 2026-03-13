@@ -5,11 +5,14 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Modules as Modules
 import qs.Modules.Settings.Controls
+import qs.Modules.Settings.Categories.Appearance
 import qs.Config
 import qs.Helpers
 
-CustomRect {
+CustomFlickable {
 	id: root
+
+	contentHeight: clayout.implicitHeight
 
 	ColumnLayout {
 		id: clayout
@@ -108,17 +111,13 @@ CustomRect {
 			Layout.preferredHeight: idleLayout.implicitHeight + Appearance.padding.normal * 2
 			color: DynamicColors.tPalette.m3surfaceContainer
 
-			ColumnLayout {
+			Idle {
 				id: idleLayout
 
 				anchors.left: parent.left
 				anchors.margins: Appearance.padding.large
 				anchors.right: parent.right
 				anchors.verticalCenter: parent.verticalCenter
-
-				Settings {
-					name: "Idle"
-				}
 			}
 		}
 	}
