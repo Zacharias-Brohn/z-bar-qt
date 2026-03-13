@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Config
 
-RowLayout {
+Item {
 	id: root
 
 	required property string name
@@ -11,26 +11,35 @@ RowLayout {
 	required property string setting
 
 	Layout.fillWidth: true
-	Layout.preferredHeight: 42
+	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
 
-	CustomText {
-		id: text
+	RowLayout {
+		id: row
 
-		Layout.alignment: Qt.AlignLeft
-		Layout.fillWidth: true
-		font.pointSize: 16
-		text: root.name
-	}
+		anchors.left: parent.left
+		anchors.margins: Appearance.padding.small
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
 
-	CustomSwitch {
-		id: cswitch
+		CustomText {
+			id: text
 
-		Layout.alignment: Qt.AlignRight
-		checked: root.object[root.setting]
+			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+			Layout.fillWidth: true
+			font.pointSize: Appearance.font.size.larger
+			text: root.name
+		}
 
-		onToggled: {
-			root.object[root.setting] = checked;
-			Config.save();
+		CustomSwitch {
+			id: cswitch
+
+			Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+			checked: root.object[root.setting]
+
+			onToggled: {
+				root.object[root.setting] = checked;
+				Config.save();
+			}
 		}
 	}
 }

@@ -148,7 +148,7 @@ Item {
 				Layout.fillHeight: true
 				Layout.preferredWidth: icon.contentWidth
 				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-				font.pointSize: 22
+				font.pointSize: Appearance.font.size.small * 2
 				text: categoryItem.icon
 				verticalAlignment: Text.AlignVCenter
 			}

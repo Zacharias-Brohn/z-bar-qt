@@ -19,7 +19,7 @@ CustomRect {
 
 		CustomRect {
 			Layout.fillWidth: true
-			Layout.preferredHeight: colorLayout.implicitHeight
+			Layout.preferredHeight: colorLayout.implicitHeight + Appearance.padding.normal * 2
 			color: DynamicColors.tPalette.m3surfaceContainer
 
 			ColumnLayout {
@@ -28,15 +28,46 @@ CustomRect {
 				anchors.left: parent.left
 				anchors.margins: Appearance.padding.large
 				anchors.right: parent.right
+				anchors.verticalCenter: parent.verticalCenter
 
 				Settings {
-					name: "smth"
+					name: "Color"
 				}
 
 				SettingSwitch {
-					name: "wallust"
+					name: "Automatic color scheme"
 					object: Config.general.color
-					setting: "wallust"
+					setting: "schemeGeneration"
+				}
+
+				Separator {
+				}
+
+				SettingSwitch {
+					name: "Smart color scheme"
+					object: Config.general.color
+					setting: "smart"
+				}
+
+				Separator {
+				}
+
+				SettingInput {
+					name: "Schedule dark mode start"
+					object: Config.general.color
+					setting: "scheduleDarkStart"
+				}
+
+				Separator {
+				}
+
+				SettingInput {
+					name: "Schedule dark mode end"
+					object: Config.general.color
+					setting: "scheduleDarkEnd"
+				}
+
+				Separator {
 				}
 
 				CustomSplitButtonRow {
@@ -71,6 +102,25 @@ CustomRect {
 				}
 			}
 		}
+
+		CustomRect {
+			Layout.fillWidth: true
+			Layout.preferredHeight: idleLayout.implicitHeight + Appearance.padding.normal * 2
+			color: DynamicColors.tPalette.m3surfaceContainer
+
+			ColumnLayout {
+				id: idleLayout
+
+				anchors.left: parent.left
+				anchors.margins: Appearance.padding.large
+				anchors.right: parent.right
+				anchors.verticalCenter: parent.verticalCenter
+
+				Settings {
+					name: "Idle"
+				}
+			}
+		}
 	}
 
 	component Settings: CustomRect {
@@ -78,7 +128,7 @@ CustomRect {
 
 		required property string name
 
-		Layout.preferredHeight: 42
+		Layout.preferredHeight: 60
 		Layout.preferredWidth: 200
 		radius: 4
 
@@ -86,10 +136,10 @@ CustomRect {
 			id: text
 
 			anchors.left: parent.left
-			anchors.margins: Appearance.padding.smaller
 			anchors.right: parent.right
+			anchors.top: parent.top
 			font.bold: true
-			font.pointSize: 32
+			font.pointSize: Appearance.font.size.large * 2
 			text: settingsItem.name
 			verticalAlignment: Text.AlignVCenter
 		}

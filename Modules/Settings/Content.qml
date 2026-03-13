@@ -13,7 +13,7 @@ Item {
 
 	property string currentCategory: "general"
 	readonly property real nonAnimHeight: view.implicitHeight + viewWrapper.anchors.margins * 2
-	readonly property real nonAnimWidth: view.implicitWidth + 500 + viewWrapper.anchors.margins * 2
+	readonly property real nonAnimWidth: view.implicitWidth + 700 + viewWrapper.anchors.margins * 2
 	required property PersistentProperties visibilities
 
 	implicitHeight: nonAnimHeight
