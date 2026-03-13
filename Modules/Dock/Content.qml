@@ -21,8 +21,10 @@ Item {
 	property real dragY: 0
 	property string draggedAppId: ""
 	property var draggedModelData: null
+	property bool dropAnimating: false
 	readonly property int padding: Appearance.padding.small
 	required property var panels
+	property var pendingCommitIds: []
 	readonly property int rounding: Appearance.rounding.large
 	required property ShellScreen screen
 	required property PersistentProperties visibilities
@@ -41,15 +43,45 @@ Item {
 		root.dragX = pos.x;
 		root.dragY = pos.y;
 		root.dragActive = true;
+		root.dropAnimating = false;
+		root.pendingCommitIds = [];
 	}
 
 	function endVisualDrag() {
 		const ids = root.visualIds.slice();
+		const finalIndex = root.visualIds.indexOf(root.draggedAppId);
+		const finalItem = dockRow.itemAtIndex(finalIndex);
+
+		// Stop sending drag events now, but keep the proxy alive while it settles.
+		root.dragActive = false;
+
+		// In a dock, the destination delegate should normally be instantiated.
+		// If not, just finish immediately.
+		if (!finalItem) {
+			root.pendingCommitIds = ids;
+			root.finishVisualDrag();
+			return;
+		}
+
+		const pos = finalItem.mapToItem(root, 0, 0);
+
+		root.pendingCommitIds = ids;
+		root.dropAnimating = true;
+
+		settleX.to = pos.x;
+		settleY.to = pos.y;
+		settleAnim.start();
+	}
+
+	function finishVisualDrag() {
+		const ids = root.pendingCommitIds.slice();
 
 		root.dragActive = false;
+		root.dropAnimating = false;
 		root.draggedAppId = "";
 		root.draggedModelData = null;
 		root.visualIds = [];
+		root.pendingCommitIds = [];
 
 		TaskbarApps.commitVisualOrder(ids);
 	}
@@ -77,7 +109,29 @@ Item {
 	}
 
 	implicitHeight: Config.dock.height + root.padding * 2
-	implicitWidth: root.dockContentWidth + root.padding * 2
+	implicitWidth: dockRow.contentWidth + root.padding * 2
+
+	ParallelAnimation {
+		id: settleAnim
+
+		onFinished: root.finishVisualDrag()
+
+		Anim {
+			id: settleX
+
+			duration: Appearance.anim.durations.normal
+			property: "dragX"
+			target: root
+		}
+
+		Anim {
+			id: settleY
+
+			duration: Appearance.anim.durations.normal
+			property: "dragY"
+			target: root
+		}
+	}
 
 	Component {
 		id: dockDelegate
@@ -88,7 +142,6 @@ Item {
 			readonly property string appId: modelData.appId
 			readonly property bool isSeparator: appId === TaskbarApps.separatorId
 			required property var modelData
-			property bool removing: false
 
 			function previewReorder(drag) {
 				const source = drag.source;
@@ -104,30 +157,19 @@ Item {
 				root.previewVisualMove(from, hovered, drag.x < width / 2);
 			}
 
-			function startDetachedRemove() {
-				const p = mapToItem(removalLayer, 0, 0);
-
-				removing = true;
-				ListView.delayRemove = true;
-
-				parent = removalLayer;
-				x = p.x;
-				y = p.y;
-
-				removeAnim.start();
-			}
-
 			height: Config.dock.height
-			transformOrigin: Item.Center
 			width: isSeparator ? 1 : Config.dock.height
-			z: removing ? 1 : 0
 
-			ListView.onRemove: startDetachedRemove()
+			ListView.onRemove: removeAnim.start()
 			onEntered: drag => previewReorder(drag)
 			onPositionChanged: drag => previewReorder(drag)
 
 			SequentialAnimation {
 				id: removeAnim
+
+				ScriptAction {
+					script: slot.ListView.delayRemove = true
+				}
 
 				ParallelAnimation {
 					Anim {
@@ -163,7 +205,7 @@ Item {
 			DragHandler {
 				id: dragHandler
 
-				enabled: !slot.isSeparator && !slot.removing
+				enabled: !slot.isSeparator
 				grabPermissions: PointerHandler.CanTakeOverFromAnything
 				target: null
 				xAxis.enabled: true
@@ -210,7 +252,7 @@ Item {
 		boundsBehavior: Flickable.StopAtBounds
 		height: Config.dock.height
 		implicitWidth: root.dockContentWidth + Config.dock.height
-		interactive: !root.dragActive
+		interactive: !(root.dragActive || root.dropAnimating)
 		model: visualModel
 		orientation: ListView.Horizontal
 		spacing: Appearance.padding.smaller
@@ -244,30 +286,10 @@ Item {
 				properties: "x,y"
 			}
 		}
-		remove: Transition {
-			ParallelAnimation {
-				Anim {
-					property: "opacity"
-					to: 0
-				}
-
-				Anim {
-					property: "scale"
-					to: 0.5
-				}
-			}
-		}
 
 		Component.onCompleted: {
 			Qt.callLater(() => enableAddAnimation = true);
 		}
-	}
-
-	Item {
-		id: removalLayer
-
-		anchors.fill: parent
-		z: 9998
 	}
 
 	Item {
@@ -281,7 +303,7 @@ Item {
 		Drag.hotSpot.y: height / 2
 		Drag.source: dragProxy
 		height: root.dragHeight
-		visible: root.dragActive && !!root.draggedModelData
+		visible: (root.dragActive || root.dropAnimating) && !!root.draggedModelData
 		width: root.dragWidth
 		x: root.dragX
 		y: root.dragY
