@@ -229,14 +229,20 @@ Item {
 					anchors.right: parent.right
 					visible: root.modelData.activeAction === undefined
 
-					Item {
-						Layout.fillWidth: true
+					IconButton {
+						id: button
+
+						Layout.alignment: Qt.AlignLeft
+						font.pointSize: Appearance.font.size.large
+						icon: "add"
+
+						onClicked: console.log(button.width)
+						// onClicked: root.addActiveActionRequested()
 					}
 
-					CustomButton {
+					CustomText {
+						Layout.alignment: Qt.AlignLeft
 						text: qsTr("Add active action")
-
-						onClicked: root.addActiveActionRequested()
 					}
 				}
 			}

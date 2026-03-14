@@ -36,6 +36,10 @@ ColumnLayout {
 	Layout.fillWidth: true
 	spacing: Appearance.spacing.smaller
 
+	Settings {
+		name: "Idle Monitors"
+	}
+
 	Repeater {
 		model: [...Config.general.idle.timeouts]
 
@@ -56,5 +60,24 @@ ColumnLayout {
 		icon: "add"
 
 		onClicked: root.addTimeoutEntry()
+	}
+
+	component Settings: CustomRect {
+		id: settingsItem
+
+		required property string name
+
+		Layout.preferredHeight: 60
+		Layout.preferredWidth: 200
+
+		CustomText {
+			id: text
+
+			anchors.fill: parent
+			font.bold: true
+			font.pointSize: Appearance.font.size.large * 2
+			text: settingsItem.name
+			verticalAlignment: Text.AlignVCenter
+		}
 	}
 }

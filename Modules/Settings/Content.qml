@@ -23,13 +23,14 @@ Item {
 	Connections {
 		function onCurrentCategoryChanged() {
 			stack.pop();
-			if (currentCategory === "general") {
+			if (currentCategory === "general")
 				stack.push(general);
-			} else if (currentCategory === "wallpaper") {
+			else if (currentCategory === "wallpaper")
 				stack.push(background);
-			} else if (currentCategory === "appearance") {
+			else if (currentCategory === "appearance")
 				stack.push(appearance);
-			}
+			else if (currentCategory === "lockscreen")
+				stack.push(lockscreen);
 		}
 
 		target: root
@@ -48,7 +49,6 @@ Item {
 			anchors.bottom: parent.bottom
 			anchors.left: parent.left
 			anchors.top: parent.top
-			implicitHeight: layout.implicitHeight
 			implicitWidth: layout.implicitWidth
 
 			Categories {
@@ -98,6 +98,13 @@ Item {
 		id: appearance
 
 		Cat.Appearance {
+		}
+	}
+
+	Component {
+		id: lockscreen
+
+		Cat.Lockscreen {
 		}
 	}
 }

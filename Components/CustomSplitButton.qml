@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.Config
+import qs.Helpers
 
 Row {
 	id: root
@@ -29,7 +30,28 @@ Row {
 	property int type: CustomSplitButton.Filled
 	property real verticalPadding: Appearance.padding.smaller
 
+	function closeDropdown(): void {
+		SettingsDropdowns.close(menu);
+	}
+
+	function openDropdown(): void {
+		if (root.disabled)
+			return;
+		SettingsDropdowns.open(menu, root);
+	}
+
+	function toggleDropdown(): void {
+		if (root.disabled)
+			return;
+		SettingsDropdowns.toggle(menu, root);
+	}
+
 	spacing: Math.floor(Appearance.spacing.small / 2)
+
+	onExpandedChanged: {
+		if (!expanded)
+			SettingsDropdowns.forget(menu);
+	}
 
 	CustomRect {
 		bottomRightRadius: Appearance.rounding.small / 2
@@ -109,7 +131,7 @@ Row {
 			id: expandStateLayer
 
 			function onClicked(): void {
-				root.expanded = !root.expanded;
+				root.toggleDropdown();
 			}
 
 			color: root.textColor

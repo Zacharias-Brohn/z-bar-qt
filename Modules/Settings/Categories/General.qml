@@ -14,13 +14,6 @@ CustomRect {
 		id: clayout
 
 		anchors.fill: parent
-
-		Settings {
-			name: "apps"
-		}
-
-		Item {
-		}
 	}
 
 	component Settings: CustomRect {
@@ -28,28 +21,17 @@ CustomRect {
 
 		required property string name
 
-		implicitHeight: 42
-		implicitWidth: 200
-		radius: 4
+		Layout.preferredHeight: 60
+		Layout.preferredWidth: 200
 
-		RowLayout {
-			id: layout
+		CustomText {
+			id: text
 
-			anchors.left: parent.left
-			anchors.margins: Appearance.padding.smaller
-			anchors.right: parent.right
-			anchors.verticalCenter: parent.verticalCenter
-
-			CustomText {
-				id: text
-
-				Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-				Layout.fillHeight: true
-				Layout.fillWidth: true
-				Layout.leftMargin: Appearance.spacing.normal
-				text: settingsItem.name
-				verticalAlignment: Text.AlignVCenter
-			}
+			anchors.fill: parent
+			font.bold: true
+			font.pointSize: Appearance.font.size.large * 2
+			text: settingsItem.name
+			verticalAlignment: Text.AlignVCenter
 		}
 	}
 }

@@ -5,7 +5,6 @@ import QtQuick.Layouts
 import qs.Components
 import qs.Modules as Modules
 import qs.Modules.Settings.Controls
-import qs.Modules.Settings.Categories.Appearance
 import qs.Config
 import qs.Helpers
 
@@ -14,13 +13,33 @@ CustomFlickable {
 
 	contentHeight: clayout.implicitHeight
 
+	TapHandler {
+		acceptedButtons: Qt.LeftButton
+
+		onTapped: function (eventPoint) {
+			const menu = SettingsDropdowns.activeMenu;
+			if (!menu)
+				return;
+
+			const p = eventPoint.scenePosition;
+
+			if (SettingsDropdowns.hit(SettingsDropdowns.activeTrigger, p))
+				return;
+
+			if (SettingsDropdowns.hit(menu, p))
+				return;
+
+			SettingsDropdowns.closeActive();
+		}
+	}
+
 	ColumnLayout {
 		id: clayout
 
 		anchors.left: parent.left
 		anchors.right: parent.right
 
-		CustomClippingRect {
+		CustomRect {
 			Layout.fillWidth: true
 			Layout.preferredHeight: colorLayout.implicitHeight + Appearance.padding.normal * 2
 			color: DynamicColors.tPalette.m3surfaceContainer
@@ -33,6 +52,7 @@ CustomFlickable {
 				anchors.margins: Appearance.padding.large
 				anchors.right: parent.right
 				anchors.verticalCenter: parent.verticalCenter
+				spacing: Appearance.spacing.normal
 
 				Settings {
 					name: "Color"
@@ -56,19 +76,11 @@ CustomFlickable {
 				Separator {
 				}
 
-				SettingInput {
-					name: "Schedule dark mode start"
+				SettingSpinner {
+					name: "Schedule dark mode"
 					object: Config.general.color
-					setting: "scheduleDarkStart"
-				}
-
-				Separator {
-				}
-
-				SettingInput {
-					name: "Schedule dark mode end"
-					object: Config.general.color
-					setting: "scheduleDarkEnd"
+					settings: ["scheduleDarkStart", "scheduleDarkEnd"]
+					z: 2
 				}
 
 				Separator {
@@ -106,22 +118,6 @@ CustomFlickable {
 				}
 			}
 		}
-
-		CustomClippingRect {
-			Layout.fillWidth: true
-			Layout.preferredHeight: idleLayout.implicitHeight + Appearance.padding.normal * 2
-			color: DynamicColors.tPalette.m3surfaceContainer
-			radius: Appearance.rounding.normal - Appearance.padding.smaller
-
-			Idle {
-				id: idleLayout
-
-				anchors.left: parent.left
-				anchors.margins: Appearance.padding.large
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-			}
-		}
 	}
 
 	component Settings: CustomRect {
@@ -135,9 +131,7 @@ CustomFlickable {
 		CustomText {
 			id: text
 
-			anchors.left: parent.left
-			anchors.right: parent.right
-			anchors.top: parent.top
+			anchors.fill: parent
 			font.bold: true
 			font.pointSize: Appearance.font.size.large * 2
 			text: settingsItem.name

@@ -94,11 +94,13 @@ Item {
 		CustomListView {
 			id: clayout
 
-			anchors.centerIn: parent
-			contentHeight: contentItem.childrenRect.height
+			anchors.bottom: parent.bottom
+			anchors.horizontalCenter: parent.horizontalCenter
+			anchors.margins: Appearance.padding.smaller
+			anchors.top: parent.top
+			boundsBehavior: Flickable.StopAtBounds
 			contentWidth: contentItem.childrenRect.width
 			highlightFollowsCurrentItem: false
-			implicitHeight: contentItem.childrenRect.height
 			implicitWidth: contentItem.childrenRect.width
 			model: listModel
 			spacing: 5
@@ -109,7 +111,7 @@ Item {
 				color: DynamicColors.palette.m3primary
 				implicitHeight: clayout.currentItem?.implicitHeight ?? 0
 				implicitWidth: clayout.width
-				radius: 4
+				radius: Appearance.rounding.normal - Appearance.padding.smaller
 				y: clayout.currentItem?.y ?? 0
 
 				Behavior on y {
@@ -131,7 +133,7 @@ Item {
 
 		implicitHeight: 42
 		implicitWidth: 200
-		radius: 4
+		radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 		RowLayout {
 			id: layout
