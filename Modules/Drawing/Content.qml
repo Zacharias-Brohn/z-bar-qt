@@ -12,10 +12,40 @@ Item {
 	required property Canvas drawing
 	required property var visibilities
 
-	implicitHeight: huePicker.implicitHeight + 12 + palette.implicitHeight + Appearance.padding.normal * 2
+	function syncFromPenColor() {
+		if (!drawing)
+			return;
+
+		if (!saturationSlider.pressed)
+			saturationSlider.value = drawing.penColor.hsvSaturation;
+
+		if (!brightnessSlider.pressed)
+			brightnessSlider.value = drawing.penColor.hsvValue;
+	}
+
+	function updatePenColorFromHsv() {
+		if (!drawing)
+			return;
+
+		drawing.penColor = Qt.hsva(huePicker.currentHue, saturationSlider.value, brightnessSlider.value, drawing.penColor.a);
+	}
+
+	implicitHeight: column.height + Appearance.padding.larger * 2
 	implicitWidth: huePicker.implicitWidth + Appearance.padding.normal * 2
 
+	Component.onCompleted: syncFromPenColor()
+
+	Connections {
+		function onPenColorChanged() {
+			root.syncFromPenColor();
+		}
+
+		target: root.drawing
+	}
+
 	Column {
+		id: column
+
 		anchors.centerIn: parent
 		spacing: 12
 
@@ -23,6 +53,38 @@ Item {
 			id: huePicker
 
 			drawing: root.drawing
+		}
+
+		GradientSlider {
+			id: saturationSlider
+
+			brightness: brightnessSlider.value
+			channel: "saturation"
+			from: 0
+			hue: huePicker.currentHue
+			icon: "\ue40a"
+			implicitHeight: 30
+			implicitWidth: palette.width
+			orientation: Qt.Horizontal
+			to: 1
+
+			onMoved: root.updatePenColorFromHsv()
+		}
+
+		GradientSlider {
+			id: brightnessSlider
+
+			channel: "brightness"
+			from: 0
+			hue: huePicker.currentHue
+			icon: "\ue1ac"
+			implicitHeight: 30
+			implicitWidth: palette.width
+			orientation: Qt.Horizontal
+			saturation: saturationSlider.value
+			to: 1
+
+			onMoved: root.updatePenColorFromHsv()
 		}
 
 		GridLayout {
@@ -38,11 +100,23 @@ Item {
 				model: root.colors
 
 				delegate: Item {
+					id: colorCircle
+
 					required property color modelData
 					readonly property bool selected: Qt.colorEqual(root.drawing.penColor, modelData)
 
 					Layout.fillWidth: true
 					height: 28
+
+					CustomRect {
+						anchors.centerIn: parent
+						border.color: Qt.rgba(0, 0, 0, 0.25)
+						border.width: Qt.colorEqual(modelData, "#ffffff") ? 1 : 0
+						color: colorCircle.modelData
+						height: 20
+						radius: width / 2
+						width: 20
+					}
 
 					CustomRect {
 						anchors.centerIn: parent
@@ -52,25 +126,26 @@ Item {
 						height: parent.height
 						radius: width / 2
 						width: parent.height
-					}
 
-					CustomRect {
-						anchors.centerIn: parent
-						border.color: Qt.rgba(0, 0, 0, 0.25)
-						border.width: Qt.colorEqual(modelData, "#ffffff") ? 1 : 0
-						color: modelData
-						height: 20
-						radius: width / 2
-						width: 20
-					}
-
-					MouseArea {
-						anchors.fill: parent
-
-						onClicked: root.drawing.penColor = parent.modelData
+						StateLayer {
+							onClicked: root.drawing.penColor = colorCircle.modelData
+						}
 					}
 				}
 			}
+		}
+
+		FilledSlider {
+			from: 1
+			icon: "border_color"
+			implicitHeight: 30
+			implicitWidth: palette.width
+			multiplier: 1
+			orientation: Qt.Horizontal
+			to: 45
+			value: root.drawing.penWidth
+
+			onMoved: root.drawing.penWidth = value
 		}
 	}
 }
