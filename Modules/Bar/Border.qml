@@ -11,7 +11,6 @@ Item {
 	id: root
 
 	required property Item bar
-	required property PersistentProperties visibilities
 
 	anchors.fill: parent
 

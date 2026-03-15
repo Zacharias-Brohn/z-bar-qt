@@ -146,7 +146,6 @@ Variants {
 
 				Border {
 					bar: bar
-					visibilities: visibilities
 				}
 
 				Backgrounds {
