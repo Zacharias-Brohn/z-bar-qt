@@ -153,6 +153,7 @@ Variants {
 					bar: bar
 					panels: panels
 					visibilities: visibilities
+					z: 1
 				}
 			}
 

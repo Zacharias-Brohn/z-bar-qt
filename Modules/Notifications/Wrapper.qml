@@ -14,7 +14,7 @@ Item {
 
 	states: State {
 		name: "hidden"
-		when: root.visibilities.sidebar
+		when: root.visibilities.sidebar || root.visibilities.dashboard || (root.panels.popouts.hasCurrent && root.panels.popouts.currentName.startsWith("traymenu"))
 
 		PropertyChanges {
 			root.implicitHeight: 0

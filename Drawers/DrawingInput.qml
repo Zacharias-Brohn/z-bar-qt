@@ -1,6 +1,7 @@
 import Quickshell
 import QtQuick
 import qs.Components
+import qs.Config
 
 CustomMouseArea {
 	id: root
@@ -12,7 +13,7 @@ CustomMouseArea {
 	required property PersistentProperties visibilities
 
 	function inLeftPanel(panel: Item, x: real, y: real): bool {
-		return x < panel.x + panel.width && withinPanelHeight(panel, x, y);
+		return x < panel.x + panel.width + Config.barConfig.border && withinPanelHeight(panel, x, y);
 	}
 
 	function withinPanelHeight(panel: Item, x: real, y: real): bool {
@@ -20,6 +21,7 @@ CustomMouseArea {
 		return y >= panelY && y <= panelY + panel.height;
 	}
 
+	acceptedButtons: Qt.LeftButton | Qt.RightButton
 	anchors.fill: root.visibilities.isDrawing ? parent : undefined
 	hoverEnabled: true
 	visible: root.visibilities.isDrawing
@@ -45,6 +47,9 @@ CustomMouseArea {
 			root.drawing.beginStroke(x, y);
 			return;
 		}
+
+		if (event.buttons & Qt.RightButton)
+			root.drawing.clear();
 	}
 	onReleased: {
 		if (root.visibilities.isDrawing)
