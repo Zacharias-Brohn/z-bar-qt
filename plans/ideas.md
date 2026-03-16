@@ -34,3 +34,7 @@
 - [ ] If nc or osd global shortcut are used, bar is 100% transparent apart from modules, seems to ignore the regular hover state opacity.
 - [ ] Should volume/pipewire module be hover as well? No other bar module is hover apart from the Dock (which is a hidden module activated by hover)?
 - [ ] Calendar swipe to other month has no animation -> on purpose?
+
+## Additional questions
+
+- [ ] Can some features be disabled? As in, will they be unloaded from RAM or how is it loaded in memory? Let's say I do not want to use the Dock and Drawing Tool and want to disable them, are they loaded in memory at all? Or all the called upon when the shortcut is hit?
