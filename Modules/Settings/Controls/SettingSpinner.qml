@@ -18,7 +18,6 @@ Item {
 	function formattedValue(setting: string): string {
 		const value = root.object[setting];
 
-		console.log(value);
 		if (value === null || value === undefined)
 			return "";
 

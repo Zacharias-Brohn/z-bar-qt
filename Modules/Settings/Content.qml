@@ -27,10 +27,26 @@ Item {
 				stack.push(general);
 			else if (currentCategory === "wallpaper")
 				stack.push(background);
+			else if (currentCategory === "bar")
+				stack.push(bar);
 			else if (currentCategory === "appearance")
 				stack.push(appearance);
 			else if (currentCategory === "lockscreen")
 				stack.push(lockscreen);
+			else if (currentCategory === "services")
+				stack.push(services);
+			else if (currentCategory === "notifications")
+				stack.push(notifications);
+			else if (currentCategory === "sidebar")
+				stack.push(sidebar);
+			else if (currentCategory === "utilities")
+				stack.push(utilities);
+			else if (currentCategory === "dashboard")
+				stack.push(dashboard);
+			else if (currentCategory === "osd")
+				stack.push(osd);
+			else if (currentCategory === "launcher")
+				stack.push(launcher);
 		}
 
 		target: root
@@ -102,9 +118,65 @@ Item {
 	}
 
 	Component {
+		id: bar
+
+		Cat.Bar {
+		}
+	}
+
+	Component {
 		id: lockscreen
 
 		Cat.Lockscreen {
+		}
+	}
+
+	Component {
+		id: services
+
+		Cat.Services {
+		}
+	}
+
+	Component {
+		id: notifications
+
+		Cat.Notifications {
+		}
+	}
+
+	Component {
+		id: sidebar
+
+		Cat.Sidebar {
+		}
+	}
+
+	Component {
+		id: utilities
+
+		Cat.Utilities {
+		}
+	}
+
+	Component {
+		id: dashboard
+
+		Cat.Dashboard {
+		}
+	}
+
+	Component {
+		id: osd
+
+		Cat.Osd {
+		}
+	}
+
+	Component {
+		id: launcher
+
+		Cat.Launcher {
 		}
 	}
 }

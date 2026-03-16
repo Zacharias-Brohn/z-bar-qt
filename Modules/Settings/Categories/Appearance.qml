@@ -1,141 +1,159 @@
-import Quickshell
-import Quickshell.Widgets
-import QtQuick
-import QtQuick.Layouts
-import qs.Components
-import qs.Modules as Modules
 import qs.Modules.Settings.Controls
 import qs.Config
-import qs.Helpers
 
-CustomFlickable {
+SettingsPage {
 	id: root
 
-	contentHeight: clayout.implicitHeight
+	SettingsSection {
+		SettingsHeader {
+			name: "Scale"
+		}
 
-	TapHandler {
-		acceptedButtons: Qt.LeftButton
+		SettingSpinBox {
+			name: "Rounding scale"
+			object: Config.appearance.rounding
+			setting: "scale"
+			step: 0.1
+		}
 
-		onTapped: function (eventPoint) {
-			const menu = SettingsDropdowns.activeMenu;
-			if (!menu)
-				return;
+		Separator {
+		}
 
-			const p = eventPoint.scenePosition;
+		SettingSpinBox {
+			name: "Spacing scale"
+			object: Config.appearance.spacing
+			setting: "scale"
+			step: 0.1
+		}
 
-			if (SettingsDropdowns.hit(SettingsDropdowns.activeTrigger, p))
-				return;
+		Separator {
+		}
 
-			if (SettingsDropdowns.hit(menu, p))
-				return;
+		SettingSpinBox {
+			name: "Padding scale"
+			object: Config.appearance.padding
+			setting: "scale"
+			step: 0.1
+		}
 
-			SettingsDropdowns.closeActive();
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Font size scale"
+			object: Config.appearance.font.size
+			setting: "scale"
+			step: 0.1
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Animation duration scale"
+			object: Config.appearance.anim.durations
+			setting: "scale"
+			step: 0.1
 		}
 	}
 
-	ColumnLayout {
-		id: clayout
+	SettingsSection {
+		SettingsHeader {
+			name: "Fonts"
+		}
 
-		anchors.left: parent.left
-		anchors.right: parent.right
+		SettingInput {
+			name: "Sans family"
+			object: Config.appearance.font.family
+			setting: "sans"
+		}
 
-		CustomRect {
-			Layout.fillWidth: true
-			Layout.preferredHeight: colorLayout.implicitHeight + Appearance.padding.normal * 2
-			color: DynamicColors.tPalette.m3surfaceContainer
-			radius: Appearance.rounding.normal - Appearance.padding.smaller
+		Separator {
+		}
 
-			ColumnLayout {
-				id: colorLayout
+		SettingInput {
+			name: "Monospace family"
+			object: Config.appearance.font.family
+			setting: "mono"
+		}
 
-				anchors.left: parent.left
-				anchors.margins: Appearance.padding.large
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-				spacing: Appearance.spacing.normal
+		Separator {
+		}
 
-				Settings {
-					name: "Color"
-				}
+		SettingInput {
+			name: "Material family"
+			object: Config.appearance.font.family
+			setting: "material"
+		}
 
-				SettingSwitch {
-					name: "Automatic color scheme"
-					object: Config.general.color
-					setting: "schemeGeneration"
-				}
+		Separator {
+		}
 
-				Separator {
-				}
-
-				SettingSwitch {
-					name: "Smart color scheme"
-					object: Config.general.color
-					setting: "smart"
-				}
-
-				Separator {
-				}
-
-				SettingSpinner {
-					name: "Schedule dark mode"
-					object: Config.general.color
-					settings: ["scheduleDarkStart", "scheduleDarkEnd"]
-					z: 2
-				}
-
-				Separator {
-				}
-
-				CustomSplitButtonRow {
-					enabled: true
-					label: qsTr("Scheme mode")
-
-					menuItems: [
-						MenuItem {
-							property string val: "light"
-
-							icon: "light_mode"
-							text: qsTr("Light")
-						},
-						MenuItem {
-							property string val: "dark"
-
-							icon: "dark_mode"
-							text: qsTr("Dark")
-						}
-					]
-
-					Component.onCompleted: {
-						if (Config.general.color.mode === "light")
-							active = menuItems[0];
-						else
-							active = menuItems[1];
-					}
-					onSelected: item => {
-						Config.general.color.mode = item.val;
-						Config.save();
-					}
-				}
-			}
+		SettingInput {
+			name: "Clock family"
+			object: Config.appearance.font.family
+			setting: "clock"
 		}
 	}
 
-	component Settings: CustomRect {
-		id: settingsItem
+	SettingsSection {
+		SettingsHeader {
+			name: "Animation"
+		}
 
-		required property string name
+		SettingSpinBox {
+			name: "Media GIF speed adjustment"
+			object: Config.appearance.anim
+			setting: "mediaGifSpeedAdjustment"
+			step: 10
+		}
 
-		Layout.preferredHeight: 60
-		Layout.preferredWidth: 200
+		Separator {
+		}
 
-		CustomText {
-			id: text
+		SettingSpinBox {
+			name: "Session GIF speed"
+			max: 5
+			min: 0
+			object: Config.appearance.anim
+			setting: "sessionGifSpeed"
+			step: 0.1
+		}
+	}
 
-			anchors.fill: parent
-			font.bold: true
-			font.pointSize: Appearance.font.size.large * 2
-			text: settingsItem.name
-			verticalAlignment: Text.AlignVCenter
+	SettingsSection {
+		SettingsHeader {
+			name: "Transparency"
+		}
+
+		SettingSwitch {
+			name: "Enable transparency"
+			object: Config.appearance.transparency
+			setting: "enabled"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Base opacity"
+			max: 1
+			min: 0
+			object: Config.appearance.transparency
+			setting: "base"
+			step: 0.05
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Layer opacity"
+			max: 1
+			min: 0
+			object: Config.appearance.transparency
+			setting: "layers"
+			step: 0.05
 		}
 	}
 }

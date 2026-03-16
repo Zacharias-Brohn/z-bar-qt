@@ -28,9 +28,10 @@ Item {
 				root.popouts.currentName = `traymenu${root.ind}`;
 				root.popouts.currentCenter = Qt.binding(() => root.mapToItem(root.loader, root.implicitWidth / 2, 0).x);
 				root.popouts.hasCurrent = true;
-				if (visibilities.sidebar || visibilities.dashboard) {
+				if (visibilities.sidebar || visibilities.dashboard || visibilities.settings) {
 					visibilities.sidebar = false;
 					visibilities.dashboard = false;
+					visibilities.settings = false;
 				}
 			}
 		}

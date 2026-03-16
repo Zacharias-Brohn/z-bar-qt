@@ -22,67 +22,74 @@ Item {
 
 		ListElement {
 			icon: "settings"
+			key: "general"
 			name: "General"
 		}
 
 		ListElement {
 			icon: "wallpaper"
+			key: "wallpaper"
 			name: "Wallpaper"
 		}
 
 		ListElement {
 			icon: "settop_component"
+			key: "bar"
 			name: "Bar"
 		}
 
 		ListElement {
 			icon: "lock"
+			key: "lockscreen"
 			name: "Lockscreen"
 		}
 
 		ListElement {
 			icon: "build_circle"
+			key: "services"
 			name: "Services"
 		}
 
 		ListElement {
 			icon: "notifications"
+			key: "notifications"
 			name: "Notifications"
 		}
 
 		ListElement {
 			icon: "view_sidebar"
+			key: "sidebar"
 			name: "Sidebar"
 		}
 
 		ListElement {
 			icon: "handyman"
+			key: "utilities"
 			name: "Utilities"
 		}
 
 		ListElement {
 			icon: "dashboard"
+			key: "dashboard"
 			name: "Dashboard"
 		}
 
 		ListElement {
 			icon: "colors"
+			key: "appearance"
 			name: "Appearance"
 		}
 
 		ListElement {
 			icon: "display_settings"
+			key: "osd"
 			name: "On screen display"
 		}
 
 		ListElement {
 			icon: "rocket_launch"
+			key: "launcher"
 			name: "Launcher"
-		}
-
-		ListElement {
-			icon: "colors"
-			name: "Colors"
 		}
 	}
 
@@ -129,6 +136,7 @@ Item {
 
 		required property string icon
 		required property int index
+		required property string key
 		required property string name
 
 		implicitHeight: 42
@@ -172,7 +180,7 @@ Item {
 			id: layer
 
 			onClicked: {
-				root.content.currentCategory = categoryItem.name.toLowerCase();
+				root.content.currentCategory = categoryItem.key;
 				clayout.currentIndex = categoryItem.index;
 			}
 		}

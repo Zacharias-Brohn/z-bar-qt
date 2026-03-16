@@ -1,77 +1,90 @@
-import Quickshell
-import Quickshell.Widgets
-import QtQuick
-import QtQuick.Layouts
-import qs.Components
-import qs.Modules as Modules
 import qs.Modules.Settings.Categories.Lockscreen
+import qs.Modules.Settings.Controls
 import qs.Config
-import qs.Helpers
 
-CustomFlickable {
+SettingsPage {
 	id: root
 
-	contentHeight: clayout.implicitHeight
+	SettingsSection {
+		SettingsHeader {
+			name: "Lockscreen"
+		}
 
-	TapHandler {
-		acceptedButtons: Qt.LeftButton
+		SettingSwitch {
+			name: "Recolor logo"
+			object: Config.lock
+			setting: "recolorLogo"
+		}
 
-		onTapped: function (eventPoint) {
-			const menu = SettingsDropdowns.activeMenu;
-			if (!menu)
-				return;
+		Separator {
+		}
 
-			const p = eventPoint.scenePosition;
+		SettingSwitch {
+			name: "Enable fingerprint"
+			object: Config.lock
+			setting: "enableFprint"
+		}
 
-			if (SettingsDropdowns.hit(SettingsDropdowns.activeTrigger, p))
-				return;
+		Separator {
+		}
 
-			if (SettingsDropdowns.hit(menu, p))
-				return;
+		SettingSpinBox {
+			name: "Max fingerprint tries"
+			min: 1
+			object: Config.lock
+			setting: "maxFprintTries"
+			step: 1
+		}
 
-			SettingsDropdowns.closeActive();
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Blur amount"
+			min: 0
+			object: Config.lock
+			setting: "blurAmount"
+			step: 1
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Height multiplier"
+			max: 2
+			min: 0.1
+			object: Config.lock.sizes
+			setting: "heightMult"
+			step: 0.05
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Aspect ratio"
+			max: 4
+			min: 0.5
+			object: Config.lock.sizes
+			setting: "ratio"
+			step: 0.05
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Center width"
+			min: 100
+			object: Config.lock.sizes
+			setting: "centerWidth"
+			step: 10
 		}
 	}
 
-	ColumnLayout {
-		id: clayout
-
-		anchors.fill: parent
-
-		CustomRect {
-			Layout.fillWidth: true
-			Layout.preferredHeight: idleLayout.implicitHeight + Appearance.padding.normal * 2
-			color: DynamicColors.tPalette.m3surfaceContainer
-			radius: Appearance.rounding.normal - Appearance.padding.smaller
-			z: -1
-
-			Idle {
-				id: idleLayout
-
-				anchors.left: parent.left
-				anchors.margins: Appearance.padding.large
-				anchors.right: parent.right
-				anchors.verticalCenter: parent.verticalCenter
-			}
-		}
-	}
-
-	component Settings: CustomRect {
-		id: settingsItem
-
-		required property string name
-
-		Layout.preferredHeight: 60
-		Layout.preferredWidth: 200
-
-		CustomText {
-			id: text
-
-			anchors.fill: parent
-			font.bold: true
-			font.pointSize: Appearance.font.size.large * 2
-			text: settingsItem.name
-			verticalAlignment: Text.AlignVCenter
+	SettingsSection {
+		Idle {
 		}
 	}
 }

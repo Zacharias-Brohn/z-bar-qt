@@ -60,8 +60,8 @@ Singleton {
 				}
 			},
 			anim: {
-				mediaGifSpeedAdjustment: 300,
-				sessionGifSpeed: 0.7,
+				mediaGifSpeedAdjustment: appearance.anim.mediaGifSpeedAdjustment,
+				sessionGifSpeed: appearance.anim.sessionGifSpeed,
 				durations: {
 					scale: appearance.anim.durations.scale
 				}
@@ -189,7 +189,7 @@ Singleton {
 				explorer: general.apps.explorer
 			},
 			idle: {
-				timouts: general.idle.timeouts
+				timeouts: general.idle.timeouts
 			}
 		};
 	}

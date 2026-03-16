@@ -236,8 +236,7 @@ Item {
 						font.pointSize: Appearance.font.size.large
 						icon: "add"
 
-						onClicked: console.log(button.width)
-						// onClicked: root.addActiveActionRequested()
+						onClicked: root.addActiveActionRequested()
 					}
 
 					CustomText {

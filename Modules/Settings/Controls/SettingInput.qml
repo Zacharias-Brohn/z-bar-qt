@@ -13,7 +13,6 @@ Item {
 	function formattedValue(): string {
 		const value = root.object[root.setting];
 
-		console.log(value);
 		if (value === null || value === undefined)
 			return "";
 
@@ -44,15 +43,16 @@ Item {
 			id: rect
 
 			Layout.preferredHeight: 33
-			Layout.preferredWidth: Math.max(Math.min(textField.contentWidth + Appearance.padding.normal * 3, 200), 50)
-			color: DynamicColors.tPalette.m3surface
-			radius: Appearance.rounding.small
+			Layout.preferredWidth: Math.max(Math.min(textField.contentWidth + Appearance.padding.normal * 2, 550), 50)
+			color: DynamicColors.tPalette.m3surfaceContainerHigh
+			radius: Appearance.rounding.full
 
 			CustomTextField {
 				id: textField
 
 				anchors.centerIn: parent
 				horizontalAlignment: Text.AlignHCenter
+				implicitWidth: Math.min(contentWidth, 550)
 				text: root.formattedValue()
 
 				onEditingFinished: {

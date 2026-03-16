@@ -20,7 +20,7 @@ Item {
 	Layout.fillWidth: true
 	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
 	clip: false
-	z: splitButton.menu.implicitHeight > 0 ? expandedZ : 1
+	z: root.expanded ? expandedZ : -1
 
 	RowLayout {
 		id: row
@@ -36,14 +36,15 @@ Item {
 			color: root.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSurfaceVariant
 			font.pointSize: Appearance.font.size.larger
 			text: root.label
+			z: root.expanded ? root.expandedZ : -1
 		}
 
 		CustomSplitButton {
 			id: splitButton
 
 			enabled: root.enabled
-			menu.z: 1
 			type: CustomSplitButton.Filled
+			z: root.expanded ? root.expandedZ : -1
 
 			menu.onItemSelected: item => {
 				root.selected(item);

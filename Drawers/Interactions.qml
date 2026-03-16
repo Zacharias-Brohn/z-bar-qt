@@ -123,6 +123,7 @@ CustomMouseArea {
 					root.dashboardShortcutActive = true;
 				}
 
+				root.visibilities.settings = false;
 				root.visibilities.sidebar = false;
 				root.popouts.hasCurrent = false;
 			} else {
@@ -149,8 +150,10 @@ CustomMouseArea {
 				}
 			}
 
-			if (root.visibilities.launcher)
+			if (root.visibilities.launcher) {
 				root.visibilities.dock = false;
+				root.visibilities.settings = false;
+			}
 		}
 
 		function onOsdChanged() {
@@ -167,6 +170,18 @@ CustomMouseArea {
 		function onResourcesChanged() {
 			if (root.visibilities.resources && root.popouts.currentName.startsWith("audio")) {
 				root.popouts.hasCurrent = false;
+			}
+
+			if (root.visibilities.resources)
+				root.visibilities.settings = false;
+		}
+
+		function onSettingsChanged() {
+			if (root.visibilities.settings) {
+				root.visibilities.resources = false;
+				root.visibilities.dashboard = false;
+				root.panels.popouts.hasCurrent = false;
+				root.visibilities.launcher = false;
 			}
 		}
 
