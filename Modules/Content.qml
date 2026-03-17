@@ -8,6 +8,7 @@ import qs.Components
 import qs.Modules.WSOverview
 import qs.Modules.Network
 import qs.Modules.UPower
+import qs.Modules.Updates
 
 Item {
 	id: root
@@ -89,6 +90,14 @@ Item {
 			name: "network"
 
 			sourceComponent: NetworkPopout {
+				wrapper: root.wrapper
+			}
+		}
+
+		Popout {
+			name: "updates"
+
+			sourceComponent: UpdatesPopout {
 				wrapper: root.wrapper
 			}
 		}

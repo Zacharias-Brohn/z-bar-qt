@@ -9,7 +9,7 @@ ShapePath {
 	readonly property bool flatten: wrapper.height < rounding * 2
 	property real ibr: invertBottomRounding ? -1 : 1
 	required property bool invertBottomRounding
-	readonly property real rounding: 8
+	property real rounding: Appearance.rounding.smallest
 	readonly property real roundingY: flatten ? wrapper.height / 2 : rounding
 	required property Wrapper wrapper
 

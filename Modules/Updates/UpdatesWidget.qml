@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Components
 import qs.Modules
+import qs.Helpers
 import qs.Config
 
 CustomRect {

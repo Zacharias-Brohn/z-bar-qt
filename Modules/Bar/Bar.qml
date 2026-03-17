@@ -4,16 +4,17 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import qs.Components
-import qs.Modules as Bar
+import qs.Modules
 import qs.Config
 import qs.Helpers
 import qs.Modules.UPower
 import qs.Modules.Network
+import qs.Modules.Updates
 
 RowLayout {
 	id: root
 
-	required property Bar.Wrapper popouts
+	required property Wrapper popouts
 	required property ShellScreen screen
 	readonly property int vPadding: 6
 	required property PersistentProperties visibilities
@@ -47,6 +48,10 @@ RowLayout {
 			popouts.currentName = "upower";
 			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
 			popouts.hasCurrent = true;
+		} else if (id === "updates") {
+			popouts.currentName = "updates";
+			popouts.currentCenter = Qt.binding(() => item.mapToItem(root, itemWidth / 2, 0).x);
+			popouts.hasCurrent = true;
 		}
 	}
 
@@ -73,7 +78,7 @@ RowLayout {
 				roleValue: "workspaces"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.Workspaces {
+					sourceComponent: Workspaces {
 						screen: root.screen
 					}
 				}
@@ -83,7 +88,7 @@ RowLayout {
 				roleValue: "audio"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.AudioWidget {
+					sourceComponent: AudioWidget {
 					}
 				}
 			}
@@ -92,7 +97,7 @@ RowLayout {
 				roleValue: "tray"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.TrayWidget {
+					sourceComponent: TrayWidget {
 						loader: root
 						popouts: root.popouts
 					}
@@ -103,7 +108,7 @@ RowLayout {
 				roleValue: "resources"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.Resources {
+					sourceComponent: Resources {
 						visibilities: root.visibilities
 					}
 				}
@@ -113,7 +118,7 @@ RowLayout {
 				roleValue: "updates"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.UpdatesWidget {
+					sourceComponent: UpdatesWidget {
 					}
 				}
 			}
@@ -122,7 +127,7 @@ RowLayout {
 				roleValue: "notifBell"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.NotifBell {
+					sourceComponent: NotifBell {
 						popouts: root.popouts
 						visibilities: root.visibilities
 					}
@@ -133,7 +138,7 @@ RowLayout {
 				roleValue: "clock"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.Clock {
+					sourceComponent: Clock {
 						loader: root
 						popouts: root.popouts
 						visibilities: root.visibilities
@@ -145,7 +150,7 @@ RowLayout {
 				roleValue: "activeWindow"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.WindowTitle {
+					sourceComponent: WindowTitle {
 						bar: root
 					}
 				}
@@ -173,7 +178,7 @@ RowLayout {
 				roleValue: "media"
 
 				delegate: WrappedLoader {
-					sourceComponent: Bar.MediaWidget {
+					sourceComponent: MediaWidget {
 					}
 				}
 			}

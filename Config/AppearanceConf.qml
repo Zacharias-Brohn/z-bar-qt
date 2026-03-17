@@ -79,6 +79,7 @@ JsonObject {
 		property int normal: 17 * scale
 		property real scale: 1
 		property int small: 12 * scale
+		property int smallest: 8 * scale
 	}
 	component Spacing: JsonObject {
 		property int large: 20 * scale

@@ -48,7 +48,8 @@ Shape {
 
 	Modules.Background {
 		invertBottomRounding: wrapper.x <= 0
-		startX: wrapper.x - 8
+		rounding: root.panels.popouts.currentName.startsWith("updates") ? Appearance.rounding.normal : Appearance.rounding.smallest
+		startX: wrapper.x - rounding
 		startY: wrapper.y
 		wrapper: root.panels.popouts
 	}
