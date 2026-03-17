@@ -1,6 +1,7 @@
 # Ideas/Features
 
 - [ ] Change volume for `$BROWSER` environment variable? Most general media source apart from separate music/video players.
+- [ ] Hyprsunset module.
 
 # Stupid idea's from Daivin
 
