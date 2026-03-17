@@ -43,6 +43,8 @@ This installs the QML plugin to `/usr/lib/qt6/qml`.
 
 ### NixOS
 
+**Note that not all features work well. This is due to limited testing on NixOS.**
+
 In your flake.nix file, add the following in your inputs.
 
 ```nix
