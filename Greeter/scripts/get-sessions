@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+import configparser
+import json
+import os
+import pathlib
+import shlex
+
+SEARCH_DIRS = [
+    "/usr/share/wayland-sessions",
+    "/usr/local/share/wayland-sessions",
+    os.path.expanduser("~/.local/share/wayland-sessions"),
+    "/usr/share/xsessions",
+    "/usr/local/share/xsessions",
+    os.path.expanduser("~/.local/share/xsessions"),
+]
+
+def clean_exec(exec_string: str):
+    parts = shlex.split(exec_string)
+    out = []
+
+    for part in parts:
+        if part == "%%":
+            out.append("%")
+        elif part.startswith("%"):
+            # ignore desktop-entry field codes for login sessions
+            continue
+        else:
+            out.append(part)
+
+    return out
+
+def truthy(value: str) -> bool:
+    return value.strip().lower() in {"1", "true", "yes"}
+
+sessions = []
+
+for directory in SEARCH_DIRS:
+    kind = "wayland" if "wayland-sessions" in directory else "x11"
+    base = pathlib.Path(directory)
+
+    if not base.is_dir():
+        continue
+
+    for file in sorted(base.glob("*.desktop")):
+        parser = configparser.ConfigParser(interpolation=None, strict=False)
+        parser.read(file, encoding="utf-8")
+
+        if "Desktop Entry" not in parser:
+            continue
+
+        entry = parser["Desktop Entry"]
+
+        if entry.get("Type", "Application") != "Application":
+            continue
+        if truthy(entry.get("Hidden", "false")):
+            continue
+        if truthy(entry.get("NoDisplay", "false")):
+            continue
+
+        exec_string = entry.get("Exec", "").strip()
+        if not exec_string:
+            continue
+
+        sessions.append({
+            "id": file.stem,
+            "name": entry.get("Name", file.stem),
+            "comment": entry.get("Comment", ""),
+            "icon": entry.get("Icon", ""),
+            "kind": kind,
+            "desktopFile": str(file),
+            "command": clean_exec(exec_string),
+        })
+
+print(json.dumps(sessions))

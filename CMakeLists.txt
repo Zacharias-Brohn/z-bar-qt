@@ -12,6 +12,7 @@ set(ENABLE_MODULES "plugin;shell" CACHE STRING "Modules to build/install")
 set(INSTALL_LIBDIR "usr/lib/ZShell" CACHE STRING "Library install dir")
 set(INSTALL_QMLDIR "usr/lib/qt6/qml" CACHE STRING "QML install dir")
 set(INSTALL_QSCONFDIR "etc/xdg/quickshell/zshell" CACHE STRING "Quickshell config install dir")
+set(INSTALL_GREETERCONFDIR "etc/xdg/quickshell/zshell-greeter" CACHE STRING "Quickshell greeter install dir")
 
 add_compile_options(
     -Wall -Wextra -Wpedantic -Wshadow -Wconversion
@@ -31,4 +32,5 @@ if("shell" IN_LIST ENABLE_MODULES)
         install(DIRECTORY ${dir} DESTINATION "${INSTALL_QSCONFDIR}")
     endforeach()
 	install(FILES shell.qml DESTINATION "${INSTALL_QSCONFDIR}")
+	install(DIRECTORY Greeter DESTINATION "${INSTALL_GREETERCONFDIR}")
 endif()

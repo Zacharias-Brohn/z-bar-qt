@@ -2,12 +2,9 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
-import QtQuick.Effects
 import qs.Components
-import qs.Config
 
 Scope {
 	id: root
