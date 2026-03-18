@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import QtQuick.Effects
-import qs.Modules
 import qs.Config
 import qs.Components
 
@@ -17,6 +16,7 @@ Item {
 
 	CustomRect {
 		anchors.fill: parent
+		anchors.margins: -1
 		color: DynamicColors.palette.m3surface
 		layer.enabled: true
 
@@ -38,8 +38,8 @@ Item {
 
 		Rectangle {
 			anchors.fill: parent
-			anchors.margins: Config.barConfig.border
-			anchors.topMargin: root.bar.implicitHeight
+			anchors.margins: Config.barConfig.border + 1
+			anchors.topMargin: root.bar.implicitHeight + 1
 			radius: Config.barConfig.border > 0 ? Config.barConfig.rounding : 0
 			topLeftRadius: Config.barConfig.rounding
 			topRightRadius: Config.barConfig.rounding
