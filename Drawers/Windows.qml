@@ -129,7 +129,7 @@ Variants {
 			Binding {
 				property: "bar"
 				target: visibilities
-				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif || visibilities.resources
+				value: visibilities.sidebar || visibilities.dashboard || visibilities.osd || visibilities.notif || visibilities.resources || visibilities.settings || bar.isHovered
 				when: Config.barConfig.autoHide
 			}
 
@@ -146,6 +146,7 @@ Variants {
 
 				Border {
 					bar: bar
+					visibilities: visibilities
 				}
 
 				Backgrounds {

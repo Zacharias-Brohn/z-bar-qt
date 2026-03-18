@@ -11,12 +11,13 @@ Item {
 	id: root
 
 	required property Item bar
+	required property PersistentProperties visibilities
 
 	anchors.fill: parent
 
 	CustomRect {
 		anchors.fill: parent
-		color: !root.bar.isHovered && Config.barConfig.autoHide ? "transparent" : DynamicColors.palette.m3surface
+		color: DynamicColors.palette.m3surface
 		layer.enabled: true
 
 		layer.effect: MultiEffect {
