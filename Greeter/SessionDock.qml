@@ -62,28 +62,30 @@ ColumnLayout {
 		}
 
 		ListView {
+			id: sessions
+
 			anchors.fill: parent
 			clip: true
 			currentIndex: root.greeter.sessionIndex
+			highlightFollowsCurrentItem: false
 			model: root.greeter.sessions
 			spacing: Appearance.spacing.small
 
 			delegate: CustomRect {
+				id: session
+
 				required property int index
 				required property var modelData
 
 				anchors.left: parent?.left
 				anchors.right: parent?.right
-				color: ListView.isCurrentItem ? DynamicColors.palette.m3secondaryContainer : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 				implicitHeight: row.implicitHeight + Appearance.padding.normal * 2
-				radius: Appearance.rounding.normal
+				radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 				StateLayer {
 					function onClicked(): void {
 						root.greeter.sessionIndex = index;
 					}
-
-					color: ListView.isCurrentItem ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
 				}
 
 				RowLayout {
@@ -94,7 +96,8 @@ ColumnLayout {
 					spacing: Appearance.spacing.normal
 
 					MaterialIcon {
-						color: ListView.isCurrentItem ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurfaceVariant
+						color: session.index === sessions.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurfaceVariant
+						font.pointSize: Appearance.font.size.extraLarge
 						text: modelData.kind === "x11" ? "tv" : "desktop_windows"
 					}
 
@@ -104,7 +107,7 @@ ColumnLayout {
 
 						CustomText {
 							Layout.fillWidth: true
-							color: ListView.isCurrentItem ? DynamicColors.palette.m3onSecondaryContainer : DynamicColors.palette.m3onSurface
+							color: session.index === sessions.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 							elide: Text.ElideRight
 							font.pointSize: Appearance.font.size.normal
 							font.weight: 600
@@ -113,18 +116,26 @@ ColumnLayout {
 
 						CustomText {
 							Layout.fillWidth: true
-							color: DynamicColors.palette.m3outline
+							color: session.index === sessions.currentIndex ? DynamicColors.palette.m3onPrimaryFixedVariant : DynamicColors.palette.m3onSurfaceVariant
 							elide: Text.ElideRight
 							font.family: Appearance.font.family.mono
 							font.pointSize: Appearance.font.size.small
 							text: modelData.kind
 						}
 					}
+				}
+			}
+			highlight: CustomRect {
+				color: DynamicColors.palette.m3primary
+				implicitHeight: sessions.currentItem?.implicitHeight ?? 0
+				implicitWidth: sessions.width
+				radius: Appearance.rounding.normal - Appearance.padding.smaller
+				y: sessions.currentItem?.y ?? 0
 
-					MaterialIcon {
-						color: DynamicColors.palette.m3primary
-						opacity: ListView.isCurrentItem ? 1 : 0
-						text: "check_circle"
+				Behavior on y {
+					Anim {
+						duration: Appearance.anim.durations.small
+						easing.bezierCurve: Appearance.anim.curves.expressiveEffects
 					}
 				}
 			}

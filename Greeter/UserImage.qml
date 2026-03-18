@@ -1,7 +1,6 @@
 import Quickshell
 import Quickshell.Widgets
 import QtQuick
-import qs.Paths
 
 Item {
 	id: root
@@ -16,7 +15,7 @@ Item {
 			anchors.fill: parent
 			asynchronous: true
 			fillMode: Image.PreserveAspectCrop
-			source: `${Paths.home}/.face`
+			source: `${Quickshell.shellDir}/images/.face`
 			sourceSize.height: parent.height
 			sourceSize.width: parent.width
 		}

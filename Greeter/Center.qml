@@ -201,10 +201,71 @@ ColumnLayout {
 	Item {
 		Layout.fillWidth: true
 		Layout.topMargin: -Appearance.spacing.large
-		implicitHeight: message.implicitHeight
+		implicitHeight: Math.max(message.implicitHeight, stateMessage.implicitHeight)
 
 		Behavior on implicitHeight {
 			Anim {
+			}
+		}
+
+		CustomText {
+			id: stateMessage
+
+			readonly property string msg: {
+				if (Hypr.kbLayout !== Hypr.defaultKbLayout) {
+					if (Hypr.capsLock && Hypr.numLock)
+						return qsTr("Caps lock and Num lock are ON.\nKeyboard layout: %1").arg(Hypr.kbLayoutFull);
+					if (Hypr.capsLock)
+						return qsTr("Caps lock is ON. Kb layout: %1").arg(Hypr.kbLayoutFull);
+					if (Hypr.numLock)
+						return qsTr("Num lock is ON. Kb layout: %1").arg(Hypr.kbLayoutFull);
+					return qsTr("Keyboard layout: %1").arg(Hypr.kbLayoutFull);
+				}
+
+				if (Hypr.capsLock && Hypr.numLock)
+					return qsTr("Caps lock and Num lock are ON.");
+				if (Hypr.capsLock)
+					return qsTr("Caps lock is ON.");
+				if (Hypr.numLock)
+					return qsTr("Num lock is ON.");
+
+				return "";
+			}
+			property bool shouldBeVisible
+
+			anchors.left: parent.left
+			anchors.right: parent.right
+			animateProp: "opacity"
+			color: DynamicColors.palette.m3onSurfaceVariant
+			font.family: Appearance.font.family.mono
+			horizontalAlignment: Qt.AlignHCenter
+			lineHeight: 1.2
+			opacity: shouldBeVisible && !message.msg ? 1 : 0
+			scale: shouldBeVisible && !message.msg ? 1 : 0.7
+			wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+
+			Behavior on opacity {
+				Anim {
+				}
+			}
+			Behavior on scale {
+				Anim {
+				}
+			}
+
+			onMsgChanged: {
+				if (msg) {
+					if (opacity > 0) {
+						animate = true;
+						text = msg;
+						animate = false;
+					} else {
+						text = msg;
+					}
+					shouldBeVisible = true;
+				} else {
+					shouldBeVisible = false;
+				}
 			}
 		}
 
