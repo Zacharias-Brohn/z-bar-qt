@@ -2,6 +2,7 @@ import Quickshell.Io
 
 JsonObject {
 	property bool autoHide: false
+	property int border: 8
 	property list<var> entries: [
 		{
 			id: "workspaces",
@@ -60,6 +61,7 @@ JsonObject {
 			enabled: true
 		},
 	]
+	property int height: 34
 	property Popouts popouts: Popouts {
 	}
 	property int rounding: 8

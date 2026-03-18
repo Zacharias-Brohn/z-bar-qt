@@ -19,7 +19,6 @@ Item {
 		}, 0);
 		return bar.width - otherWidth - bar.spacing * (bar.children.length - 1) - bar.vPadding * 2;
 	}
-	required property Brightness.Monitor monitor
 
 	clip: true
 	implicitHeight: current.implicitHeight
@@ -48,7 +47,7 @@ Item {
 		elide: Qt.ElideRight
 		elideWidth: root.maxWidth
 		font.family: "Rubik"
-		font.pointSize: 12
+		font.pointSize: Appearance.font.size.normal
 		text: Hypr.activeToplevel?.title ?? qsTr("Desktop")
 
 		onElideWidthChanged: root.current.text = elidedText

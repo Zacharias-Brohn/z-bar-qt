@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import qs.Config
 
-CustomRect {
+Item {
 	id: root
 
 	property alias active: splitButton.active
@@ -18,38 +18,40 @@ CustomRect {
 	signal selected(item: MenuItem)
 
 	Layout.fillWidth: true
+	Layout.preferredHeight: row.implicitHeight + Appearance.padding.smaller * 2
 	clip: false
-	color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainer, 2)
-	implicitHeight: row.implicitHeight + Appearance.padding.large * 2
-	opacity: enabled ? 1.0 : 0.5
-	radius: Appearance.rounding.normal
-	z: splitButton.menu.implicitHeight > 0 ? expandedZ : 1
+	z: root.expanded ? expandedZ : -1
 
 	RowLayout {
 		id: row
 
-		anchors.fill: parent
-		anchors.margins: Appearance.padding.large
+		anchors.left: parent.left
+		anchors.margins: Appearance.padding.small
+		anchors.right: parent.right
+		anchors.verticalCenter: parent.verticalCenter
 		spacing: Appearance.spacing.normal
 
 		CustomText {
 			Layout.fillWidth: true
 			color: root.enabled ? DynamicColors.palette.m3onSurface : DynamicColors.palette.m3onSurfaceVariant
+			font.pointSize: Appearance.font.size.larger
 			text: root.label
+			z: root.expanded ? root.expandedZ : -1
 		}
 
 		CustomSplitButton {
 			id: splitButton
 
 			enabled: root.enabled
-			menu.z: 1
 			type: CustomSplitButton.Filled
+			z: root.expanded ? root.expandedZ : -1
 
 			menu.onItemSelected: item => {
 				root.selected(item);
+				splitButton.closeDropdown();
 			}
 			stateLayer.onClicked: {
-				splitButton.expanded = !splitButton.expanded;
+				splitButton.toggleDropdown();
 			}
 		}
 	}

@@ -7,15 +7,16 @@ import qs.Modules
 import qs.Config
 import qs.Components
 
-Item {
+CustomRect {
 	id: root
 
 	property color barColor: DynamicColors.palette.m3primary
 	property color textColor: DynamicColors.palette.m3onSurface
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
 	implicitWidth: 150
+	radius: Appearance.rounding.full
 
 	Behavior on implicitWidth {
 		NumberAnimation {
@@ -24,34 +25,27 @@ Item {
 		}
 	}
 
-	CustomRect {
-		anchors.left: parent.left
-		anchors.right: parent.right
-		anchors.verticalCenter: parent.verticalCenter
-		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
-		radius: height / 2
-	}
+	Component.onCompleted: console.log(root.height, root.implicitHeight)
 
 	RowLayout {
 		id: layout
 
-		anchors.fill: parent
+		anchors.left: parent.left
 		anchors.leftMargin: Appearance.padding.small
-		anchors.rightMargin: Appearance.padding.small * 2
 		anchors.verticalCenter: parent.verticalCenter
+		width: root.implicitWidth - Appearance.padding.small * 3
 
 		MaterialIcon {
 			Layout.alignment: Qt.AlignVCenter
 			animate: true
 			color: Audio.muted ? DynamicColors.palette.m3error : root.textColor
-			font.pointSize: 14
+			font.pointSize: Appearance.font.size.larger
 			text: Audio.muted ? "volume_off" : "volume_up"
 		}
 
 		CustomRect {
 			Layout.fillWidth: true
-			color: "#50ffffff"
+			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 			implicitHeight: 4
 			radius: 20
 
@@ -74,13 +68,13 @@ Item {
 			Layout.alignment: Qt.AlignVCenter
 			animate: true
 			color: (Audio.sourceMuted ?? false) ? DynamicColors.palette.m3error : root.textColor
-			font.pointSize: 14
+			font.pointSize: Appearance.font.size.larger
 			text: Audio.sourceMuted ? "mic_off" : "mic"
 		}
 
 		CustomRect {
 			Layout.fillWidth: true
-			color: "#50ffffff"
+			color: DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 			implicitHeight: 4
 			radius: 20
 

@@ -6,6 +6,7 @@ JsonObject {
 	}
 	property Color color: Color {
 	}
+	property bool desktopIcons: false
 	property Idle idle: Idle {
 	}
 	property string logo: ""
@@ -29,10 +30,12 @@ JsonObject {
 	component Idle: JsonObject {
 		property list<var> timeouts: [
 			{
+				name: "Lock",
 				timeout: 180,
 				idleAction: "lock"
 			},
 			{
+				name: "Screen",
 				timeout: 300,
 				idleAction: "dpms off",
 				activeAction: "dpms on"

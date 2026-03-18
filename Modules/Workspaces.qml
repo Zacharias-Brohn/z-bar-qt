@@ -12,16 +12,16 @@ Item {
 	id: root
 
 	property real activeWorkspaceMargin: Math.ceil(Appearance.padding.small / 2)
-	required property PanelWindow bar
 	readonly property int effectiveActiveWorkspaceId: monitor?.activeWorkspace?.id ?? 1
-	readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.bar.screen)
+	readonly property HyprlandMonitor monitor: Hyprland.monitorFor(root.screen)
+	required property ShellScreen screen
 	property int workspaceButtonWidth: bgRect.implicitHeight - root.activeWorkspaceMargin * 2
 	property int workspaceIndexInGroup: (effectiveActiveWorkspaceId - 1) % root.workspacesShown
 	readonly property list<var> workspaces: Hyprland.workspaces.values.filter(w => w.monitor === root.monitor)
 	readonly property int workspacesShown: workspaces.length
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
+	height: implicitHeight
+	implicitHeight: Config.barConfig.height + Math.max(Appearance.padding.smaller, Config.barConfig.border) * 2
 	implicitWidth: (root.workspaceButtonWidth * root.workspacesShown) + root.activeWorkspaceMargin * 2
 
 	Behavior on implicitWidth {
@@ -36,7 +36,7 @@ Item {
 		anchors.right: parent.right
 		anchors.verticalCenter: parent.verticalCenter
 		color: DynamicColors.tPalette.m3surfaceContainer
-		implicitHeight: root.parent.height - ((Appearance.padding.small - 1) * 2)
+		implicitHeight: root.implicitHeight - ((Appearance.padding.small - 1) * 2)
 		radius: height / 2
 
 		CustomRect {
@@ -91,7 +91,7 @@ Item {
 
 						CustomText {
 							anchors.centerIn: parent
-							color: DynamicColors.palette.m3onSecondaryContainer
+							color: button.modelData.active ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSecondaryContainer
 							elide: Text.ElideRight
 							horizontalAlignment: Text.AlignHCenter
 							text: button.modelData.name
@@ -149,21 +149,11 @@ Item {
 			}
 		}
 
-		ShaderEffectSource {
-			id: activeTextTex
-
-			anchors.fill: bgRect
-			anchors.margins: root.activeWorkspaceMargin
-			hideSource: true
-			live: true
-			recursive: true
-			sourceItem: activeTextSource
-		}
-
 		Item {
 			id: indicatorMask
 
 			anchors.fill: bgRect
+			layer.enabled: true
 			visible: false
 
 			CustomRect {
@@ -176,21 +166,12 @@ Item {
 			}
 		}
 
-		ShaderEffectSource {
-			id: indicatorMaskEffect
-
-			anchors.fill: activeTextSource
-			live: true
-			sourceItem: indicatorMask
-			visible: false
-		}
-
 		MultiEffect {
 			anchors.fill: activeTextSource
 			maskEnabled: true
 			maskInverted: false
-			maskSource: indicatorMaskEffect
-			source: activeTextTex
+			maskSource: indicatorMask
+			source: activeTextSource
 			z: 5
 		}
 	}

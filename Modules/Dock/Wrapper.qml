@@ -18,6 +18,12 @@ Item {
 	implicitWidth: content.implicitWidth
 	visible: height > 0
 
+	Behavior on implicitWidth {
+		Anim {
+			duration: Appearance.anim.durations.small
+		}
+	}
+
 	onShouldBeActiveChanged: {
 		if (shouldBeActive) {
 			timer.stop();
@@ -84,12 +90,13 @@ Item {
 		id: content
 
 		active: false
-		anchors.horizontalCenter: parent.horizontalCenter
+		anchors.left: parent.left
 		anchors.top: parent.top
 		visible: false
 
 		sourceComponent: Content {
 			panels: root.panels
+			screen: root.screen
 			visibilities: root.visibilities
 
 			Component.onCompleted: root.contentHeight = implicitHeight

@@ -25,6 +25,15 @@ Scope {
 	}
 
 	CustomShortcut {
+		name: "toggle-drawing"
+
+		onPressed: {
+			const visibilities = Visibilities.getForActive();
+			visibilities.isDrawing = !visibilities.isDrawing;
+		}
+	}
+
+	CustomShortcut {
 		name: "toggle-nc"
 
 		onPressed: {

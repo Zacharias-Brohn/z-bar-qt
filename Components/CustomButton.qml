@@ -1,12 +1,13 @@
 import QtQuick
 import QtQuick.Controls
+import qs.Config
 
 Button {
 	id: control
 
-	required property color bgColor
+	property color bgColor: DynamicColors.palette.m3primary
 	property int radius: 4
-	required property color textColor
+	property color textColor: DynamicColors.palette.m3onPrimary
 
 	background: CustomRect {
 		color: control.bgColor

@@ -6,43 +6,36 @@ import qs.Modules
 import qs.Helpers as Helpers
 import qs.Components
 
-Item {
+CustomRect {
 	id: root
 
 	required property RowLayout loader
 	required property Wrapper popouts
 	required property PersistentProperties visibilities
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
-	implicitWidth: timeText.contentWidth + 5 * 2
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitWidth: timeText.contentWidth + Appearance.padding.normal * 2
+	radius: Appearance.rounding.full
 
-	CustomRect {
-		anchors.bottomMargin: 3
-		anchors.fill: parent
-		anchors.topMargin: 3
-		color: "transparent"
-		radius: 4
+	CustomText {
+		id: timeText
 
-		CustomText {
-			id: timeText
+		anchors.centerIn: parent
+		color: DynamicColors.palette.m3onSurface
+		text: Time.dateStr
 
-			anchors.centerIn: parent
-			color: DynamicColors.palette.m3onSurface
-			text: Time.dateStr
-
-			Behavior on color {
-				CAnim {
-				}
+		Behavior on color {
+			CAnim {
 			}
 		}
+	}
 
-		StateLayer {
-			acceptedButtons: Qt.LeftButton
+	StateLayer {
+		acceptedButtons: Qt.LeftButton
 
-			onClicked: {
-				root.visibilities.dashboard = !root.visibilities.dashboard;
-			}
+		onClicked: {
+			root.visibilities.dashboard = !root.visibilities.dashboard;
 		}
 	}
 }

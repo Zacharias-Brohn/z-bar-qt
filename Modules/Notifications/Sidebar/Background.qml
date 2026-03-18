@@ -15,7 +15,7 @@ ShapePath {
 	readonly property real utilsWidthDiff: panels.utilities.width - wrapper.width
 	required property Wrapper wrapper
 
-	fillColor: flatten ? "transparent" : DynamicColors.palette.m3surface
+	fillColor: DynamicColors.palette.m3surface
 	strokeWidth: -1
 
 	Behavior on fillColor {

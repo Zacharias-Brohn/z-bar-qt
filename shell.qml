@@ -1,5 +1,6 @@
 //@ pragma UseQApplication
 //@ pragma Env QSG_RENDER_LOOP=threaded
+//@ pragma Env QSG_USE_SIMPLE_ANIMATION_DRIVER=0
 //@ pragma Env QS_NO_RELOAD_POPUP=1
 import Quickshell
 import qs.Modules
@@ -10,7 +11,7 @@ import qs.Helpers
 import qs.Modules.Polkit
 
 ShellRoot {
-	Bar {
+	Windows {
 	}
 
 	Wallpaper {

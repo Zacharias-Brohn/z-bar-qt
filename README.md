@@ -43,6 +43,8 @@ This installs the QML plugin to `/usr/lib/qt6/qml`.
 
 ### NixOS
 
+**Note that not all features work well. This is due to limited testing on NixOS.**
+
 In your flake.nix file, add the following in your inputs.
 
 ```nix
@@ -91,7 +93,7 @@ Below a full example of what it could look like.
 }
 ```
 
-Now you can add z-bar-qt as a nixpkg in environment.systemPackages (or optionally in your homePackages).
+Now you can add z-bar-qt as a nixpkg in environment.systemPackages (or optionally in your homePackages). It is named zshell and for cli options; zshell-cli.
 
 ```nix
 { pkgs, inputs, ... }:
@@ -108,7 +110,7 @@ You can now run `zshell` to run the bar. `zshell-cli` can be used for additional
 
 ## Configuration
 
-Configuration is stored in `~/.config/z-bar/config.json`. Options include:
+Configuration is stored in `~/.config/zshell/config.json`. Options include:
 
 |              Option               |                         Description                         |
 | :-------------------------------: | :---------------------------------------------------------: |

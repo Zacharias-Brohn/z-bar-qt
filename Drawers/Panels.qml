@@ -11,6 +11,8 @@ import qs.Components.Toast as Toasts
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
 import qs.Modules.Settings as Settings
+import qs.Modules.Drawing as Drawing
+import qs.Modules.Dock as Dock
 import qs.Config
 
 Item {
@@ -18,6 +20,9 @@ Item {
 
 	required property Item bar
 	readonly property alias dashboard: dashboard
+	readonly property alias dock: dock
+	readonly property alias drawing: drawing
+	required property Canvas drawingItem
 	readonly property alias launcher: launcher
 	readonly property alias notifications: notifications
 	readonly property alias osd: osd
@@ -31,19 +36,24 @@ Item {
 	required property PersistentProperties visibilities
 
 	anchors.fill: parent
-	// anchors.margins: 8
-	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
-
-	Behavior on anchors.topMargin {
-		Anim {
-		}
-	}
+	anchors.margins: Config.barConfig.border
+	anchors.topMargin: bar.implicitHeight
 
 	Resources.Wrapper {
 		id: resources
 
 		anchors.left: parent.left
 		anchors.top: parent.top
+		visibilities: root.visibilities
+	}
+
+	Drawing.Wrapper {
+		id: drawing
+
+		anchors.left: parent.left
+		anchors.verticalCenter: parent.verticalCenter
+		drawing: root.drawingItem
+		screen: root.screen
 		visibilities: root.visibilities
 	}
 
@@ -133,6 +143,17 @@ Item {
 		anchors.horizontalCenter: parent.horizontalCenter
 		anchors.top: parent.top
 		panels: root
+		screen: root.screen
+		visibilities: root.visibilities
+	}
+
+	Dock.Wrapper {
+		id: dock
+
+		anchors.bottom: parent.bottom
+		anchors.horizontalCenter: parent.horizontalCenter
+		panels: root
+		screen: root.screen
 		visibilities: root.visibilities
 	}
 }

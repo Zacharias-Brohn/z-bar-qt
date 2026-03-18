@@ -167,7 +167,7 @@ Item {
 			anchors.centerIn: parent
 			color: profiles.current === text ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
 			fill: profiles.current === text ? 1 : 0
-			font.pointSize: 36
+			font.pointSize: Appearance.font.size.large * 2
 			text: parent.icon
 
 			Behavior on fill {

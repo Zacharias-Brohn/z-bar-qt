@@ -5,46 +5,39 @@ import qs.Config
 import qs.Helpers
 import qs.Components
 
-Item {
+CustomRect {
 	id: root
 
 	required property Wrapper popouts
 	required property PersistentProperties visibilities
 
-	anchors.bottom: parent.bottom
-	anchors.top: parent.top
-	implicitWidth: 30
+	color: DynamicColors.tPalette.m3surfaceContainer
+	implicitHeight: Config.barConfig.height + Appearance.padding.smallest * 2
+	implicitWidth: implicitHeight
+	radius: Appearance.rounding.full
 
-	CustomRect {
-		anchors.bottomMargin: 3
-		anchors.fill: parent
-		anchors.topMargin: 3
-		color: "transparent"
-		radius: 4
+	MaterialIcon {
+		id: notificationCenterIcon
 
-		MaterialIcon {
-			id: notificationCenterIcon
+		property color iconColor: DynamicColors.palette.m3onSurface
 
-			property color iconColor: DynamicColors.palette.m3onSurface
+		anchors.centerIn: parent
+		color: iconColor
+		font.family: "Material Symbols Rounded"
+		font.pointSize: Appearance.font.size.larger
+		text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
 
-			anchors.centerIn: parent
-			color: iconColor
-			font.family: "Material Symbols Rounded"
-			font.pointSize: 16
-			text: HasNotifications.hasNotifications ? "\uf4fe" : "\ue7f4"
-
-			Behavior on color {
-				CAnim {
-				}
+		Behavior on color {
+			CAnim {
 			}
 		}
+	}
 
-		StateLayer {
-			cursorShape: Qt.PointingHandCursor
+	StateLayer {
+		cursorShape: Qt.PointingHandCursor
 
-			onClicked: {
-				root.visibilities.sidebar = !root.visibilities.sidebar;
-			}
+		onClicked: {
+			root.visibilities.sidebar = !root.visibilities.sidebar;
 		}
 	}
 }

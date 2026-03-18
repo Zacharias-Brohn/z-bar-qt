@@ -11,8 +11,9 @@ import qs.Modules.Dashboard as Dashboard
 import qs.Modules.Osd as Osd
 import qs.Modules.Launcher as Launcher
 import qs.Modules.Resources as Resources
-
+import qs.Modules.Drawing as Drawing
 import qs.Modules.Settings as Settings
+import qs.Modules.Dock as Dock
 
 Shape {
 	id: root
@@ -22,13 +23,15 @@ Shape {
 	required property PersistentProperties visibilities
 
 	anchors.fill: parent
-	// anchors.margins: 8
-	anchors.topMargin: Config.barConfig.autoHide && !visibilities.bar ? 0 : bar.implicitHeight
+	anchors.margins: Config.barConfig.border
+	anchors.topMargin: bar.implicitHeight
+	asynchronous: true
 	preferredRendererType: Shape.CurveRenderer
 
-	Behavior on anchors.topMargin {
-		Anim {
-		}
+	Drawing.Background {
+		startX: 0
+		startY: wrapper.y - rounding
+		wrapper: root.panels.drawing
 	}
 
 	Resources.Background {
@@ -45,7 +48,8 @@ Shape {
 
 	Modules.Background {
 		invertBottomRounding: wrapper.x <= 0
-		startX: wrapper.x - 8
+		rounding: root.panels.popouts.currentName.startsWith("updates") ? Appearance.rounding.normal : Appearance.rounding.smallest
+		startX: wrapper.x - rounding
 		startY: wrapper.y
 		wrapper: root.panels.popouts
 	}
@@ -91,5 +95,13 @@ Shape {
 		startX: (root.width - wrapper.width) / 2 - rounding
 		startY: 0
 		wrapper: root.panels.settings
+	}
+
+	Dock.Background {
+		id: dock
+
+		startX: (root.width - wrapper.width) / 2 - rounding
+		startY: root.height
+		wrapper: root.panels.dock
 	}
 }

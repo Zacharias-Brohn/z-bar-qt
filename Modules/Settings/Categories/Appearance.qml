@@ -1,97 +1,159 @@
-import Quickshell
-import Quickshell.Widgets
-import QtQuick
-import QtQuick.Layouts
-import qs.Components
-import qs.Modules as Modules
 import qs.Modules.Settings.Controls
 import qs.Config
-import qs.Helpers
 
-CustomRect {
+SettingsPage {
 	id: root
 
-	ColumnLayout {
-		id: clayout
+	SettingsSection {
+		SettingsHeader {
+			name: "Scale"
+		}
 
-		anchors.left: parent.left
-		anchors.right: parent.right
+		SettingSpinBox {
+			name: "Rounding scale"
+			object: Config.appearance.rounding
+			setting: "scale"
+			step: 0.1
+		}
 
-		CustomRect {
-			Layout.fillWidth: true
-			Layout.preferredHeight: colorLayout.implicitHeight
-			color: DynamicColors.tPalette.m3surfaceContainer
+		Separator {
+		}
 
-			ColumnLayout {
-				id: colorLayout
+		SettingSpinBox {
+			name: "Spacing scale"
+			object: Config.appearance.spacing
+			setting: "scale"
+			step: 0.1
+		}
 
-				anchors.left: parent.left
-				anchors.margins: Appearance.padding.large
-				anchors.right: parent.right
+		Separator {
+		}
 
-				Settings {
-					name: "smth"
-				}
+		SettingSpinBox {
+			name: "Padding scale"
+			object: Config.appearance.padding
+			setting: "scale"
+			step: 0.1
+		}
 
-				SettingSwitch {
-					name: "wallust"
-					object: Config.general.color
-					setting: "wallust"
-				}
+		Separator {
+		}
 
-				CustomSplitButtonRow {
-					enabled: true
-					label: qsTr("Scheme mode")
+		SettingSpinBox {
+			name: "Font size scale"
+			object: Config.appearance.font.size
+			setting: "scale"
+			step: 0.1
+		}
 
-					menuItems: [
-						MenuItem {
-							property string val: "light"
+		Separator {
+		}
 
-							icon: "light_mode"
-							text: qsTr("Light")
-						},
-						MenuItem {
-							property string val: "dark"
-
-							icon: "dark_mode"
-							text: qsTr("Dark")
-						}
-					]
-
-					Component.onCompleted: {
-						if (Config.general.color.mode === "light")
-							active = menuItems[0];
-						else
-							active = menuItems[1];
-					}
-					onSelected: item => {
-						Config.general.color.mode = item.val;
-						Config.save();
-					}
-				}
-			}
+		SettingSpinBox {
+			name: "Animation duration scale"
+			object: Config.appearance.anim.durations
+			setting: "scale"
+			step: 0.1
 		}
 	}
 
-	component Settings: CustomRect {
-		id: settingsItem
+	SettingsSection {
+		SettingsHeader {
+			name: "Fonts"
+		}
 
-		required property string name
+		SettingInput {
+			name: "Sans family"
+			object: Config.appearance.font.family
+			setting: "sans"
+		}
 
-		Layout.preferredHeight: 42
-		Layout.preferredWidth: 200
-		radius: 4
+		Separator {
+		}
 
-		CustomText {
-			id: text
+		SettingInput {
+			name: "Monospace family"
+			object: Config.appearance.font.family
+			setting: "mono"
+		}
 
-			anchors.left: parent.left
-			anchors.margins: Appearance.padding.smaller
-			anchors.right: parent.right
-			font.bold: true
-			font.pointSize: 32
-			text: settingsItem.name
-			verticalAlignment: Text.AlignVCenter
+		Separator {
+		}
+
+		SettingInput {
+			name: "Material family"
+			object: Config.appearance.font.family
+			setting: "material"
+		}
+
+		Separator {
+		}
+
+		SettingInput {
+			name: "Clock family"
+			object: Config.appearance.font.family
+			setting: "clock"
+		}
+	}
+
+	SettingsSection {
+		SettingsHeader {
+			name: "Animation"
+		}
+
+		SettingSpinBox {
+			name: "Media GIF speed adjustment"
+			object: Config.appearance.anim
+			setting: "mediaGifSpeedAdjustment"
+			step: 10
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Session GIF speed"
+			max: 5
+			min: 0
+			object: Config.appearance.anim
+			setting: "sessionGifSpeed"
+			step: 0.1
+		}
+	}
+
+	SettingsSection {
+		SettingsHeader {
+			name: "Transparency"
+		}
+
+		SettingSwitch {
+			name: "Enable transparency"
+			object: Config.appearance.transparency
+			setting: "enabled"
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Base opacity"
+			max: 1
+			min: 0
+			object: Config.appearance.transparency
+			setting: "base"
+			step: 0.05
+		}
+
+		Separator {
+		}
+
+		SettingSpinBox {
+			name: "Layer opacity"
+			max: 1
+			min: 0
+			object: Config.appearance.transparency
+			setting: "layers"
+			step: 0.05
 		}
 	}
 }

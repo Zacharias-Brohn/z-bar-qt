@@ -25,6 +25,8 @@
   pkg-config,
   pythonEnv,
   zshell-cli,
+  ddcutil,
+  brightnessctl,
 }:
 let
   version = "1.0.0";
@@ -39,6 +41,8 @@ let
     bash
     hyprland
     zshell-cli
+    ddcutil
+    brightnessctl
   ];
 
   fontconfig = makeFontsConf {

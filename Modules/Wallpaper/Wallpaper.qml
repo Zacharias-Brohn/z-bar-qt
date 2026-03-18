@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import Quickshell.Wayland
 import qs.Config
+import qs.Modules.DesktopIcons
 
 Loader {
 	active: Config.background.enabled
@@ -29,6 +30,16 @@ Loader {
 			}
 
 			WallBackground {
+			}
+
+			Loader {
+				id: loader
+
+				active: Config.general.desktopIcons
+				anchors.fill: parent
+
+				sourceComponent: DesktopIcons {
+				}
 			}
 		}
 	}

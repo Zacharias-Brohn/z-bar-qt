@@ -33,6 +33,10 @@ Singleton {
 		recentSaveCooldown.restart();
 	}
 
+	function saveNoToast(): void {
+		saveTimer.restart();
+	}
+
 	function serializeAppearance(): var {
 		return {
 			rounding: {
@@ -56,8 +60,8 @@ Singleton {
 				}
 			},
 			anim: {
-				mediaGifSpeedAdjustment: 300,
-				sessionGifSpeed: 0.7,
+				mediaGifSpeedAdjustment: appearance.anim.mediaGifSpeedAdjustment,
+				sessionGifSpeed: appearance.anim.sessionGifSpeed,
 				durations: {
 					scale: appearance.anim.durations.scale
 				}
@@ -81,6 +85,8 @@ Singleton {
 		return {
 			autoHide: barConfig.autoHide,
 			rounding: barConfig.rounding,
+			border: barConfig.border,
+			height: barConfig.height,
 			popouts: {
 				tray: barConfig.popouts.tray,
 				audio: barConfig.popouts.audio,
@@ -155,10 +161,10 @@ Singleton {
 		return {
 			enable: dock.enable,
 			height: dock.height,
-			hoverRegionHeight: dock.hoverRegionHeight,
 			hoverToReveal: dock.hoverToReveal,
 			pinnedApps: dock.pinnedApps,
-			pinnedOnStartup: dock.pinnedOnStartup
+			pinnedOnStartup: dock.pinnedOnStartup,
+			ignoredAppRegexes: dock.ignoredAppRegexes
 		};
 	}
 
@@ -166,6 +172,7 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
+			desktopIcons: general.desktopIcons,
 			color: {
 				wallust: general.color.wallust,
 				mode: general.color.mode,
@@ -182,7 +189,7 @@ Singleton {
 				explorer: general.apps.explorer
 			},
 			idle: {
-				timouts: general.idle.timeouts
+				timeouts: general.idle.timeouts
 			}
 		};
 	}

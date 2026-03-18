@@ -8,6 +8,7 @@ Item {
 	id: root
 
 	required property var panels
+	required property ShellScreen screen
 	required property PersistentProperties visibilities
 
 	implicitHeight: 0
@@ -46,16 +47,21 @@ Item {
 		}
 	]
 
-	Loader {
-		id: content
+	CustomClippingRect {
+		anchors.fill: parent
 
-		active: true
-		anchors.bottom: parent.bottom
-		anchors.horizontalCenter: parent.horizontalCenter
-		visible: true
+		Loader {
+			id: content
 
-		sourceComponent: Content {
-			visibilities: root.visibilities
+			active: true
+			anchors.bottom: parent.bottom
+			anchors.horizontalCenter: parent.horizontalCenter
+			visible: true
+
+			sourceComponent: Content {
+				screen: root.screen
+				visibilities: root.visibilities
+			}
 		}
 	}
 }

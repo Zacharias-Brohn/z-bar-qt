@@ -28,6 +28,7 @@ RowLayout {
 	CustomTextField {
 		id: textField
 
+		implicitHeight: upButton.implicitHeight
 		inputMethodHints: Qt.ImhFormattedNumbersOnly
 		leftPadding: Appearance.padding.normal
 		padding: Appearance.padding.small
@@ -37,7 +38,7 @@ RowLayout {
 		background: CustomRect {
 			color: DynamicColors.tPalette.m3surfaceContainerHigh
 			implicitWidth: 100
-			radius: Appearance.rounding.small
+			radius: Appearance.rounding.full
 		}
 		validator: DoubleValidator {
 			bottom: root.min
@@ -82,10 +83,12 @@ RowLayout {
 	}
 
 	CustomRect {
+		id: upButton
+
 		color: DynamicColors.palette.m3primary
 		implicitHeight: upIcon.implicitHeight + Appearance.padding.small * 2
 		implicitWidth: implicitHeight
-		radius: Appearance.rounding.small
+		radius: Appearance.rounding.full
 
 		StateLayer {
 			id: upState
@@ -119,7 +122,7 @@ RowLayout {
 		color: DynamicColors.palette.m3primary
 		implicitHeight: downIcon.implicitHeight + Appearance.padding.small * 2
 		implicitWidth: implicitHeight
-		radius: Appearance.rounding.small
+		radius: Appearance.rounding.full
 
 		StateLayer {
 			id: downState

@@ -22,83 +22,92 @@ Item {
 
 		ListElement {
 			icon: "settings"
+			key: "general"
 			name: "General"
 		}
 
 		ListElement {
 			icon: "wallpaper"
+			key: "wallpaper"
 			name: "Wallpaper"
 		}
 
 		ListElement {
 			icon: "settop_component"
+			key: "bar"
 			name: "Bar"
 		}
 
 		ListElement {
 			icon: "lock"
+			key: "lockscreen"
 			name: "Lockscreen"
 		}
 
 		ListElement {
 			icon: "build_circle"
+			key: "services"
 			name: "Services"
 		}
 
 		ListElement {
 			icon: "notifications"
+			key: "notifications"
 			name: "Notifications"
 		}
 
 		ListElement {
 			icon: "view_sidebar"
+			key: "sidebar"
 			name: "Sidebar"
 		}
 
 		ListElement {
 			icon: "handyman"
+			key: "utilities"
 			name: "Utilities"
 		}
 
 		ListElement {
 			icon: "dashboard"
+			key: "dashboard"
 			name: "Dashboard"
 		}
 
 		ListElement {
 			icon: "colors"
+			key: "appearance"
 			name: "Appearance"
 		}
 
 		ListElement {
 			icon: "display_settings"
+			key: "osd"
 			name: "On screen display"
 		}
 
 		ListElement {
 			icon: "rocket_launch"
+			key: "launcher"
 			name: "Launcher"
-		}
-
-		ListElement {
-			icon: "colors"
-			name: "Colors"
 		}
 	}
 
-	CustomRect {
+	CustomClippingRect {
 		anchors.fill: parent
 		color: DynamicColors.tPalette.m3surfaceContainer
-		radius: 4
+		radius: Appearance.rounding.normal
 
 		CustomListView {
 			id: clayout
 
-			anchors.centerIn: parent
-			contentHeight: contentItem.childrenRect.height
+			anchors.bottom: parent.bottom
+			anchors.horizontalCenter: parent.horizontalCenter
+			anchors.margins: Appearance.padding.smaller
+			anchors.top: parent.top
+			boundsBehavior: Flickable.StopAtBounds
 			contentWidth: contentItem.childrenRect.width
 			highlightFollowsCurrentItem: false
-			implicitHeight: contentItem.childrenRect.height
 			implicitWidth: contentItem.childrenRect.width
 			model: listModel
 			spacing: 5
@@ -109,7 +118,7 @@ Item {
 				color: DynamicColors.palette.m3primary
 				implicitHeight: clayout.currentItem?.implicitHeight ?? 0
 				implicitWidth: clayout.width
-				radius: 4
+				radius: Appearance.rounding.normal - Appearance.padding.smaller
 				y: clayout.currentItem?.y ?? 0
 
 				Behavior on y {
@@ -127,11 +136,12 @@ Item {
 
 		required property string icon
 		required property int index
+		required property string key
 		required property string name
 
 		implicitHeight: 42
 		implicitWidth: 200
-		radius: 4
+		radius: Appearance.rounding.normal - Appearance.padding.smaller
 
 		RowLayout {
 			id: layout
@@ -148,7 +158,7 @@ Item {
 				Layout.fillHeight: true
 				Layout.preferredWidth: icon.contentWidth
 				color: categoryItem.index === clayout.currentIndex ? DynamicColors.palette.m3onPrimary : DynamicColors.palette.m3onSurface
-				font.pointSize: 22
+				font.pointSize: Appearance.font.size.small * 2
 				text: categoryItem.icon
 				verticalAlignment: Text.AlignVCenter
 			}
@@ -170,7 +180,7 @@ Item {
 			id: layer
 
 			onClicked: {
-				root.content.currentCategory = categoryItem.name.toLowerCase();
+				root.content.currentCategory = categoryItem.key;
 				clayout.currentIndex = categoryItem.index;
 			}
 		}

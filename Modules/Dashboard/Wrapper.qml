@@ -72,17 +72,21 @@ Item {
 		}
 	}
 
-	Loader {
-		id: content
+	CustomClippingRect {
+		anchors.fill: parent
 
-		active: true
-		anchors.bottom: parent.bottom
-		anchors.horizontalCenter: parent.horizontalCenter
-		visible: false
+		Loader {
+			id: content
 
-		sourceComponent: Content {
-			state: root.dashState
-			visibilities: root.visibilities
+			active: true
+			anchors.bottom: parent.bottom
+			anchors.horizontalCenter: parent.horizontalCenter
+			visible: false
+
+			sourceComponent: Content {
+				state: root.dashState
+				visibilities: root.visibilities
+			}
 		}
 	}
 }

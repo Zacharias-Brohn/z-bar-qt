@@ -5,7 +5,7 @@ import qs.Config
 RadioButton {
 	id: root
 
-	font.pointSize: 12
+	font.pointSize: Appearance.font.size.normal
 	implicitHeight: Math.max(implicitIndicatorHeight, implicitContentHeight)
 	implicitWidth: implicitIndicatorWidth + implicitContentWidth + contentItem.anchors.leftMargin
 
