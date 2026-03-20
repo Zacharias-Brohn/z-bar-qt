@@ -30,6 +30,10 @@ def lockscreen(
 ):
     img = Image.open(input_image)
     size = img.size
+    if (blur_amount == 0):
+        img.save(output_path, "PNG")
+        return
+
     if (size[0] < 3840 or size[1] < 2160):
         img = img.resize((size[0] // 2, size[1] // 2), Image.NEAREST)
     else:
