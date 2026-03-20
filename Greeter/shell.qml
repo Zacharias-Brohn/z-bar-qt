@@ -12,7 +12,7 @@ ShellRoot {
 	GreeterState {
 		id: greeter
 
-		username: "zach"
+		username: Config.general.username
 	}
 
 	GreeterSurface {

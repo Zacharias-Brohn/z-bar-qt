@@ -172,6 +172,7 @@ Singleton {
 		return {
 			logo: general.logo,
 			wallpaperPath: general.wallpaperPath,
+			username: general.username,
 			desktopIcons: general.desktopIcons,
 			color: {
 				wallust: general.color.wallust,

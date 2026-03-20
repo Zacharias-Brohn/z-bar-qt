@@ -10,6 +10,7 @@ JsonObject {
 	property Idle idle: Idle {
 	}
 	property string logo: ""
+	property string username: ""
 	property string wallpaperPath: Quickshell.env("HOME") + "/Pictures/Wallpapers"
 
 	component Apps: JsonObject {
