@@ -8,19 +8,21 @@ CustomRect {
 	id: root
 
 	property alias currentIndex: menu.currentIndex
+	property bool enabled
 	property alias expanded: menu.expanded
 	property alias label: label
 	property alias menu: menu
 	property alias text: label.text
 
-	color: DynamicColors.palette.m3primary
+	color: enabled ? DynamicColors.palette.m3primary : DynamicColors.layer(DynamicColors.palette.m3surfaceContainerHigh, 2)
 	radius: Appearance.rounding.full
+	z: expanded ? 100 : 0
 
 	CustomText {
 		id: label
 
 		anchors.centerIn: parent
-		color: DynamicColors.palette.m3onPrimary
+		color: root.enabled ? DynamicColors.palette.m3onPrimary : DynamicColors.layer(DynamicColors.palette.m3onSurface, 2)
 		font.pointSize: Appearance.font.size.large
 	}
 
@@ -28,6 +30,8 @@ CustomRect {
 		function onClicked(): void {
 			SettingsDropdowns.toggle(menu, root);
 		}
+
+		visible: root.enabled
 	}
 
 	PathViewMenu {

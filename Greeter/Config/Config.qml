@@ -357,7 +357,7 @@ Singleton {
 	FileView {
 		id: fileView
 
-		path: `${Paths.config}/config.json`
+		path: "/etc/zshell-greeter/config.json"
 		watchChanges: true
 
 		onFileChanged: {

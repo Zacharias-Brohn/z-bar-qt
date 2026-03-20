@@ -43,7 +43,7 @@ Item {
 		anchors.centerIn: parent
 		color: DynamicColors.palette.m3onSurface
 		implicitSize: 22
-		layer.enabled: DynamicColors.light
+		layer.enabled: Config.general.color.smart || Config.general.color.scheduleDark
 		source: root.item.icon
 	}
 }

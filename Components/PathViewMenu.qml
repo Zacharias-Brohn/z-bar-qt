@@ -29,6 +29,7 @@ Elevation {
 	level: root.expanded ? 2 : 0
 	radius: itemHeight / 2
 	visible: implicitHeight > 0
+	z: root.expanded ? 100 : 0
 
 	Behavior on implicitHeight {
 		Anim {
@@ -68,6 +69,7 @@ Elevation {
 		anchors.fill: parent
 		color: DynamicColors.palette.m3surfaceContainer
 		radius: parent.radius
+		z: root.z
 
 		// Main visible spinner: normal/outside text color
 		PathView {

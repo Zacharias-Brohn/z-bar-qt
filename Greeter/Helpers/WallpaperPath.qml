@@ -6,5 +6,5 @@ import Quickshell.Io
 Singleton {
 	id: root
 
-	property string lockscreenBg: `${Quickshell.shellDir}/images/greeter_bg.png`
+	property string lockscreenBg: "/etc/zshell-greeter/images/greeter_bg.png"
 }

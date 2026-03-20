@@ -62,25 +62,84 @@ Item {
 			}
 		}
 
-		SpinnerButton {
-			Layout.preferredHeight: Appearance.font.size.large + Appearance.padding.smaller * 2
-			Layout.preferredWidth: height * 2
-			currentIndex: root.object[root.settings[0]]
-			text: root.formattedValue(root.settings[0])
+		ColumnLayout {
+			id: optionLayout
 
-			menu.onItemSelected: item => {
-				root.commitChoice(item, root.settings[0]);
+			Layout.fillHeight: true
+			Layout.preferredWidth: 100
+
+			RowLayout {
+				Layout.preferredWidth: optionLayout.width
+
+				CustomText {
+					Layout.alignment: Qt.AlignLeft | Qt.AlignHCenter
+					Layout.fillWidth: true
+					text: qsTr("Enabled: ")
+				}
+
+				CustomSwitch {
+					id: enabledSwitch
+
+					Layout.alignment: Qt.AlignRight | Qt.AlignHCenter
+					checked: root.object[root.settings[2]]
+
+					onToggled: {
+						root.object[root.settings[2]] = checked;
+						Config.save();
+					}
+				}
 			}
-		}
 
-		SpinnerButton {
-			Layout.preferredHeight: Appearance.font.size.large + Appearance.padding.smaller * 2
-			Layout.preferredWidth: height * 2
-			currentIndex: root.object[root.settings[1]]
-			text: root.formattedValue(root.settings[1])
+			RowLayout {
+				Layout.preferredWidth: optionLayout.width
+				z: setting2.expanded ? -1 : 1
 
-			menu.onItemSelected: item => {
-				root.commitChoice(item, root.settings[1]);
+				CustomText {
+					Layout.alignment: Qt.AlignLeft | Qt.AlignHCenter
+					Layout.fillWidth: true
+					text: qsTr("Start: ")
+				}
+
+				SpinnerButton {
+					id: setting1
+
+					Layout.alignment: Qt.AlignRight | Qt.AlignHCenter
+					Layout.preferredHeight: Appearance.font.size.large + Appearance.padding.smaller * 2
+					Layout.preferredWidth: height * 2
+					currentIndex: root.object[root.settings[0]]
+					enabled: enabledSwitch.checked
+					text: root.formattedValue(root.settings[0])
+
+					menu.onItemSelected: item => {
+						root.commitChoice(item, root.settings[0]);
+					}
+				}
+			}
+
+			RowLayout {
+				Layout.preferredWidth: optionLayout.width
+				z: setting1.expanded ? -1 : 1
+
+				CustomText {
+					Layout.alignment: Qt.AlignLeft | Qt.AlignHCenter
+					Layout.fillWidth: true
+					text: qsTr("End: ")
+				}
+
+				SpinnerButton {
+					id: setting2
+
+					Layout.alignment: Qt.AlignRight | Qt.AlignHCenter
+					Layout.preferredHeight: Appearance.font.size.large + Appearance.padding.smaller * 2
+					Layout.preferredWidth: height * 2
+					currentIndex: root.object[root.settings[1]]
+					enabled: enabledSwitch.checked
+					text: root.formattedValue(root.settings[1])
+
+					menu.onItemSelected: item => {
+						root.commitChoice(item, root.settings[1]);
+					}
+				}
 			}
 		}
 	}

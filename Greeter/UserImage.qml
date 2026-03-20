@@ -15,7 +15,7 @@ Item {
 			anchors.fill: parent
 			asynchronous: true
 			fillMode: Image.PreserveAspectCrop
-			source: `${Quickshell.shellDir}/images/.face`
+			source: "/etc/zshell-greeter/images/face"
 			sourceSize.height: parent.height
 			sourceSize.width: parent.width
 		}

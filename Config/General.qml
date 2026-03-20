@@ -21,6 +21,7 @@ JsonObject {
 	component Color: JsonObject {
 		property string mode: "dark"
 		property bool neovimColors: false
+		property bool scheduleDark: false
 		property int scheduleDarkEnd: 0
 		property int scheduleDarkStart: 0
 		property bool schemeGeneration: true
