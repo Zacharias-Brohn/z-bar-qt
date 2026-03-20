@@ -182,14 +182,14 @@ Item {
 				control.onClicked();
 			}
 
-			color: control.active ? DynamicColors.palette[`m3on${control.colour}`] : DynamicColors.palette[`m3on${control.colour}Container`]
+			color: control.active ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
 		}
 
 		MaterialIcon {
 			id: controlIcon
 
 			anchors.centerIn: parent
-			color: control.active ? DynamicColors.palette[`m3on${control.colour}`] : DynamicColors.palette[`m3on${control.colour}Container`]
+			color: control.active ? DynamicColors.palette[`m3on${control.set_color}`] : DynamicColors.palette[`m3on${control.set_color}Container`]
 			fill: control.active ? 1 : 0
 			font.pointSize: Appearance.font.size.large
 
