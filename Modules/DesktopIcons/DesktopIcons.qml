@@ -87,6 +87,7 @@ Item {
 		}
 
 		border.color: DynamicColors.palette.m3primary
+		border.pixelAligned: true
 		border.width: 1
 		color: DynamicColors.tPalette.m3primary
 		opacity: 0
@@ -127,10 +128,10 @@ Item {
 
 		onPositionChanged: mouse => {
 			if (lasso.visible) {
-				lasso.x = Math.floor(Math.min(mouse.x, root.startX));
-				lasso.y = Math.floor(Math.min(mouse.y, root.startY));
-				lasso.width = Math.floor(Math.abs(mouse.x - root.startX));
-				lasso.height = Math.floor(Math.abs(mouse.y - root.startY));
+				lasso.x = Math.min(mouse.x, root.startX);
+				lasso.y = Math.min(mouse.y, root.startY);
+				lasso.width = Math.abs(mouse.x - root.startX);
+				lasso.height = Math.abs(mouse.y - root.startY);
 
 				let minCol = Math.floor((lasso.x - gridArea.x) / cellWidth);
 				let maxCol = Math.floor((lasso.x + lasso.width - gridArea.x) / cellWidth);
