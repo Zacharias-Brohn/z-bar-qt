@@ -174,7 +174,6 @@ Singleton {
 			wallpaperPath: general.wallpaperPath,
 			desktopIcons: general.desktopIcons,
 			color: {
-				wallust: general.color.wallust,
 				mode: general.color.mode,
 				smart: general.color.smart,
 				scheduleDark: general.color.scheduleDark,

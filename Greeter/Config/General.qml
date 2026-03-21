@@ -26,7 +26,6 @@ JsonObject {
 		property int scheduleDarkStart: 0
 		property bool schemeGeneration: true
 		property bool smart: false
-		property bool wallust: false
 	}
 	component Idle: JsonObject {
 		property list<var> timeouts: [

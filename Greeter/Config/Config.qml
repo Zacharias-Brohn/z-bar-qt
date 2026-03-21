@@ -175,7 +175,6 @@ Singleton {
 			username: general.username,
 			desktopIcons: general.desktopIcons,
 			color: {
-				wallust: general.color.wallust,
 				mode: general.color.mode,
 				smart: general.color.smart,
 				schemeGeneration: general.color.schemeGeneration,

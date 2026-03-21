@@ -12,6 +12,7 @@ Singleton {
 
 	readonly property int darkEnd: Config.general.color.scheduleDarkEnd
 	readonly property int darkStart: Config.general.color.scheduleDarkStart
+	readonly property bool enabled: Config.general.color.scheduleDark
 
 	function applyDarkMode() {
 		if (Config.general.color.schemeGeneration) {
@@ -27,9 +28,6 @@ Singleton {
 		Quickshell.execDetached(["sh", "-c", `sed -i 's/color_scheme_path=\\(.*\\)Light.colors/color_scheme_path=\\1Dark.colors/' ${Paths.home}/.config/qt6ct/qt6ct.conf`]);
 
 		Quickshell.execDetached(["sed", "-i", "'s/\\(vim.cmd.colorscheme \\).*/\\1\"tokyodark\"/'", "~/.config/nvim/lua/config/load-colorscheme.lua"]);
-
-		if (Config.general.color.wallust)
-			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
 	}
 
 	function applyLightMode() {
@@ -47,9 +45,6 @@ Singleton {
 
 		if (Config.general.color.neovimColors)
 			Quickshell.execDetached(["sed", "-i", "'s/\\(vim.cmd.colorscheme \\).*/\\1\"onelight\"/'", "~/.config/nvim/lua/config/load-colorscheme.lua"]);
-
-		if (Config.general.color.wallust)
-			Wallust.generateColors(WallpaperPath.currentWallpaperPath);
 	}
 
 	function checkStartup() {
@@ -71,15 +66,15 @@ Singleton {
 		running: true
 
 		onTriggered: {
-			if (darkStart === darkEnd)
+			if (!root.enabled)
 				return;
 			var now = new Date();
-			if (now.getHours() >= darkStart || now.getHours() < darkEnd) {
+			if (now.getHours() >= root.darkStart || now.getHours() < root.darkEnd) {
 				if (DynamicColors.light)
-					applyDarkMode();
+					root.applyDarkMode();
 			} else {
 				if (!DynamicColors.light)
-					applyLightMode();
+					root.applyLightMode();
 			}
 		}
 	}
